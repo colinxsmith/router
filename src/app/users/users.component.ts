@@ -20,9 +20,9 @@ export class UsersComponent implements OnInit {
       .subscribe((data: User[]) => {
         this.users = data;
         this.users.sort((d1, d2) => {
-          if (d2.movies.valueOf() > d1.movies.valueOf()) {
+          if (+d2.movies > +d1.movies) {
             return 1;
-          } else if (d1.movies.valueOf() === d2.movies.valueOf()) {
+          } else if (+d1.movies === +d2.movies) {
             return 0;
           } else {
             return -1;
@@ -35,7 +35,7 @@ export class UsersComponent implements OnInit {
           .attr('x', 0)
           .attr('y', 0)
           .attr('transform', (d, i) => `translate(${20},${i * 30 + 30})`)
-          .text((d) => `${d.id} ${d.movies.valueOf()} ${d.name}`)
+          .text((d) => `${d.id} ${d.movies} ${d.name}`)
           .attr('class', 'users');
       });
   }
