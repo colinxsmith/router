@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { UserService } from './user.service';
-import { User } from './User';
 import * as d3 from 'd3';
 @Component({
   selector: 'app-users',
@@ -10,14 +9,14 @@ import * as d3 from 'd3';
 })
 export class UsersComponent implements OnInit {
 
-  users: User[];
+  users: any[];
 
   constructor(private userService: UserService) { }
 
   ngOnInit() {
     this.userService
       .getUsers()
-      .subscribe((data: User[]) => {
+      .subscribe((data: any[]) => {
         this.users = data;
         this.users.sort((d1, d2) => {
           if (+d2.movies > +d1.movies) {
