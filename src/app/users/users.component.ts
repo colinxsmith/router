@@ -15,6 +15,12 @@ export class UsersComponent implements OnInit {
   constructor(private userService: UserService) { }
 
   ngOnInit() {
+    this.userService.postResult().subscribe(res => {
+      console.log(res);
+    },
+      err => {
+        console.log('Error occured');
+      });
     this.userService
       .getUsers(this.getKey)
       .subscribe((data: any[]) => {

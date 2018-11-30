@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable()
 export class UserService {
@@ -8,7 +8,13 @@ export class UserService {
   getUsers(key = 'results') {
     console.log('here');
     return this
-            .http
-            .get(`${this.url}/${key}`);
-        }
+      .http
+      .get(`${this.url}/${key}`);
+  }
+  postResult() {
+    const options = { headers: new HttpHeaders().set('Content-Type', 'application/json') };
+    return this
+      .http
+      .post(`${this.url}/results`, { name: 'Colin', id: 8, movies: 0}, options);
+  }
 }
