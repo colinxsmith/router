@@ -9,7 +9,7 @@ import * as d3 from 'd3';
 })
 export class UsersComponent implements OnInit {
 
-  users: any[];
+  displayData: any[];
   getKey = 'radarData';
 
   constructor(private userService: UserService) { }
@@ -19,8 +19,8 @@ export class UsersComponent implements OnInit {
       .getUsers(this.getKey)
       .subscribe((data: any[]) => {
         if (this.getKey === 'results') {
-          this.users = data;
-          this.users.sort((d1, d2) => {
+          this.displayData = data;
+          this.displayData.sort((d1, d2) => {
             if (+d2.movies > +d1.movies) {
               return 1;
             } else if (+d1.movies === +d2.movies) {
@@ -30,13 +30,13 @@ export class UsersComponent implements OnInit {
             }
           });
           this.simpleDisplay();
-        } else {
+        } else if (this.getKey === 'radarData') {
           data.forEach((d) => {
-            this.users = d;
-            this.users.sort((d1, d2) => {
-              if (+d2.movies > +d1.movies) {
+            this.displayData = d;
+            this.displayData.sort((d1, d2) => {
+              if (+d2.value > +d1.value) {
                 return 1;
-              } else if (+d1.movies === +d2.movies) {
+              } else if (+d1.value === +d2.value) {
                 return 0;
               } else {
                 return -1;
@@ -49,17 +49,17 @@ export class UsersComponent implements OnInit {
   }
 
   simpleDisplay() {
-    const nDat = this.users.length,
+    const nDat = this.displayData.length,
       base = d3.select('app-users').append('svg')
         .attr('width', 500)
-        .attr('height', (nDat + 2) * 20);
+        .attr('height', (nDat + 2) * 21);
     base.append('text')
       .attr('x', 5)
-      .attr('y', 25)
+      .attr('y', 23)
       .attr('transform', `translate(${10},${0})`)
       .text(() => {
         let back = '';
-        Object.keys(this.users[0]).forEach((k) => back += `${k} `);
+        Object.keys(this.displayData[0]).forEach((k) => back += `${k} `);
         return back;
       })
       .attr('class', 'users');
@@ -69,9 +69,9 @@ export class UsersComponent implements OnInit {
       .attr('height', 24)
       .attr('x', 5)
       .attr('y', 3);
-    base.selectAll('inner').data(this.users).enter().append('text')
+    base.selectAll('inner').data(this.displayData).enter().append('text')
       .attr('x', 5)
-      .attr('y', 52)
+      .attr('y', 54)
       .attr('transform', (d, i) => `translate(${10},${i * 20})`)
       .text((d) => {
         let back = '';
