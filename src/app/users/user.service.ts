@@ -5,10 +5,10 @@ import { HttpClient } from '@angular/common/http';
 export class UserService {
   constructor(private http: HttpClient) { }
   url = 'http://localhost:4023';
-  getUsers() {
+  getUsers(key = 'results') {
     console.log('here');
     return this
             .http
-            .get(`${this.url}/results`);
+            .get(`${this.url}/${key}`);
         }
 }

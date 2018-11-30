@@ -10,24 +10,41 @@ import * as d3 from 'd3';
 export class UsersComponent implements OnInit {
 
   users: any[];
+  getKey = 'radarData';
 
   constructor(private userService: UserService) { }
 
   ngOnInit() {
     this.userService
-      .getUsers()
+      .getUsers(this.getKey)
       .subscribe((data: any[]) => {
-        this.users = data;
-        this.users.sort((d1, d2) => {
-          if (+d2.movies > +d1.movies) {
-            return 1;
-          } else if (+d1.movies === +d2.movies) {
-            return 0;
-          } else {
-            return -1;
-          }
-        });
-        this.simpleDisplay();
+        if (this.getKey === 'results') {
+          this.users = data;
+          this.users.sort((d1, d2) => {
+            if (+d2.movies > +d1.movies) {
+              return 1;
+            } else if (+d1.movies === +d2.movies) {
+              return 0;
+            } else {
+              return -1;
+            }
+          });
+          this.simpleDisplay();
+        } else {
+          data.forEach((d) => {
+            this.users = d;
+            this.users.sort((d1, d2) => {
+              if (+d2.movies > +d1.movies) {
+                return 1;
+              } else if (+d1.movies === +d2.movies) {
+                return 0;
+              } else {
+                return -1;
+              }
+            });
+            this.simpleDisplay();
+          });
+        }
       });
   }
 
