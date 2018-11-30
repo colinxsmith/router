@@ -4,3 +4,9 @@ text.users {
     fill:rgb(230, 18, 18);
     stroke: rgb(16, 192, 16);
 }
+rect.users {
+    fill: aquamarine;
+    stroke: magenta;
+    stroke-width: 3px;
+    opacity: 0.5;
+}
