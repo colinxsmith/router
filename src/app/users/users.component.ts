@@ -19,7 +19,13 @@ export class UsersComponent implements OnInit {
       console.log(res);
     },
       err => {
-        console.log('Error occured');
+        console.log('Error in post, try put');
+        this.userService.putResult().subscribe(res => {
+          console.log(res);
+        },
+          errp => {
+            console.log('Error in put');
+          });
       });
     this.userService
       .getUsers(this.getKey)

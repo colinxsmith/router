@@ -15,6 +15,12 @@ export class UserService {
     const options = { headers: new HttpHeaders().set('Content-Type', 'application/json') };
     return this
       .http
-      .post(`${this.url}/results`, { name: 'Colin', id: 8, movies: 0}, options);
+      .post<{name: String, id: number, movies: number}>(`${this.url}/results`, {id: 8, name: 'Colin', movies: 0}, options);
+  }
+  putResult() {
+    const options = { headers: new HttpHeaders().set('Content-Type', 'application/json') };
+    return this
+      .http
+      .put<{name: String, id: number, movies: number}>(`${this.url}/results/8`, {id: 8, name: 'Colin', movies: 200}, options);
   }
 }
