@@ -47,6 +47,6 @@ stop.bottom {
     stop-opacity: 0.10;
 }
 circle.gridCircle {
-    fill: rgb(116, 179, 104);
-    stroke:rgba(116, 179, 104,0.25);
+    fill: rgb(255, 155, 97);
+    stroke:rgba(255, 155, 97,0.25);
 }
