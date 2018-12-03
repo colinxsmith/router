@@ -19,7 +19,7 @@ export class UsersComponent implements OnInit {
     this.chooseData(this.itemData[0]);
   }
   chooseData(dd: string) {
-    d3.select('app-users').select('svg').remove();
+    d3.select('app-users').selectAll('svg').remove();
     this.getKey = dd;
     this.userService.postResult().subscribe(res => {
       console.log(res);
@@ -58,6 +58,10 @@ export class UsersComponent implements OnInit {
               levels: 5, roundStrokes: true, colour: radarBlobColour
             };
           this.RadarChart('app-users', this.displayData, radarChartOptions);
+          data.forEach((ddd) => {
+            this.displayData = ddd;
+            this.simpleDisplay();
+          });
         }
       }, res => {
         console.log(res);
@@ -141,7 +145,6 @@ export class UsersComponent implements OnInit {
       .range([0, radius])
       .domain([0, maxValue]);
 
-    d3.select(id).select('svg').remove();
     const svg = d3.select(id).append('svg'), doView = true;
 
     if (doView) {
