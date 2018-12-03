@@ -167,8 +167,9 @@ export class UsersComponent implements OnInit {
       .enter()
       .append('circle')
       .attr('class', 'gridCircle')
-      .attr('r', (d, i) => radius / cfg.levels * d)
+      .attr('r', (d) => radius / cfg.levels * d)
       .style('fill-opacity', cfg.opacityCircles)
+      .style('stroke-opacity', cfg.opacityCircles)
       .style('filter', 'url(#glow)');
 
     axisGrid.selectAll('.axisLabel')
