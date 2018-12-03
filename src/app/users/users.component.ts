@@ -191,16 +191,14 @@ export class UsersComponent implements OnInit {
     axis.append('line')
       .attr('x1', 0)
       .attr('y1', 0)
-      .attr('x2', 0)
-      .attr('y2', 0)
+      .attr('x2', 10)
+      .attr('y2', -10)
       .transition()
       .ease(d3.easeBounce)
       .duration(2000)
-      .attr('x2', (d, i) => rScale(maxValue * 1.1) * Math.cos(angleSlice * i - Math.PI / 2))
-      .attr('y2', (d, i) => rScale(maxValue * 1.1) * Math.sin(angleSlice * i - Math.PI / 2))
-      .attr('class', 'line')
-      .style('stroke', 'white')
-      .style('stroke-width', '2px');
+      .attr('x2', (d, i) => rScale(maxValue * 1.0) * Math.cos(angleSlice * i - Math.PI / 2))
+      .attr('y2', (d, i) => rScale(maxValue * 1.0) * Math.sin(angleSlice * i - Math.PI / 2))
+      .attr('class', 'line');
 
     axis.append('text')
       .attr('class', 'legendRadar')

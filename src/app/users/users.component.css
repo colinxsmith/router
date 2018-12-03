@@ -50,3 +50,7 @@ circle.gridCircle {
     fill: rgb(255, 155, 97);
     stroke:rgba(255, 155, 97,0.25);
 }
+line.line {
+    stroke:lightgrey;
+    stroke-width:1.5px;
+}
