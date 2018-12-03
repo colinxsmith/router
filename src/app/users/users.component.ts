@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { UserService } from './user.service';
 import * as d3 from 'd3';
 @Component({
@@ -10,11 +10,17 @@ import * as d3 from 'd3';
 export class UsersComponent implements OnInit {
 
   displayData: any[];
-  getKey = 'radarData';
+  getKey = '';
+  itemData = ['results', 'radarData'];
 
   constructor(private userService: UserService) { }
 
   ngOnInit() {
+    this.chooseData(this.itemData[0]);
+   }
+  chooseData(dd: string) {
+    d3.select('app-users').select('svg').remove();
+    this.getKey = dd;
     this.userService.postResult().subscribe(res => {
       console.log(res);
     },
@@ -49,7 +55,7 @@ export class UsersComponent implements OnInit {
             radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)', 'rgb(50,50,255)']),
             radarChartOptions = {
               w: width, h: height, margin: margin, maxValue: 0.5,
-              levels: 10, roundStrokes: true, colour: radarBlobColour
+              levels: 5, roundStrokes: true, colour: radarBlobColour
             };
           this.RadarChart('app-users', this.displayData, radarChartOptions);
         }
@@ -136,7 +142,7 @@ export class UsersComponent implements OnInit {
       .domain([0, maxValue]);
 
     d3.select(id).select('svg').remove();
-    const svg = d3.select(id).append('svg'), doView = false;
+    const svg = d3.select(id).append('svg'), doView = true;
 
     if (doView) {
       svg.attr('viewBox', `0 0 ${cfg.w + cfg.margin.left + cfg.margin.right} ${cfg.h + cfg.margin.top + cfg.margin.bottom}`)
@@ -162,8 +168,6 @@ export class UsersComponent implements OnInit {
       .append('circle')
       .attr('class', 'gridCircle')
       .attr('r', (d, i) => radius / cfg.levels * d)
-      .style('fill', '#CDCDCD')
-      .style('stroke', '#CDCDCD')
       .style('fill-opacity', cfg.opacityCircles)
       .style('filter', 'url(#glow)');
 
