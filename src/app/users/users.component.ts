@@ -17,7 +17,7 @@ export class UsersComponent implements OnInit {
 
   ngOnInit() {
     this.chooseData(this.itemData[0]);
-   }
+  }
   chooseData(dd: string) {
     d3.select('app-users').select('svg').remove();
     this.getKey = dd;
