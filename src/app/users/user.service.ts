@@ -15,12 +15,12 @@ export class UserService {
     const options = { headers: new HttpHeaders().set('Content-Type', 'application/json') };
     return this
       .http
-      .post<{name: String, id: number, movies: number}>(`${this.url}/results`, {id: 8, name: 'Colin', movies: 0}, options);
+      .post<{name: String, id: number, movies: number}>(`${this.url}/results`, {id: 7, name: 'Colin', movies: 0}, options);
   }
-  putResult() {
+  putResult(key = 'results', id = 7) {
     const options = { headers: new HttpHeaders().set('Content-Type', 'application/json') };
     return this
-      .http
-      .put<{name: String, id: number, movies: number}>(`${this.url}/results/8`, {id: 8, name: 'Colin', movies: 200}, options);
+      .http // Can't change the id here.... the id:8 is ignored
+      .put<{name: String, id: number, movies: number}>(`${this.url}/${key}/${id}`, {id: 8, name: 'Colin', movies: 200}, options);
   }
 }
