@@ -9,7 +9,7 @@ export class UserService {
     console.log('here');
     return this
       .http
-      .get(`${this.url}/${key}`);
+      .get<any[]>(`${this.url}/${key}`);
   }
   postResult() {
     const options = { headers: new HttpHeaders().set('Content-Type', 'application/json') };

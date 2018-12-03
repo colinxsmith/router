@@ -18,18 +18,18 @@ export class UsersComponent implements OnInit {
     this.userService.postResult().subscribe(res => {
       console.log(res);
     },
-      err => {
+      () => {
         console.log('Error in post, try put');
         this.userService.putResult().subscribe(res => {
           console.log(res);
         },
-          errp => {
+          () => {
             console.log('Error in put');
           });
       });
     this.userService
       .getUsers(this.getKey)
-      .subscribe((data: any[]) => {
+      .subscribe(data => {
         if (this.getKey === 'results') {
           this.displayData = data;
           this.displayData.sort((d1, d2) => {
@@ -57,6 +57,8 @@ export class UsersComponent implements OnInit {
             this.simpleDisplay();
           });
         }
+      }, res => {
+        console.log(res);
       });
   }
 
