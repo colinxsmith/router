@@ -30,8 +30,8 @@ export class UsersComponent implements OnInit {
     this.userService
       .getUsers(this.getKey)
       .subscribe(data => {
+        this.displayData = data;
         if (this.getKey === 'results') {
-          this.displayData = data;
           this.displayData.sort((d1, d2) => {
             if (+d2.movies > +d1.movies) {
               return 1;
@@ -43,28 +43,16 @@ export class UsersComponent implements OnInit {
           });
           this.simpleDisplay();
         } else if (this.getKey === 'radarData') {
-          const margin = {
-            top: 100,
-            right: 100,
-            bottom: 100,
-            left: 100
-          }
-            , width = Math.min(700, 950 - 10) - margin.left - margin.right
-            , height = Math.min(width, 950 - margin.top - margin.bottom - 20);
-
-          const radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)', 'rgb(50,50,255)']);
-
-          const radarChartOptions = {
-            w: width,
-            h: height,
-            margin: margin,
-            maxValue: 0.5,
-            levels: 5,
-            roundStrokes: true,
-            color: radarBlobColour
-          };
-          this.RadarChart('app-users', data, radarChartOptions);
-           }
+          const margin = { top: 150, right: 150, bottom: 150, left: 150 }, ww = 1000, hh = 1000,
+            width = ww - margin.left - margin.right,
+            height = hh - margin.top - margin.bottom,
+            radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)', 'rgb(50,50,255)']),
+            radarChartOptions = {
+              w: width, h: height, margin: margin, maxValue: 0.5,
+              levels: 10, roundStrokes: true, colour: radarBlobColour
+            };
+          this.RadarChart('app-users', this.displayData, radarChartOptions);
+        }
       }, res => {
         console.log(res);
       });
@@ -111,24 +99,23 @@ export class UsersComponent implements OnInit {
   RadarChart(id: string, data: { axis: string; value: number; }[][], options: {
     w: number; h: number;
     margin: { top: number; right: number; bottom: number; left: number; };
-    maxValue: number; levels: number; roundStrokes: boolean; color: d3.ScaleOrdinal<number, string>;
+    maxValue: number; levels: number; roundStrokes: boolean; colour: d3.ScaleOrdinal<number, string>;
   }) {
     const cfg = {
       w: 600,				// Width of the circle
       h: 600,				// Height of the circle
       margin: { top: 20, right: 20, bottom: 20, left: 20 }, // The margins of the SVG
       levels: 3,				// How many levels or inner circles should there be drawn
-      maxValue: 0, 			// What is the value that the biggest circle will represent
+      maxValue: 0, 			// The value that the biggest circle will represent
       labelFactor: 1.25, 	// How much farther than the radius of the outer circle should the labels be placed
       wrapWidth: 60, 		// The number of pixels after which a label needs to be given a new line
       lineHeight: 1.4, 		// Height for wrapped lines
       opacityArea: 0.35, 	// The opacity of the area of the blob
-      dotRadius: 3, 			// The size of the colored circles of each blog
+      dotRadius: 3, 			// The size of the coloured circles of each blog
       opacityCircles: 0.1, 	// The opacity of the circles of each blob
       strokeWidth: 2, 		// The width of the stroke around each blob
       roundStrokes: false,	// If true the area and stroke will follow a round path (cardinal-closed)
-      //    color: d3.schemeCategory10	// Color function
-      color: d3.scaleOrdinal<number, string>(d3.schemeCategory10).domain([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+      colour: d3.scaleOrdinal<number, string>(d3.schemeCategory10).domain([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
     };
     if ('undefined' !== typeof options) {
       for (const i in options) {
@@ -163,9 +150,9 @@ export class UsersComponent implements OnInit {
     const g = svg.append('g')
       .attr('transform', 'translate(' + (cfg.w / 2 + cfg.margin.left) + ',' + (cfg.h / 2 + cfg.margin.top) + ')'),
       filter = g.append('defs').append('filter').attr('id', 'glow'),
-      feGaussianBlur = filter.append('feGaussianBlur').attr('stdDeviation', '2.5').attr('result', 'coloredBlur'),
+      feGaussianBlur = filter.append('feGaussianBlur').attr('stdDeviation', '2.5').attr('result', 'colouredBlur'),
       feMerge = filter.append('feMerge'),
-      feMergeNode_1 = feMerge.append('feMergeNode').attr('in', 'coloredBlur'),
+      feMergeNode_1 = feMerge.append('feMergeNode').attr('in', 'colouredBlur'),
       feMergeNode_2 = feMerge.append('feMergeNode').attr('in', 'SourceGraphic'),
       axisGrid = g.append('g').attr('class', 'axisWrapper');
 
@@ -236,7 +223,7 @@ export class UsersComponent implements OnInit {
       .append('path')
       .attr('class', 'radarArea')
       .attr('d', (d: any, i) => radarLine(d))
-      .style('fill', (d, i) => cfg.color(i))
+      .style('fill', (d, i) => cfg.colour(i))
       .style('fill-opacity', cfg.opacityArea)
       .on('mouseover', (d, i, jj) => {
         // Dim all blobs
@@ -261,7 +248,7 @@ export class UsersComponent implements OnInit {
       .ease(d3.easeBounce)
       .duration(2000)
       .attr('d', (d: any, i) => radarLine(d))
-      .style('stroke', (d, i) => cfg.color(i))
+      .style('stroke', (d, i) => cfg.colour(i))
       .style('fill', 'none')
       .style('filter', 'url(#glow)');
 
@@ -272,7 +259,7 @@ export class UsersComponent implements OnInit {
       .attr('r', cfg.dotRadius)
       .attr('cx', (d, i) => rScale(+d.value) * Math.cos(angleSlice * i - Math.PI / 2))
       .attr('cy', (d, i) => rScale(+d.value) * Math.sin(angleSlice * i - Math.PI / 2))
-      .style('fill', (d, i, j) => cfg.color(+(d3.select(<HTMLInputElement>(j[i]).parentNode).attr('data-index'))))
+      .style('fill', (d, i, j) => cfg.colour(+(d3.select(<HTMLInputElement>(j[i]).parentNode).attr('data-index'))))
       .style('fill-opacity', 0.8);
     const blobCircleWrapper = g.selectAll('.radarCircleWrapper')
       .data(data)
@@ -287,7 +274,7 @@ export class UsersComponent implements OnInit {
       .attr('r', cfg.dotRadius * 1.1)
       .attr('cx', (d, i) => rScale(+d.value) * Math.cos(angleSlice * i - Math.PI / 2))
       .attr('cy', (d, i) => rScale(+d.value) * Math.sin(angleSlice * i - Math.PI / 2))
-      .style('fill', (d, i, j) => cfg.color(+(d3.select(<HTMLInputElement>(j[i]).parentNode).attr('data-index'))))
+      .style('fill', (d, i, j) => cfg.colour(+(d3.select(<HTMLInputElement>(j[i]).parentNode).attr('data-index'))))
       .style('pointer-events', 'all')
       .on('mouseover', (d, i, j) => {
         const newX = parseFloat(d3.select(j[i]).attr('cx')) - 10,
