@@ -11,7 +11,7 @@ export class UsersComponent implements OnInit {
 
   displayData: any[];
   getKey = '';
-  itemData = ['results', 'radarData'];
+  itemData = ['radarData', 'results'];
 
   constructor(private userService: UserService) { }
 
