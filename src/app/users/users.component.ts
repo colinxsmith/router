@@ -9,7 +9,7 @@ import * as d3 from 'd3';
 })
 export class UsersComponent implements OnInit {
 
-  displayData: any[];
+  displayData: any;
   getKey = '';
   itemData = ['radarData', 'results'];
 
@@ -47,7 +47,7 @@ export class UsersComponent implements OnInit {
               return -1;
             }
           });
-          this.simpleDisplay();
+          this.simpleDisplay(this.displayData);
         } else if (this.getKey === 'radarData') {
           const margin = { top: 150, right: 150, bottom: 150, left: 150 }, ww = 1000, hh = 1000,
             width = ww - margin.left - margin.right,
@@ -57,10 +57,9 @@ export class UsersComponent implements OnInit {
               w: width, h: height, margin: margin, maxValue: 0.5,
               levels: 5, roundStrokes: true, colour: radarBlobColour
             };
-          this.RadarChart('app-users', this.displayData, radarChartOptions);
+          this.RadarChart('app-users', data, radarChartOptions);
           data.forEach((ddd) => {
-            this.displayData = ddd;
-            this.simpleDisplay();
+            this.simpleDisplay(ddd);
           });
         }
       }, res => {
@@ -68,8 +67,8 @@ export class UsersComponent implements OnInit {
       });
   }
 
-  simpleDisplay() {
-    const nDat = this.displayData.length,
+  simpleDisplay(displayData: any) {
+    const nDat = displayData.length,
       base = d3.select('app-users').append('svg')
         .attr('width', 500)
         .attr('height', (nDat + 2) * 21);
@@ -79,7 +78,7 @@ export class UsersComponent implements OnInit {
       .attr('transform', `translate(${10},${0})`)
       .text(() => {
         let back = '';
-        Object.keys(this.displayData[0]).forEach((k) => back += `${k} `);
+        Object.keys(displayData[0]).forEach((k) => back += `${k} `);
         return back;
       })
       .attr('class', 'users');
@@ -89,7 +88,7 @@ export class UsersComponent implements OnInit {
       .attr('height', 24)
       .attr('x', 5)
       .attr('y', 3);
-    base.selectAll('inner').data(this.displayData).enter().append('text')
+    base.selectAll('inner').data(displayData).enter().append('text')
       .attr('x', 5)
       .attr('y', 54)
       .attr('transform', (d, i) => `translate(${10},${i * 20})`)

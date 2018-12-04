@@ -9,15 +9,15 @@ export class UserService {
     console.log('here');
     return this
       .http
-      .get<any[]>(`${this.url}/${key}`);
+      .get<any>(`${this.url}/${key}`);
   }
   postResult() {
     const options = { headers: new HttpHeaders().set('Content-Type', 'application/json') };
     return this
       .http
-      .post<{ name: String, id: number, movies: number }>(`${this.url}/results`, { id: 7, name: 'Colin', movies: 0 }, options);
+      .post<{ name: String, id: number, movies: number }>(`${this.url}/results`, { id: 6, name: 'Colin', movies: 0 }, options);
   }
-  putResult(key = 'results', id = 7) {
+  putResult(key = 'results', id = 6) {
     const options = { headers: new HttpHeaders().set('Content-Type', 'application/json') };
     return this
       .http // Can't change the id here.... the id:8 is ignored
