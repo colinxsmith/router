@@ -58,7 +58,7 @@ export class UsersComponent implements OnInit {
               levels: 5, roundStrokes: true, colour: radarBlobColour
             };
           this.RadarChart('app-users', data, radarChartOptions);
-        //  this.stockbars(data, ww, hh, 2000, ' ', ' ');
+          this.stockbars(data[0], ww, hh, 2000, ' ', ' ');
           data.forEach((ddd) => {
             this.simpleDisplay(ddd);
           });
@@ -340,7 +340,7 @@ export class UsersComponent implements OnInit {
         bottom: 80 * scaleAll,
         left: 70 * scaleAll
       },
-        chart = svg.attr('width', ww - margin.left - margin.right)
+        chart = svg.append('g').attr('width', ww - margin.left - margin.right)
           .attr('height', hh - margin.top - margin.bottom)
       , bandfiddle = 10000
         , customXAxis = (g) => {
@@ -363,7 +363,9 @@ export class UsersComponent implements OnInit {
         , x = d3.scaleBand().rangeRound([0, bandfiddle * width]).paddingInner(0.1)
         , xx = d3.scaleBand().rangeRound([0, width]).paddingInner(0.1)
         , y = d3.scaleLinear().range([height, 0])
-        .domain([Math.min(0, d3.min(DATA, (d) => d.value), d3.max(DATA, (d) => d.value))]);
+          .domain([Math.min(0, d3.min(DATA, (d) => d.value)),
+          d3.max(DATA, (d) => d.value)]);
+          console.log(y.domain());
       svg.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
       x.domain(DATA.map((d) => d.axis)).padding(0.1);
       xx.domain(DATA.map((d) => d.axis)).padding(0.1);
@@ -382,7 +384,7 @@ export class UsersComponent implements OnInit {
       // -----------------------------------------------Rim Outline-----------------------------------
       chart.selectAll('.bar').data(DATA).enter().append('rect').attr('class', 'barrim')
       .attr('width', x.bandwidth() / bandfiddle + 2 * rim).attr('x', (d) => x(d.axis) / bandfiddle - rim)
-      .attr('height', (d) => +d.axis <= 0 ? y(d.value) - y(0) + rim : y(0) - y(d.value) + rim)
+      .attr('height', (d) => x(d.axis) <= 0 ? y(d.value) - y(0) + rim : y(0) - y(d.value) + rim)
       .attr('y', (d) => d.value <= 0 ? y(0) : y(d.value) - rim)
       .on('mousemove', function(d) {
           tooltip.style('left', d3.event.pageX - 50 + 'px')
