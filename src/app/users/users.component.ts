@@ -198,8 +198,8 @@ export class UsersComponent implements OnInit {
       .transition()
       .ease(d3.easeBounce)
       .duration(2000)
-      .attr('x2', (d, i) => rScale(maxValue * 1.0) * Math.cos(angleSlice * i - Math.PI / 2))
-      .attr('y2', (d, i) => rScale(maxValue * 1.0) * Math.sin(angleSlice * i - Math.PI / 2))
+      .attr('x2', (d, i) => rScale(maxValue * 1.13) * Math.cos(angleSlice * i - Math.PI / 2))
+      .attr('y2', (d, i) => rScale(maxValue * 1.13) * Math.sin(angleSlice * i - Math.PI / 2))
       .attr('class', 'line');
 
     axis.append('text')

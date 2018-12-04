@@ -51,6 +51,6 @@ circle.gridCircle {
     stroke:rgba(255, 155, 97,0.25);
 }
 line.line {
-    stroke:lightgrey;
+    stroke:rgb(248, 230, 230);
     stroke-width:1.5px;
 }
