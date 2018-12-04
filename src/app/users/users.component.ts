@@ -58,6 +58,7 @@ export class UsersComponent implements OnInit {
               levels: 5, roundStrokes: true, colour: radarBlobColour
             };
           this.RadarChart('app-users', data, radarChartOptions);
+        //  this.stockbars(data, ww, hh, 2000, ' ', ' ');
           data.forEach((ddd) => {
             this.simpleDisplay(ddd);
           });
@@ -69,10 +70,10 @@ export class UsersComponent implements OnInit {
 
   simpleDisplay(displayData: any) {
     const nDat = displayData.length, ww = 350,
-       base = d3.select('app-users').append('svg')
+      base = d3.select('app-users').append('svg')
         .attr('width', ww)
         .attr('height', (nDat + 2) * 21);
-      // base = d3.select('app-users').append('svg').attr('viewBox', `0 0 ${ww} ${(nDat + 2) * 21}`);
+    // base = d3.select('app-users').append('svg').attr('viewBox', `0 0 ${ww} ${(nDat + 2) * 21}`);
     base.append('text')
       .attr('x', 5)
       .attr('y', 23)
@@ -201,8 +202,8 @@ export class UsersComponent implements OnInit {
       .duration(2000)
       .tween('lines', (d, i, j) => (t) => {
         const HERE = d3.select(j[i]), extension = 1.13;
-        HERE.attr('x2', () => rScale(maxValue * extension ) * Math.cos(angleSlice * i - Math.PI / 2) * t);
-        HERE.attr('y2', () => rScale(maxValue * extension ) * Math.sin(angleSlice * i - Math.PI / 2) * t);
+        HERE.attr('x2', () => rScale(maxValue * extension) * Math.cos(angleSlice * i - Math.PI / 2) * t);
+        HERE.attr('y2', () => rScale(maxValue * extension) * Math.sin(angleSlice * i - Math.PI / 2) * t);
       })
       .attr('class', 'line');
 
@@ -214,7 +215,7 @@ export class UsersComponent implements OnInit {
       .text((d) => d)
       .call(this.wrapFunction, cfg.wrapWidth, cfg.lineHeight);
 
-    const radarLine = d3.lineRadial<{axis: string, value: number}>()
+    const radarLine = d3.lineRadial<{ axis: string, value: number }>()
       .curve(d3.curveLinearClosed)
       .radius((d) => rScale(d.value))
       .angle((d, i) => i * angleSlice);
@@ -268,7 +269,7 @@ export class UsersComponent implements OnInit {
       .attr('r', cfg.dotRadius)
       .attr('cx', (d, i) => rScale(+d.value) * Math.cos(angleSlice * i - Math.PI / 2))
       .attr('cy', (d, i) => rScale(+d.value) * Math.sin(angleSlice * i - Math.PI / 2))
-      .style('fill', (d, i, j) => cfg.colour(+(d3.select((j[i]).parentNode).attr('data-index'))))
+      .style('fill', (d, i, j) => cfg.colour(+(d3.select(<HTMLSelectElement>(j[i]).parentNode).attr('data-index'))))
       .style('fill-opacity', 0.8);
     const blobCircleWrapper = g.selectAll('.radarCircleWrapper')
       .data(data)
@@ -283,7 +284,7 @@ export class UsersComponent implements OnInit {
       .attr('r', cfg.dotRadius * 1.1)
       .attr('cx', (d, i) => rScale(+d.value) * Math.cos(angleSlice * i - Math.PI / 2))
       .attr('cy', (d, i) => rScale(+d.value) * Math.sin(angleSlice * i - Math.PI / 2))
-      .style('fill', (d, i, j) => cfg.colour(+(d3.select((j[i]).parentNode).attr('data-index'))))
+      .style('fill', (d, i, j) => cfg.colour(+(d3.select(<HTMLSelectElement>(j[i]).parentNode).attr('data-index'))))
       .style('pointer-events', 'all')
       .on('mouseover', (d, i, j) => {
         const newX = parseFloat(d3.select(j[i]).attr('cx')) - 10,
@@ -324,4 +325,98 @@ export class UsersComponent implements OnInit {
         }
       }
     })
+    stockbars = (DATA: {axis: string, value: number}[], ww: number, hh: number,
+      durationtime: number, xText: string, yText: string) => {
+      const svg = d3.select('app-users').append('svg')
+        .attr('width', ww)
+        .attr('height', hh),
+
+        scaleAll = 1;
+      if (xText.length < 1) { xText = 'Asset Weight'; }
+      if (yText.length < 1) { yText = 'Aversion: '; }
+      const margin = {
+        top: 50 * scaleAll,
+        right: 50 * scaleAll,
+        bottom: 80 * scaleAll,
+        left: 70 * scaleAll
+      },
+        chart = svg.attr('width', ww - margin.left - margin.right)
+          .attr('height', hh - margin.top - margin.bottom)
+      , bandfiddle = 10000
+        , customXAxis = (g) => {
+          g.call(d3.axisBottom(xx).tickSize(0));
+          const g1 = g.select('.domain').attr('class', 'axis');
+          const g2 = g.selectAll('text').attr('class', 'axisNames')
+            .attr('x', -10 * scaleAll).attr('y', -10 * scaleAll).attr('transform', 'rotate(-70)');
+          if (DATA.length > 30) {
+              g.selectAll('text').style('fill', 'none').style('stroke', 'none');
+          }
+          if (scaleAll !== 1) {
+              g1.style('font-size', (+g1.style('font-size').replace('px', '') * scaleAll) + 'px');
+              g2.style('font-size', (+g2.style('font-size').replace('px', '') * scaleAll) + 'px');
+          }
+      }
+        , rim = 5 * scaleAll
+        , width = ww - margin.left - margin.right
+        , height = hh - margin.top - margin.bottom
+        , tooltip = d3.select('body').append('g').attr('class', 'toolTip')
+        , x = d3.scaleBand().rangeRound([0, bandfiddle * width]).paddingInner(0.1)
+        , xx = d3.scaleBand().rangeRound([0, width]).paddingInner(0.1)
+        , y = d3.scaleLinear().range([height, 0])
+        .domain([Math.min(0, d3.min(DATA, (d) => d.value), d3.max(DATA, (d) => d.value))]);
+      svg.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+      x.domain(DATA.map((d) => d.axis)).padding(0.1);
+      xx.domain(DATA.map((d) => d.axis)).padding(0.1);
+      const yAxis = d3.axisLeft(y).ticks(2)
+        , svgX = svg.append('g').attr('transform', 'translate(0,' + height + ')').attr('class', 'axis').call(customXAxis)
+        , svgY = svg.append('g').attr('transform', 'translate(' + 0 + ',0)').attr('class', 'axis').call(yAxis)
+        , titleY = svg.append('text').attr('class', 'axisLabel').attr('transform', 'rotate(-90)')
+        .attr('y', 0 - margin.left * 0.6).attr('x', 0 - (height / 2)).text(xText)
+        , titleX = svg.append('text').attr('transform', 'translate(0, ' + height + ')')
+        .attr('class', 'axisLabel').attr('x', width / 2).attr('y', margin.bottom * 0.9)
+        .text(yText)
+        , rimmy2 = svg.append('rect').attr('class', 'rim').attr('x', 0).attr('y', 0)
+        .attr('width', width).attr('height', height)
+        , rimmy1 = svg.append('rect').attr('class', 'rim').attr('x', -margin.left)
+        .attr('y', -margin.top).attr('width', ww).attr('height', hh);
+      // -----------------------------------------------Rim Outline-----------------------------------
+      chart.selectAll('.bar').data(DATA).enter().append('rect').attr('class', 'barrim')
+      .attr('width', x.bandwidth() / bandfiddle + 2 * rim).attr('x', (d) => x(d.axis) / bandfiddle - rim)
+      .attr('height', (d) => +d.axis <= 0 ? y(d.value) - y(0) + rim : y(0) - y(d.value) + rim)
+      .attr('y', (d) => d.value <= 0 ? y(0) : y(d.value) - rim)
+      .on('mousemove', function(d) {
+          tooltip.style('left', d3.event.pageX - 50 + 'px')
+          .style('top', d3.event.pageY - 70 + 'px')
+          .style('display', 'inline-block').html((d.axis) + '<br>weight: ' + (d.value));
+      }).on('mouseout', (d) => tooltip.style('display', 'none'));
+      // --------------------------------------------------------------------------------------------
+      chart.selectAll('.bar').data(DATA).enter().append('rect').attr('width', x.bandwidth() / bandfiddle).attr('x', function(d) {
+          return x(d.axis) / bandfiddle;
+      }).attr('height', function(d) {
+          const deviation = 0;
+          return deviation <= 0 ? +y(deviation) - y(0) : y(0) - y(deviation);
+      }).attr('y', function(d) {
+          const deviation = 0;
+          return deviation <= 0 ? y(0) : y(deviation);
+      }).attr('id', function(d) {
+          return d.value > 0 ? 'weightSinglePlus' : 'weightSingleMinus';
+      }).on('mousemove', function(d) {
+          tooltip.style('left', d3.event.pageX - 50 + 'px')
+          .style('top', d3.event.pageY - 70 + 'px').style('display', 'inline-block')
+          .html((d.axis) + '<br>weight: ' + (d.value));
+      }).on('mouseout', function(d) {
+          tooltip.style('display', 'none');
+      }).transition().duration(durationtime).attr('height', function(d) {
+          return +d.value <= 0 ? y(+d.value) - y(0) : y(0) - y(+d.value);
+      }).attr('y', function(d) {
+          return +d.value <= 0 ? y(0) : y(+d.value);
+      });
+      if (scaleAll !== 1) {
+          chart.style('stroke-width', +chart.style('stroke-width').replace('px', '') * scaleAll);
+          titleX.style('font-size', (+titleX.style('font-size').replace('px', '') * scaleAll) + 'px');
+          titleY.style('font-size', (+titleY.style('font-size').replace('px', '') * scaleAll) + 'px');
+          svgX.style('font-size', (+svgX.style('font-size').replace('px', '') * scaleAll) + 'px');
+          svgY.style('font-size', (+svgY.style('font-size').replace('px', '') * scaleAll) + 'px');
+      }
+  }
 }
