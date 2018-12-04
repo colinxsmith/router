@@ -68,10 +68,11 @@ export class UsersComponent implements OnInit {
   }
 
   simpleDisplay(displayData: any) {
-    const nDat = displayData.length,
-      base = d3.select('app-users').append('svg')
-        .attr('width', 500)
+    const nDat = displayData.length, ww = 350,
+       base = d3.select('app-users').append('svg')
+        .attr('width', ww)
         .attr('height', (nDat + 2) * 21);
+      // base = d3.select('app-users').append('svg').attr('viewBox', `0 0 ${ww} ${(nDat + 2) * 21}`);
     base.append('text')
       .attr('x', 5)
       .attr('y', 23)
@@ -84,7 +85,7 @@ export class UsersComponent implements OnInit {
       .attr('class', 'users');
     base.append('rect')
       .attr('class', 'users')
-      .attr('width', 490)
+      .attr('width', ww - 10)
       .attr('height', 24)
       .attr('x', 5)
       .attr('y', 3);
@@ -100,7 +101,7 @@ export class UsersComponent implements OnInit {
       .attr('class', 'users');
     base.append('rect')
       .attr('class', 'users')
-      .attr('width', 490)
+      .attr('width', ww - 10)
       .attr('height', nDat * 21)
       .attr('x', 5)
       .attr('y', 32);
@@ -267,7 +268,7 @@ export class UsersComponent implements OnInit {
       .attr('r', cfg.dotRadius)
       .attr('cx', (d, i) => rScale(+d.value) * Math.cos(angleSlice * i - Math.PI / 2))
       .attr('cy', (d, i) => rScale(+d.value) * Math.sin(angleSlice * i - Math.PI / 2))
-      .style('fill', (d, i, j) => cfg.colour(+(d3.select(<HTMLInputElement>(j[i]).parentNode).attr('data-index'))))
+      .style('fill', (d, i, j) => cfg.colour(+(d3.select((j[i]).parentNode).attr('data-index'))))
       .style('fill-opacity', 0.8);
     const blobCircleWrapper = g.selectAll('.radarCircleWrapper')
       .data(data)
@@ -282,7 +283,7 @@ export class UsersComponent implements OnInit {
       .attr('r', cfg.dotRadius * 1.1)
       .attr('cx', (d, i) => rScale(+d.value) * Math.cos(angleSlice * i - Math.PI / 2))
       .attr('cy', (d, i) => rScale(+d.value) * Math.sin(angleSlice * i - Math.PI / 2))
-      .style('fill', (d, i, j) => cfg.colour(+(d3.select(<HTMLInputElement>(j[i]).parentNode).attr('data-index'))))
+      .style('fill', (d, i, j) => cfg.colour(+(d3.select((j[i]).parentNode).attr('data-index'))))
       .style('pointer-events', 'all')
       .on('mouseover', (d, i, j) => {
         const newX = parseFloat(d3.select(j[i]).attr('cx')) - 10,
