@@ -198,8 +198,11 @@ export class UsersComponent implements OnInit {
       .transition()
       .ease(d3.easeBounce)
       .duration(2000)
-      .attr('x2', (d, i) => rScale(maxValue * 1.13) * Math.cos(angleSlice * i - Math.PI / 2))
-      .attr('y2', (d, i) => rScale(maxValue * 1.13) * Math.sin(angleSlice * i - Math.PI / 2))
+      .tween('lines', (d, i, j) => (t) => {
+        const HERE = d3.select(j[i]), extension = 1.13;
+        HERE.attr('x2', () => rScale(maxValue * extension ) * Math.cos(angleSlice * i - Math.PI / 2) * t);
+        HERE.attr('y2', () => rScale(maxValue * extension ) * Math.sin(angleSlice * i - Math.PI / 2) * t);
+      })
       .attr('class', 'line');
 
     axis.append('text')
@@ -210,9 +213,9 @@ export class UsersComponent implements OnInit {
       .text((d) => d)
       .call(this.wrapFunction, cfg.wrapWidth, cfg.lineHeight);
 
-    const radarLine = d3.lineRadial()
+    const radarLine = d3.lineRadial<{axis: string, value: number}>()
       .curve(d3.curveLinearClosed)
-      .radius((d: any) => rScale(d.value))
+      .radius((d) => rScale(d.value))
       .angle((d, i) => i * angleSlice);
 
     if (cfg.roundStrokes) {
@@ -227,7 +230,7 @@ export class UsersComponent implements OnInit {
     blobWrapper
       .append('path')
       .attr('class', 'radarArea')
-      .attr('d', (d: any, i) => radarLine(d))
+      .attr('d', (d) => radarLine(d))
       .style('fill', (d, i) => cfg.colour(i))
       .style('fill-opacity', cfg.opacityArea)
       .on('mouseover', (d, i, jj) => {
@@ -252,7 +255,7 @@ export class UsersComponent implements OnInit {
       .transition()
       .ease(d3.easeBounce)
       .duration(2000)
-      .attr('d', (d: any, i) => radarLine(d))
+      .attr('d', (d) => radarLine(d))
       .style('stroke', (d, i) => cfg.colour(i))
       .style('fill', 'none')
       .style('filter', 'url(#glow)');
