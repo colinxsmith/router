@@ -54,7 +54,7 @@ export class UsersComponent implements OnInit {
             height = hh - margin.top - margin.bottom,
             radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)', 'rgb(50,50,255)']),
             radarChartOptions = {
-              w: width, h: height, margin: margin, maxValue: 0.5,
+              w: width, h: height, margin: margin, maxValue: 0.1,
               levels: 5, roundStrokes: true, colour: radarBlobColour
             };
           this.RadarChart('app-users', data, radarChartOptions);
