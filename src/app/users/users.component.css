@@ -94,7 +94,7 @@ text.axis {
 }
 rect.barrim {
     opacity:1;
-    fill: rgba(105, 119, 18, 0.5);
+    fill: rgb(234, 240, 197);
 }
 #weightSinglePlus {
     fill: rgb(37, 175, 213);

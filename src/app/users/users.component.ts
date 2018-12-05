@@ -379,36 +379,34 @@ export class UsersComponent implements OnInit {
         .attr('y', -margin.top).attr('width', ww).attr('height', hh);
     // -----------------------------------------------Rim Outline-----------------------------------
     chart.selectAll('.bar').data(DATA).enter().append('rect').attr('class', 'barrim')
-      .attr('width', x.bandwidth() / bandfiddle + 2 * rim).attr('x', (d) => x(d.axis) / bandfiddle - rim)
-      .attr('height', (d) => x(d.axis) <= 0 ? y(d.value) - y(0) + rim : y(0) - y(d.value) + rim)
-      .attr('y', (d) => d.value <= 0 ? y(0) : y(d.value) - rim)
-      .on('mousemove', function (d) {
-        tooltip.style('left', d3.event.pageX - 50 + 'px')
-          .style('top', d3.event.pageY - 70 + 'px')
-          .style('display', 'inline-block').html((d.axis) + '<br>weight: ' + (d.value));
-      }).on('mouseout', (d) => tooltip.style('display', 'none'));
+      .attr('width', x.bandwidth() / bandfiddle + 2 * rim)
+      .attr('x', (d) => x(d.axis) / bandfiddle - rim)
+      .attr('height', (d) => rim + (d.value <= 0 ? y(d.value) - y(0) : y(0) - y(d.value)))
+      .attr('y', (d) => (d.value <= 0 ? y(0) : y(d.value) - rim))
+      .on('mousemove', (d) => tooltip.style('left', d3.event.pageX - 50 + 'px')
+        .style('top', d3.event.pageY - 70 + 'px')
+        .style('display', 'inline-block').html((d.axis) + '<br>weight: ' + (d.value)))
+      .on('mouseout', (d) => tooltip.style('display', 'none'));
     // --------------------------------------------------------------------------------------------
-    chart.selectAll('.bar').data(DATA).enter().append('rect').attr('width', x.bandwidth() / bandfiddle).attr('x', function (d) {
-      return x(d.axis) / bandfiddle;
-    }).attr('height', function (d) {
+    chart.selectAll('.bar').data(DATA).enter().append('rect')
+    .attr('width', x.bandwidth() / bandfiddle)
+    .attr('x', (d) => x(d.axis) / bandfiddle)
+    .attr('height', (d) => {
       const deviation = 0;
-      return deviation <= 0 ? +y(deviation) - y(0) : y(0) - y(deviation);
-    }).attr('y', function (d) {
+      return deviation <= 0 ? y(deviation) - y(0) : y(0) - y(deviation);
+    })
+    .attr('y', (d) => {
       const deviation = 0;
       return deviation <= 0 ? y(0) : y(deviation);
-    }).attr('id', function (d) {
-      return d.value > 0 ? 'weightSinglePlus' : 'weightSingleMinus';
-    }).on('mousemove', function (d) {
-      tooltip.style('left', d3.event.pageX - 50 + 'px')
+    })
+    .attr('id', (d) => d.value > 0 ? 'weightSinglePlus' : 'weightSingleMinus')
+    .on('mousemove', (d) => tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px').style('display', 'inline-block')
-        .html((d.axis) + '<br>weight: ' + (d.value));
-    }).on('mouseout', function (d) {
-      tooltip.style('display', 'none');
-    }).transition().duration(durationtime).attr('height', function (d) {
-      return +d.value <= 0 ? y(+d.value) - y(0) : y(0) - y(+d.value);
-    }).attr('y', function (d) {
-      return +d.value <= 0 ? y(0) : y(+d.value);
-    });
+        .html((d.axis) + '<br>weight: ' + (d.value)))
+    .on('mouseout', (d) => tooltip.style('display', 'none'))
+    .transition().duration(durationtime)
+    .attr('height', (d) => d.value <= 0 ? y(d.value) - y(0) : y(0) - y(d.value))
+    .attr('y', (d) => d.value <= 0 ? y(0) : y(d.value));
     if (scaleAll < 1) {
       chart.style('stroke-width', +chart.style('stroke-width').replace('px', '') * scaleAll);
       titleX.style('font-size', (+titleX.style('font-size').replace('px', '') * scaleAll) + 'px');
