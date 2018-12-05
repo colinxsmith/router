@@ -53,9 +53,13 @@ circle.gridCircle {
 line.line {
     stroke:rgb(248, 230, 230);
     stroke-width:1.5px;
+    background-color: azure;
 }
 
-
+.leafy {
+    color: green;
+    font-size: 20px;
+}
 
 
 .toolTip {
