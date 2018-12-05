@@ -58,25 +58,12 @@ line.line {
 
 
 
-.front {
-    fill: rgba(36, 207, 207, 0.72);
-    stroke: brown;
-}
-
-.frontl {
-    stroke: rgba(57, 86, 191, 0.7411764705882353);
-    fill: none;
-    stroke-width: 20
-}
-
 .toolTip {
-    top: -100px;
-    /*Stop seeing initial position*/
     position: absolute;
     text-align: center;
     padding: 2px;
     font: 25px Calibri,sans-serif;
-    background: initial;
+    background: black;
     color:white;
     border: 10px;
     border-radius: 8px;
@@ -88,35 +75,31 @@ line.line {
     stroke: none;
 }
 
-.axisLabel {
+text.axisLabel {
     stroke-width: 0.5px;
     font: 25px Calibri,sans-serif;
     text-anchor: middle;
-    stroke: rgba(8, 109, 148, 0.74);
+    fill:rgba(211, 127, 56, 0.74);
 }
-.axisNames {
+text.axisNames {
     stroke-width: 0.5px;
     font: 15px Calibri,sans-serif;
     text-anchor: end;
-    stroke: #006e80;
+    fill: rgb(123, 168, 99);
 }
 
-.axis {
+text.axis {
     stroke-width: 4px;
     font: 25px Calibri,sans-serif;
 }
-.barrim {
+rect.barrim {
     opacity:1;
     fill: rgba(105, 119, 18, 0.5);
 }
 #weightSinglePlus {
-    fill: rgba(56, 227, 34, 0.91);
+    fill: rgb(37, 175, 213);
 }
 
 #weightSingleMinus {
     fill: rgba(231, 127, 121, 1);
 }
-/* body {
-    background-color: rgba(135, 61, 108, 0.92);
-}
-svg{width:500px;height:600px} */
