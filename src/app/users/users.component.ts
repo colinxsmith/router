@@ -385,7 +385,8 @@ export class UsersComponent implements OnInit {
       .attr('y', (d) => (d.value <= 0 ? y(0) : y(d.value) - rim))
       .on('mousemove', (d) => tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px')
-        .style('display', 'inline-block').html(`<a class="fa fa-gears leafy"></a>${d.axis}<br>weight:${d.value}`))
+        .style('display', 'inline-block')
+        .html(`<i class="fa fa-gears leafy"></i>${d.axis}<br>weight:${d.value}`))
       .on('mouseout', (d) => tooltip.style('display', 'none'));
     // --------------------------------------------------------------------------------------------
     chart.selectAll('.bar').data(DATA).enter().append('rect')
@@ -402,7 +403,7 @@ export class UsersComponent implements OnInit {
     .attr('id', (d) => d.value > 0 ? 'weightSinglePlus' : 'weightSingleMinus')
     .on('mousemove', (d) => tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px').style('display', 'inline-block')
-        .html(`<app-icon><fa><i class="fa fa-gears leafy"></i></fa></app-icon>${d.axis}<br>weight:${d.value}`))
+        .html(`<i class="fa fa-gears leafy"></i>${d.axis}<br>weight:${d.value}`))
     .on('mouseout', (d) => tooltip.style('display', 'none'))
     .transition().duration(durationtime)
     .attr('height', (d) => d.value <= 0 ? y(d.value) - y(0) : y(0) - y(d.value))
