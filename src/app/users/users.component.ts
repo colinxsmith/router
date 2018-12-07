@@ -146,7 +146,7 @@ export class UsersComponent implements OnInit {
       .range([0, radius])
       .domain([0, maxValue]);
 
-    const svg = d3.select(id).append('svg'), doView = true;
+    const svg = d3.select(id).append('svg'), doView = false;
 
     if (doView) {
       svg.attr('viewBox', `0 0 ${cfg.w + cfg.margin.left + cfg.margin.right} ${cfg.h + cfg.margin.top + cfg.margin.bottom}`)
@@ -155,6 +155,8 @@ export class UsersComponent implements OnInit {
       svg
         .attr('width', cfg.w + cfg.margin.left + cfg.margin.right)
         .attr('height', cfg.h + cfg.margin.top + cfg.margin.bottom)
+        .attr('x', 0)
+        .attr('y', 0)
         .attr('class', 'radar' + id);
     }
     const g = svg.append('g')
@@ -344,7 +346,9 @@ export class UsersComponent implements OnInit {
         g.call(d3.axisBottom(xx).tickSize(0));
         const g1 = g.select('.domain').attr('class', 'axis');
         const g2 = g.selectAll('text').attr('class', 'axisNames')
-          .attr('x', -10 * scaleAll).attr('y', -10 * scaleAll).attr('transform', 'rotate(-70)');
+          .attr('x', -5 * scaleAll)
+          .attr('y', -5 * scaleAll)
+          .attr('transform', 'rotate(-70)');
         if (DATA.length > 30) {
           g.selectAll('text').style('fill', 'none').style('stroke', 'none');
         }
