@@ -4,7 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 @Injectable()
 export class UserService {
   constructor(private http: HttpClient) { }
-  url = 'http://10.2.70.36:4023';
+  url = 'http://192.168.0.27:4023';
   getUsers(key = 'results') {
     console.log('here');
     return this

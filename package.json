@@ -4,14 +4,14 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --port 4022 --host 10.2.70.36",
+    "start": "ng serve --port 4022 --host 192.168.0.27",
     "build": "ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "find1": "sed -n \"/10.2.70.36/p\" package.json src/app/users/user.service.ts",
+    "edith": "sed -i \"s/192.168.0.27/192.168.0.27/\" package.json src/app/users/user.service.ts",
     "find2": "sed -n \"/192.168.0.27/p\" package.json src/app/users/user.service.ts",
-    "json-server": "json-server --watch src/data/db.json --port 4023 --host 10.2.70.36"
+    "json-server": "json-server --watch src/data/db.json --port 4023 --host 192.168.0.27"
   },
   "private": true,
   "dependencies": {
