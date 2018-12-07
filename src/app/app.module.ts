@@ -10,7 +10,7 @@ import { UserService } from './users/user.service';
 import {APP_BASE_HREF} from '@angular/common';
 
 const routes: Routes = [
-  { path: 'users', component: UsersComponent },
+  { path: 'router', component: UsersComponent },
   { path: 'dashboard', component: DashboardComponent }
 ];
 
@@ -28,7 +28,7 @@ const routes: Routes = [
   exports: [
     RouterModule
   ],
-  providers: [UserService, {provide: APP_BASE_HREF, useValue : '/router' }],
+  providers: [UserService, {provide: APP_BASE_HREF, useValue : '/' }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
