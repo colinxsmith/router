@@ -4,12 +4,12 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --port 4022",
+    "start": "ng serve --port 4022 --host 10.2.70.36",
     "build": "ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "json-server": "json-server --watch src/data/db.json --port 4023"
+    "json-server": "json-server --watch src/data/db.json --port 4023 --host 10.2.70.36"
   },
   "private": true,
   "dependencies": {
@@ -24,6 +24,7 @@
     "@angular/router": "^5.2.0",
     "@types/d3": "^5.0.1",
     "bootstrap": "^4.1.3",
+    "classlist.js": "^1.1.20150312",
     "core-js": "^2.4.1",
     "d3": "^5.7.0",
     "font-awesome": "^4.7.0",

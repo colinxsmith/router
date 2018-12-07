@@ -1,63 +1,234 @@
 {
-    "results": [
-    {        "id": "1",        "name": "RDJ",        "movies": "100"    },
-    {        "id": "2",        "name": "Tom Holland",        "movies": "3"    },
-    {        "id": "3",        "name": "Benedict Cumberbatch",        "movies": "10"    },
-    {        "id": "4",        "name": "Chris Hemsworth",        "movies": "30"    },
-    {        "id": "5",        "name": "Chris Evans",        "movies": "20"    }
-    ]
-,
-    "radarData":    [[      { "axis": "Equity", "value": 0.6 },
-      { "axis": "E-Oil Factor", "value": 0.2 },
-      { "axis": "E-GBP Factor", "value": 0.15 },
-      { "axis": "E-EUR Factor", "value": 0.15 },
-      { "axis": "E-USD Factor", "value": 0.25 },
-      { "axis": "E-Int rate Factor", "value": 0.24 },
-      { "axis": "E-Growth", "value": 0.3 },
-      { "axis": "E-value", "value": 0.2 },
-      { "axis": "E-Income", "value": 0.15 },
-      { "axis": "E-Small cap", "value": 0.25 },
-      { "axis": "E-Med cap", "value": 0.15 },
-      { "axis": "E-Large cap", "value": 0.2 },
-      { "axis": "Fixed Income", "value": -0.35 },
-      { "axis": "F-Duration", "value": 0.75 },
-      { "axis": "F-Quality", "value": 0.3 },
-      { "axis": "Cash", "value": 0.05 }
-    ],
-    [      { "axis": "Equity", "value": 0.5 },
-      { "axis": "E-Oil Factor", "value": 0.3 },
-      { "axis": "E-GBP Factor", "value": 0.2 },
-      { "axis": "E-EUR Factor", "value": 0.15 },
-      { "axis": "E-USD Factor", "value": 0.3 },
-      { "axis": "E-Int rate Factor", "value": 0.28 },
-      { "axis": "E-Growth", "value": 0.2 },
-      { "axis": "E-value", "value": 0.3 },
-      { "axis": "E-Income", "value": 0.25 },
-      { "axis": "E-Small cap", "value": 0.2 },
-      { "axis": "E-Med cap", "value": 0.25 },
-      { "axis": "E-Large cap", "value": 0.05 },
-      { "axis": "Fixed Income", "value": 0.45 },
-      { "axis": "F-Duration", "value": 0.5 },
-      { "axis": "F-Quality", "value": 0.4 },
-      { "axis": "Cash", "value": 0.05 }
+  "results": [
+    {
+      "id": "1",
+      "name": "RDJ",
+      "movies": "100"
+    },
+    {
+      "id": "2",
+      "name": "Tom Holland",
+      "movies": "3"
+    },
+    {
+      "id": "3",
+      "name": "Benedict Cumberbatch",
+      "movies": "10"
+    },
+    {
+      "id": "4",
+      "name": "Chris Hemsworth",
+      "movies": "30"
+    },
+    {
+      "id": "5",
+      "name": "Chris Evans",
+      "movies": "20"
+    },
+    {
+      "id": 6,
+      "name": "Colin",
+      "movies": 87
+    }
+  ],
+  "radarData": [
+    [
+      {
+        "axis": "Equity",
+        "value": 0.6
+      },
+      {
+        "axis": "E-Oil Factor",
+        "value": 0.2
+      },
+      {
+        "axis": "E-GBP Factor",
+        "value": 0.15
+      },
+      {
+        "axis": "E-EUR Factor",
+        "value": 0.15
+      },
+      {
+        "axis": "E-USD Factor",
+        "value": 0.25
+      },
+      {
+        "axis": "E-Int rate Factor",
+        "value": 0.24
+      },
+      {
+        "axis": "E-Growth",
+        "value": 0.3
+      },
+      {
+        "axis": "E-value",
+        "value": 0.2
+      },
+      {
+        "axis": "E-Income",
+        "value": 0.15
+      },
+      {
+        "axis": "E-Small cap",
+        "value": 0.25
+      },
+      {
+        "axis": "E-Med cap",
+        "value": 0.15
+      },
+      {
+        "axis": "E-Large cap",
+        "value": 0.2
+      },
+      {
+        "axis": "Fixed Income",
+        "value": -0.35
+      },
+      {
+        "axis": "F-Duration",
+        "value": 0.75
+      },
+      {
+        "axis": "F-Quality",
+        "value": 0.3
+      },
+      {
+        "axis": "Cash",
+        "value": 0.05
+      }
     ],
     [
-      { "axis": "Equity", "value": 0.9 },
-      { "axis": "E-Oil Factor", "value": 0.4 },
-      { "axis": "E-GBP Factor", "value": 0.7 },
-      { "axis": "E-EUR Factor", "value": 0.8 },
-      { "axis": "E-USD Factor", "value": 0.2 },
-      { "axis": "E-Int rate Factor", "value": 0.2 },
-      { "axis": "E-Growth", "value": 0.25 },
-      { "axis": "E-value", "value": 0.39 },
-      { "axis": "E-Income", "value": 0.29 },
-      { "axis": "E-Small cap", "value": 0.27 },
-      { "axis": "E-Med cap", "value": 0.21 },
-      { "axis": "E-Large cap", "value": 0.1 },
-      { "axis": "Fixed Income", "value": 0.41 },
-      { "axis": "F-Duration", "value": 0.2 },
-      { "axis": "F-Quality", "value": 0.1 },
-      { "axis": "Cash", "value": 0.002 }
+      {
+        "axis": "Equity",
+        "value": 0.5
+      },
+      {
+        "axis": "E-Oil Factor",
+        "value": 0.3
+      },
+      {
+        "axis": "E-GBP Factor",
+        "value": 0.2
+      },
+      {
+        "axis": "E-EUR Factor",
+        "value": 0.15
+      },
+      {
+        "axis": "E-USD Factor",
+        "value": 0.3
+      },
+      {
+        "axis": "E-Int rate Factor",
+        "value": 0.28
+      },
+      {
+        "axis": "E-Growth",
+        "value": 0.2
+      },
+      {
+        "axis": "E-value",
+        "value": 0.3
+      },
+      {
+        "axis": "E-Income",
+        "value": 0.25
+      },
+      {
+        "axis": "E-Small cap",
+        "value": 0.2
+      },
+      {
+        "axis": "E-Med cap",
+        "value": 0.25
+      },
+      {
+        "axis": "E-Large cap",
+        "value": 0.05
+      },
+      {
+        "axis": "Fixed Income",
+        "value": 0.45
+      },
+      {
+        "axis": "F-Duration",
+        "value": 0.5
+      },
+      {
+        "axis": "F-Quality",
+        "value": 0.4
+      },
+      {
+        "axis": "Cash",
+        "value": 0.05
+      }
+    ],
+    [
+      {
+        "axis": "Equity",
+        "value": 0.9
+      },
+      {
+        "axis": "E-Oil Factor",
+        "value": 0.4
+      },
+      {
+        "axis": "E-GBP Factor",
+        "value": 0.7
+      },
+      {
+        "axis": "E-EUR Factor",
+        "value": 0.8
+      },
+      {
+        "axis": "E-USD Factor",
+        "value": 0.2
+      },
+      {
+        "axis": "E-Int rate Factor",
+        "value": 0.2
+      },
+      {
+        "axis": "E-Growth",
+        "value": 0.25
+      },
+      {
+        "axis": "E-value",
+        "value": 0.39
+      },
+      {
+        "axis": "E-Income",
+        "value": 0.29
+      },
+      {
+        "axis": "E-Small cap",
+        "value": 0.27
+      },
+      {
+        "axis": "E-Med cap",
+        "value": 0.21
+      },
+      {
+        "axis": "E-Large cap",
+        "value": 0.1
+      },
+      {
+        "axis": "Fixed Income",
+        "value": 0.41
+      },
+      {
+        "axis": "F-Duration",
+        "value": 0.2
+      },
+      {
+        "axis": "F-Quality",
+        "value": 0.1
+      },
+      {
+        "axis": "Cash",
+        "value": 0.002
+      }
     ]
-]
+  ]
 }
