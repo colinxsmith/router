@@ -100,10 +100,10 @@ rect.barrim {
     opacity:1;
     fill: rgb(234, 240, 197);
 }
-#weightSinglePlus {
+rect.weightSinglePlus {
     fill: rgb(37, 175, 213);
 }
 
-#weightSingleMinus {
+rect.weightSingleMinus {
     fill: rgba(231, 127, 121, 1);
 }
