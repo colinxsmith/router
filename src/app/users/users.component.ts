@@ -404,7 +404,7 @@ export class UsersComponent implements OnInit {
       const deviation = 0;
       return deviation <= 0 ? y(0) : y(deviation);
     })
-    .attr('id', (d) => d.value > 0 ? 'weightSinglePlus' : 'weightSingleMinus')
+    .attr('class', (d) => d.value > 0 ? 'weightSinglePlus' : 'weightSingleMinus')
     .on('mousemove', (d) => tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px').style('display', 'inline-block')
         .html(`<i class="fa fa-gears leafy"></i>${d.axis}<br>weight:${d.value}`))
