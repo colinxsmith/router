@@ -5,8 +5,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 export class UserService {
   constructor(private http: HttpClient) { }
   url = 'http://10.2.70.36:4023';
-  getUsers(key = 'results') {
-    console.log('here');
+  getData(key = 'results') {
     return this
       .http
       .get<any>(`${this.url}/${key}`);
@@ -24,6 +23,6 @@ export class UserService {
       .put<{
         name: String, id: number,
         movies: number
-      }>(`${this.url}/${key}/${id}`, { id: 8, name: 'Colin', movies: Math.round(Math.random() * 200) }, options);
+      }>(`${this.url}/${key}/${id}`, { id: 8, name: 'Colin', movies: Math.floor(Math.random() * 200) }, options);
   }
 }

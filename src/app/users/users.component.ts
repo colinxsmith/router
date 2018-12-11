@@ -34,7 +34,7 @@ export class UsersComponent implements OnInit {
           });
       });
     this.userService
-      .getUsers(this.getKey)
+      .getData(this.getKey)
       .subscribe(data => {
         this.displayData = data;
         if (this.getKey === 'results') {
@@ -328,14 +328,12 @@ export class UsersComponent implements OnInit {
       }
     })
   stockbars = (DATA: { axis: string, value: number }[], ww: number, hh: number,
-    durationtime: number, xText = '', yText = '') => {
+    durationtime: number, xText = 'Weight', yText = 'Class') => {
     const svg = d3.select('app-users').append('svg')
       .attr('width', ww)
       .attr('height', hh).append('g'),
       chart = svg.append('g'),
       scaleAll = 1;
-    if (xText.length < 1) { xText = 'Weight'; }
-    if (yText.length < 1) { yText = 'Class'; }
     const margin = {
       top: 50 * scaleAll,
       right: 50 * scaleAll,
