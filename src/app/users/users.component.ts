@@ -11,7 +11,7 @@ export class UsersComponent implements OnInit {
 
   displayData: any;
   getKey = '';
-  itemData = ['radarData', 'results'];
+  itemData = ['radarData', 'results', 'newData'];
 
   constructor(private userService: UserService) { }
 
@@ -62,6 +62,12 @@ export class UsersComponent implements OnInit {
             this.stockbars(ddd, ww * 0.5, hh * 0.5, 2000);
             this.simpleDisplay(ddd);
           });
+        } else if (this.getKey === 'newData') {
+          if (data.length !== undefined) {
+            this.simpleDisplay(data);
+          } else {
+            this.simpleDisplay([data]);
+          }
         }
       }, res => {
         console.log(res);
@@ -69,7 +75,8 @@ export class UsersComponent implements OnInit {
   }
 
   simpleDisplay(displayData: any) {
-    const nDat = displayData.length, ww = 350,
+    const www = Object.keys(displayData[0]).length;
+    const nDat = displayData.length, ww = Math.max(350, www * 50),
       base = d3.select('app-users').append('svg')
         .attr('width', ww)
         .attr('height', (nDat + 2) * 21);
