@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { UserService } from './user.service';
 import * as d3 from 'd3';
+import { max } from 'd3';
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
@@ -55,7 +56,7 @@ export class UsersComponent implements OnInit {
             radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)', 'rgb(50,50,255)']),
             radarChartOptions = {
               w: width, h: height, margin: margin, maxValue: 0.1,
-              levels: 5, roundStrokes: true, colour: radarBlobColour
+              levels: 3, roundStrokes: true, colour: radarBlobColour
             };
           this.RadarChart('app-users', data, radarChartOptions);
           data.forEach((ddd) => {
@@ -151,7 +152,7 @@ export class UsersComponent implements OnInit {
 
     const rScale = d3.scaleLinear()
       .range([0, radius])
-      .domain([0, maxValue]);
+      .domain([-maxValue, maxValue]);
 
     const svg = d3.select(id).append('svg'), doView = false;
 
@@ -175,24 +176,31 @@ export class UsersComponent implements OnInit {
       feMergeNode_2 = feMerge.append('feMergeNode').attr('in', 'SourceGraphic'),
       axisGrid = g.append('g').attr('class', 'axisWrapper');
 
+      const circScale = d3.scaleLinear<number, number>().domain([-cfg.levels, cfg.levels]).range([0, radius]);
+      const circVal = d3.scaleLinear<number, number>().domain([-cfg.levels, cfg.levels]).range([-maxValue, maxValue]);
+
     axisGrid.selectAll('.levels')
-      .data(d3.range(1, (cfg.levels + 1)).reverse())
+      .data(d3.range(-(cfg.levels), (cfg.levels + 1)).reverse())
       .enter()
       .append('circle')
       .attr('class', 'gridCircle')
-      .attr('r', (d) => radius / cfg.levels * d)
+      .attr('r', (d) => circScale(d))
       .style('fill-opacity', cfg.opacityCircles)
       .style('stroke-opacity', cfg.opacityCircles)
       .style('filter', 'url(#glow)');
 
+    axisGrid.append('circle')
+      .attr('class', 'gridZero')
+      .attr('r', circScale(0));
+
     axisGrid.selectAll('.axisLabel')
-      .data(d3.range(1, (cfg.levels + 1)).reverse())
+      .data(d3.range(-(cfg.levels), (cfg.levels + 1)).reverse())
       .enter().append('text')
       .attr('class', 'axisRadar')
       .attr('x', 4)
-      .attr('y', (d) => -d * radius / cfg.levels)
+      .attr('y', (d) => -circScale(d))
       .attr('dy', '0.4em')
-      .text((d, i) => percentFormat(maxValue * d / cfg.levels));
+      .text((d, i) => percentFormat(circVal(d)));
 
 
     const axis = axisGrid.selectAll('.axis')
@@ -338,7 +346,7 @@ export class UsersComponent implements OnInit {
     durationtime: number, xText = 'Weight', yText = 'Class') => {
     const svg = d3.select('app-users').append('svg')
       .attr('width', ww)
-      .attr('height', hh).append('g'),
+      .attr('height', hh).attr('class', 'stockbars').append('g'),
       chart = svg.append('g'),
       scaleAll = 1;
     const margin = {

@@ -8,7 +8,7 @@
   {        "id": "5",        "name": "Chris Evans",        "movies": "20"    }
   ]
 ,
-  "radarData":    [[      { "axis": "Equity", "value": 0.6 },
+  "radarData":    [[      { "axis": "Equity", "value": -0.3 },
     { "axis": "E-Oil Factor", "value": 0.2 },
     { "axis": "E-GBP Factor", "value": 0.15 },
     { "axis": "E-EUR Factor", "value": 0.15 },
