@@ -12,7 +12,7 @@ rect.users {
     shape-rendering: crispEdges;
 }
 text.tooltipRadar{
-    font-size: 11px;
+    font-size: 30px;
     font-family: Calibri, sans-serif;
 }
 text.legendRadar{
@@ -23,7 +23,7 @@ text.legendRadar{
     text-align: left;
 }
 text.axisRadar{
-    font-size: 13px;
+    font-size: 18px;
     font-stretch: expanded;
     font-family: Calibri, sans-serif;
     fill: rgb(115, 115, 115);
@@ -50,11 +50,11 @@ circle.gridCircle {
     fill: rgb(255, 155, 97);
     stroke:rgba(255, 155, 97,0.25);
 }
-circle.gridZero {
-    fill: none;
-    stroke:rgba(179, 162, 162, 0.829);
-    stroke-dasharray: 15, 10;
-    stroke-width: 3px;
+path.gridZero {
+    fill: black;
+    stroke:black;
+    stroke-dasharray: 15, 15;
+    stroke-width: 2px;
 }
 line.line {
     stroke:rgb(248, 230, 230);
