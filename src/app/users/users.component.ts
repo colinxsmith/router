@@ -9,13 +9,10 @@ import { max } from 'd3';
   encapsulation: ViewEncapsulation.None
 })
 export class UsersComponent implements OnInit {
-
   displayData: any;
   getKey = '';
   itemData = ['radarData', 'results', 'newData'];
-
   constructor(private userService: UserService) { }
-
   ngOnInit() {
     this.chooseData(this.itemData[0]);
   }
@@ -74,7 +71,6 @@ export class UsersComponent implements OnInit {
         console.log(res);
       });
   }
-
   simpleDisplay(displayData: any) {
     const www = Object.keys(displayData[0]).length;
     const nDat = displayData.length, ww = Math.max(350, www * 50),
@@ -141,9 +137,7 @@ export class UsersComponent implements OnInit {
         if ('undefined' !== typeof options[i]) { cfg[i] = options[i]; }
       }
     }
-
     const maxValue = Math.max(cfg.maxValue, +d3.max(data, (i) => d3.max(i.map((o) => o.value))));
-
     const allAxis = (data[0].map((i) => i.axis)),	// Names of each axis
       total = allAxis.length,					// The number of different axes
       radius = Math.min(cfg.w / 2, cfg.h / 2), 	// Radius of the outermost circle
@@ -152,9 +146,7 @@ export class UsersComponent implements OnInit {
     const rScale = d3.scaleLinear<number, number>()
       .range([0, radius])
       .domain([-maxValue, maxValue]);
-
     const svg = d3.select(id).append('svg'), doView = false;
-
     if (doView) {
       svg.attr('viewBox', `0 0 ${cfg.w + cfg.margin.left + cfg.margin.right} ${cfg.h + cfg.margin.top + cfg.margin.bottom}`)
         .attr('class', 'radar' + id);
@@ -187,11 +179,21 @@ export class UsersComponent implements OnInit {
       .style('fill-opacity', cfg.opacityCircles)
       .style('stroke-opacity', cfg.opacityCircles)
       .style('filter', 'url(#glow)');
-
-    axisGrid.append('circle')
+    axisGrid.append('path')
       .attr('class', 'gridZero')
-      .attr('r', circScale(0));
-
+      .attr('d', () => d3.arc()({
+        innerRadius: circScale(0),
+        outerRadius: circScale(0),
+        startAngle: 0,
+        endAngle: 0
+      }))
+      .transition().duration(2000)
+      .attrTween('d', () => (t) => d3.arc()({
+        innerRadius: circScale(0),
+        outerRadius: circScale(0),
+        startAngle: -(t + 0.5) * Math.PI,
+        endAngle: (t - 0.5) * Math.PI
+      }));
     axisGrid.selectAll('.axisLabel')
       .data(d3.range(-(cfg.levels), (cfg.levels + 1)).reverse())
       .enter().append('text')
@@ -200,14 +202,11 @@ export class UsersComponent implements OnInit {
       .attr('y', (d) => -circScale(d))
       .attr('dy', '0.4em')
       .text((d, i) => percentFormat(circVal(d)));
-
-
     const axis = axisGrid.selectAll('.axis')
       .data(allAxis)
       .enter()
       .append('g')
       .attr('class', 'axis');
-
     axis.append('line')
       .attr('x1', 0)
       .attr('y1', 0)
@@ -222,7 +221,6 @@ export class UsersComponent implements OnInit {
         HERE.attr('y2', () => rScale(maxValue * extension) * Math.sin(angleScale(i) - Math.PI / 2) * t);
       })
       .attr('class', 'line');
-
     axis.append('text')
       .attr('class', 'legendRadar')
       .attr('dy', '0.35em')
@@ -230,7 +228,6 @@ export class UsersComponent implements OnInit {
       .attr('y', (d, i) => rScale(maxValue * cfg.labelFactor) * Math.sin(angleScale(i) - Math.PI / 2))
       .text((d) => d)
       .call(this.wrapFunction, cfg.wrapWidth, cfg.lineHeight);
-
     const radarLine = d3.lineRadial<{ axis: string, value: number }>()
       .curve(d3.curveLinearClosed)
       .radius((d) => rScale(d.value))
@@ -244,7 +241,6 @@ export class UsersComponent implements OnInit {
       .enter().append('g')
       .attr('data-index', (d, i) => i)
       .attr('class', 'radarWrapper');
-
     blobWrapper
       .append('path')
       .attr('class', 'radarArea')
@@ -265,7 +261,6 @@ export class UsersComponent implements OnInit {
         .transition().duration(200)
         .style('fill-opacity', cfg.opacityArea)
       );
-
     blobWrapper.append('path')
       .attr('class', 'radarStroke')
       .style('stroke-width', cfg.strokeWidth + 'px')
@@ -277,7 +272,6 @@ export class UsersComponent implements OnInit {
       .style('stroke', (d, i) => cfg.colour(i))
       .style('fill', 'none')
       .style('filter', 'url(#glow)');
-
     blobWrapper.selectAll('.radarCircle')
       .data((d) => d)
       .enter().append('circle')
@@ -292,7 +286,6 @@ export class UsersComponent implements OnInit {
       .enter().append('g')
       .attr('data-index', (d, i) => i)
       .attr('class', 'radarCircleWrapper');
-
     blobCircleWrapper.selectAll('.radarInvisibleCircle')
       .data((d) => d)
       .enter().append('circle')
