@@ -147,10 +147,9 @@ export class UsersComponent implements OnInit {
     const allAxis = (data[0].map((i) => i.axis)),	// Names of each axis
       total = allAxis.length,					// The number of different axes
       radius = Math.min(cfg.w / 2, cfg.h / 2), 	// Radius of the outermost circle
-      percentFormat = d3.format('.0%'),			 	// Percentage formatting
-      angleSlice = Math.PI * 2 / total;		// The width in radians of each "slice"
+      percentFormat = d3.format('.0%');		// The width in radians of each "slice"
 
-    const rScale = d3.scaleLinear()
+    const rScale = d3.scaleLinear<number, number>()
       .range([0, radius])
       .domain([-maxValue, maxValue]);
 
@@ -178,7 +177,7 @@ export class UsersComponent implements OnInit {
 
       const circScale = d3.scaleLinear<number, number>().domain([-cfg.levels, cfg.levels]).range([0, radius]);
       const circVal = d3.scaleLinear<number, number>().domain([-cfg.levels, cfg.levels]).range([-maxValue, maxValue]);
-
+      const angleScale = d3.scaleLinear<number, number>().domain([0, data[0].length]).range([0, Math.PI * 2]);
     axisGrid.selectAll('.levels')
       .data(d3.range(-(cfg.levels), (cfg.levels + 1)).reverse())
       .enter()
@@ -219,23 +218,23 @@ export class UsersComponent implements OnInit {
       .duration(2000)
       .tween('lines', (d, i, j) => (t) => {
         const HERE = d3.select(j[i]), extension = 1.13;
-        HERE.attr('x2', () => rScale(maxValue * extension) * Math.cos(angleSlice * i - Math.PI / 2) * t);
-        HERE.attr('y2', () => rScale(maxValue * extension) * Math.sin(angleSlice * i - Math.PI / 2) * t);
+        HERE.attr('x2', () => rScale(maxValue * extension) * Math.cos(angleScale(i) - Math.PI / 2) * t);
+        HERE.attr('y2', () => rScale(maxValue * extension) * Math.sin(angleScale(i) - Math.PI / 2) * t);
       })
       .attr('class', 'line');
 
     axis.append('text')
       .attr('class', 'legendRadar')
       .attr('dy', '0.35em')
-      .attr('x', (d, i) => rScale(maxValue * cfg.labelFactor) * Math.cos(angleSlice * i - Math.PI / 2))
-      .attr('y', (d, i) => rScale(maxValue * cfg.labelFactor) * Math.sin(angleSlice * i - Math.PI / 2))
+      .attr('x', (d, i) => rScale(maxValue * cfg.labelFactor) * Math.cos(angleScale(i) - Math.PI / 2))
+      .attr('y', (d, i) => rScale(maxValue * cfg.labelFactor) * Math.sin(angleScale(i) - Math.PI / 2))
       .text((d) => d)
       .call(this.wrapFunction, cfg.wrapWidth, cfg.lineHeight);
 
     const radarLine = d3.lineRadial<{ axis: string, value: number }>()
       .curve(d3.curveLinearClosed)
       .radius((d) => rScale(d.value))
-      .angle((d, i) => i * angleSlice);
+      .angle((d, i) => angleScale(i));
 
     if (cfg.roundStrokes) {
       radarLine.curve(d3.curveCardinalClosed);
@@ -284,8 +283,8 @@ export class UsersComponent implements OnInit {
       .enter().append('circle')
       .attr('class', 'radarCircle')
       .attr('r', cfg.dotRadius)
-      .attr('cx', (d, i) => rScale(+d.value) * Math.cos(angleSlice * i - Math.PI / 2))
-      .attr('cy', (d, i) => rScale(+d.value) * Math.sin(angleSlice * i - Math.PI / 2))
+      .attr('cx', (d, i) => rScale(+d.value) * Math.cos(angleScale(i) - Math.PI / 2))
+      .attr('cy', (d, i) => rScale(+d.value) * Math.sin(angleScale(i) - Math.PI / 2))
       .style('fill', (d, i, j) => cfg.colour(+(d3.select(<HTMLSelectElement>(j[i]).parentNode).attr('data-index'))))
       .style('fill-opacity', 0.8);
     const blobCircleWrapper = g.selectAll('.radarCircleWrapper')
@@ -299,8 +298,8 @@ export class UsersComponent implements OnInit {
       .enter().append('circle')
       .attr('class', 'radarInvisibleCircle')
       .attr('r', cfg.dotRadius * 1.1)
-      .attr('cx', (d, i) => rScale(+d.value) * Math.cos(angleSlice * i - Math.PI / 2))
-      .attr('cy', (d, i) => rScale(+d.value) * Math.sin(angleSlice * i - Math.PI / 2))
+      .attr('cx', (d, i) => rScale(+d.value) * Math.cos(angleScale(i) - Math.PI / 2))
+      .attr('cy', (d, i) => rScale(+d.value) * Math.sin(angleScale(i) - Math.PI / 2))
       .style('fill', (d, i, j) => cfg.colour(+(d3.select(<HTMLSelectElement>(j[i]).parentNode).attr('data-index'))))
       .style('pointer-events', 'all')
       .on('mouseover', (d, i, j) => {
@@ -376,7 +375,7 @@ export class UsersComponent implements OnInit {
       , tooltip = d3.select('body').append('g').attr('class', 'toolTip')
       , x = d3.scaleBand().rangeRound([0, bandfiddle * width]).paddingInner(0.1)
       , xx = d3.scaleBand().rangeRound([0, width]).paddingInner(0.1)
-      , y = d3.scaleLinear().range([height, 0])
+      , y = d3.scaleLinear<number, number>().range([height, 0])
         .domain([Math.min(0, d3.min(DATA, (d) => d.value)),
         d3.max(DATA, (d) => d.value)]);
     svg.attr('transform', `translate(${margin.left}, ${margin.top})`);
