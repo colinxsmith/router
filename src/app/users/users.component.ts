@@ -279,7 +279,7 @@ export class UsersComponent implements OnInit {
       .attr('r', cfg.dotRadius)
       .attr('cx', (d, i) => rScale(+d.value) * Math.cos(angleScale(i) - Math.PI / 2))
       .attr('cy', (d, i) => rScale(+d.value) * Math.sin(angleScale(i) - Math.PI / 2))
-      .style('fill', (d, i, j) => cfg.colour(+(d3.select(<HTMLSelectElement>(j[i]).parentNode).attr('data-index'))))
+      .style('fill', (d, i, j) => cfg.colour(+(<HTMLSelectElement>(j[i]).parentNode).getAttribute('data-index')))
       .style('fill-opacity', 0.8);
     const blobCircleWrapper = g.selectAll('.radarCircleWrapper')
       .data(data)
@@ -293,7 +293,7 @@ export class UsersComponent implements OnInit {
       .attr('r', cfg.dotRadius * 1.1)
       .attr('cx', (d, i) => rScale(+d.value) * Math.cos(angleScale(i) - Math.PI / 2))
       .attr('cy', (d, i) => rScale(+d.value) * Math.sin(angleScale(i) - Math.PI / 2))
-      .style('fill', (d, i, j) => cfg.colour(+(d3.select(<HTMLSelectElement>(j[i]).parentNode).attr('data-index'))))
+      .style('fill', (d, i, j) => cfg.colour(+(<HTMLSelectElement>(j[i]).parentNode).getAttribute('data-index')))
       .style('pointer-events', 'all')
       .on('mouseover', (d, i, j) => {
         const newX = parseFloat(d3.select(j[i]).attr('cx')) - 10,
