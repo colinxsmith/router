@@ -60,9 +60,7 @@
     { "axis": "F-Quality", "value": 0.1 },
     { "axis": "Cash", "value": 0.002 }
   ]
-]
-
-,
+],
 "KAG":[[
 {"axis": "USD.EMA", "value": 0.000000},
 {"axis": "USD.ANDS", "value": 0.003628},
@@ -104,5 +102,46 @@
 {"axis": "USD.MCBI", "value": 0.026146},
 {"axis": "USD.72650310", "value": 0.020693},
 {"axis": "USD.LBAI", "value": 0.003160}
+],[
+{"axis": "USD.EMA", "value": 0.000000},
+{"axis": "USD.ANDS", "value": 0.000000},
+{"axis": "USD.HLTH", "value": 0.050000},
+{"axis": "USD.ACAD", "value": 0.000000},
+{"axis": "USD.SYXI", "value": 0.000000},
+{"axis": "USD.ALNY", "value": 0.006978},
+{"axis": "USD.AINV", "value": 0.050000},
+{"axis": "USD.EBAY", "value": 0.000000},
+{"axis": "USD.TGLO", "value": 0.000000},
+{"axis": "USD.SFFS", "value": 0.100000},
+{"axis": "USD.KAR", "value": 0.005362},
+{"axis": "USD.ZETA", "value": 0.000000},
+{"axis": "USD.03892310", "value": 0.050000},
+{"axis": "USD.PUMP", "value": 0.000000},
+{"axis": "USD.LSE", "value": 0.008466},
+{"axis": "USD.LBAI", "value": 0.000000},
+{"axis": "USD.EBAY", "value": 0.000000},
+{"axis": "USD.CNQR", "value": 0.000000},
+{"axis": "USD.KAR", "value": 0.005362},
+{"axis": "USD.CUTR", "value": 0.044638},
+{"axis": "USD.ZETA", "value": 0.000000},
+{"axis": "USD.ATYT", "value": 0.000000},
+{"axis": "USD.PUMP", "value": 0.000000},
+{"axis": "USD.MMR", "value": 0.000000},
+{"axis": "USD.03892310", "value": 0.050000},
+{"axis": "USD.LSE", "value": 0.008466},
+{"axis": "USD.21922V10", "value": 0.041534},
+{"axis": "USD.FOX", "value": 0.100000},
+{"axis": "USD.PFCB", "value": 0.050000},
+{"axis": "USD.PPE", "value": 0.000000},
+{"axis": "USD.SFFS", "value": 0.100000},
+{"axis": "USD.ATLS", "value": 0.050000},
+{"axis": "USD.TBNC", "value": 0.050000},
+{"axis": "USD.UCBH", "value": 0.100000},
+{"axis": "USD.PRSP", "value": 0.100000},
+{"axis": "USD.00827210", "value": 0.004794},
+{"axis": "USD.WGBC", "value": 0.045206},
+{"axis": "USD.LBAI", "value": 0.000000},
+{"axis": "USD.MCBI", "value": 0.044501},
+{"axis": "USD.72650310", "value": 0.005499}
 ]]
 }
