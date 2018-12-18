@@ -71,7 +71,7 @@ export class UsersComponent implements OnInit {
             };
           this.RadarChart('app-users', data, radarChartOptions);
           data.forEach((ddd) => {
-            this.stockbars(ddd, ww * 0.5, hh * 0.5, 2000);
+            this.stockbars(ddd, ww * 0.5, hh * 0.5, 2000, 'Weights', 'Assets');
             this.simpleDisplay(ddd);
           });
         } else if (this.getKey === 'newData') {
