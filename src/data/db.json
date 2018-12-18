@@ -61,4 +61,48 @@
     { "axis": "Cash", "value": 0.002 }
   ]
 ]
+
+,
+"KAG":[[
+{"axis": "USD.EMA", "value": 0.000000},
+{"axis": "USD.ANDS", "value": 0.003628},
+{"axis": "USD.HLTH", "value": 0.050000},
+{"axis": "USD.ACAD", "value": 0.000000},
+{"axis": "USD.SYXI", "value": 0.000000},
+{"axis": "USD.ALNY", "value": 0.008741},
+{"axis": "USD.AINV", "value": 0.050000},
+{"axis": "USD.EBAY", "value": 0.000000},
+{"axis": "USD.SFFS", "value": 0.100000},
+{"axis": "USD.TGLO", "value": 0.000000},
+{"axis": "USD.KAR", "value": 0.008610},
+{"axis": "USD.ZETA", "value": 0.000000},
+{"axis": "USD.03892310", "value": 0.050000},
+{"axis": "USD.PUMP", "value": 0.000000},
+{"axis": "USD.LSE", "value": 0.022280},
+{"axis": "USD.LBAI", "value": 0.003160},
+{"axis": "USD.CNQR", "value": 0.000000},
+{"axis": "USD.CUTR", "value": 0.041390},
+{"axis": "USD.KAR", "value": 0.008610},
+{"axis": "USD.EBAY", "value": 0.000000},
+{"axis": "USD.ATYT", "value": 0.000000},
+{"axis": "USD.ZETA", "value": 0.000000},
+{"axis": "USD.MMR", "value": 0.000000},
+{"axis": "USD.PUMP", "value": 0.000000},
+{"axis": "USD.PPE", "value": 0.000000},
+{"axis": "USD.PFCB", "value": 0.050000},
+{"axis": "USD.21922V10", "value": 0.027720},
+{"axis": "USD.LSE", "value": 0.022280},
+{"axis": "USD.03892310", "value": 0.050000},
+{"axis": "USD.FOX", "value": 0.100000},
+{"axis": "USD.ATLS", "value": 0.050000},
+{"axis": "USD.TBNC", "value": 0.050000},
+{"axis": "USD.SFFS", "value": 0.100000},
+{"axis": "USD.UCBH", "value": 0.100000},
+{"axis": "USD.00827210", "value": 0.013216},
+{"axis": "USD.WGBC", "value": 0.036784},
+{"axis": "USD.PRSP", "value": 0.100000},
+{"axis": "USD.MCBI", "value": 0.026146},
+{"axis": "USD.72650310", "value": 0.020693},
+{"axis": "USD.LBAI", "value": 0.003160}
+]]
 }

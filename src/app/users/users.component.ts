@@ -11,7 +11,7 @@ import { max } from 'd3';
 export class UsersComponent implements OnInit {
   displayData: any;
   getKey = '';
-  itemData = ['radarData', 'results', 'newData'];
+  itemData = ['radarData', 'results', 'newData', 'KAG'];
   constructor(private userService: UserService) { }
   ngOnInit() {
     this.chooseData(this.itemData[0]);
@@ -47,6 +47,20 @@ export class UsersComponent implements OnInit {
           });
           this.simpleDisplay(this.displayData);
         } else if (this.getKey === 'radarData') {
+          const margin = { top: 150, right: 150, bottom: 150, left: 150 }, ww = 1000, hh = 1000,
+            width = ww - margin.left - margin.right,
+            height = hh - margin.top - margin.bottom,
+            radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)', 'rgb(50,50,255)']),
+            radarChartOptions = {
+              w: width, h: height, margin: margin, maxValue: 0.1,
+              levels: 3, roundStrokes: true, colour: radarBlobColour
+            };
+          this.RadarChart('app-users', data, radarChartOptions);
+          data.forEach((ddd) => {
+            this.stockbars(ddd, ww * 0.5, hh * 0.5, 2000);
+            this.simpleDisplay(ddd);
+          });
+        } else if (this.getKey === 'KAG') {
           const margin = { top: 150, right: 150, bottom: 150, left: 150 }, ww = 1000, hh = 1000,
             width = ww - margin.left - margin.right,
             height = hh - margin.top - margin.bottom,
@@ -216,9 +230,9 @@ export class UsersComponent implements OnInit {
       .ease(d3.easeBounce)
       .duration(2000)
       .tween('lines', (d, i, j) => (t) => {
-        const HERE = d3.select(j[i]), extension = 1.13;
-        HERE.attr('x2', () => rScale(maxValue * extension) * Math.cos(angleScale(i) - Math.PI / 2) * t);
-        HERE.attr('y2', () => rScale(maxValue * extension) * Math.sin(angleScale(i) - Math.PI / 2) * t);
+        const HERE = j[i], extension = 1.13;
+        HERE.setAttribute('x2', '' + rScale(maxValue * extension) * Math.cos(angleScale(i) - Math.PI / 2) * t);
+        HERE.setAttribute('y2', '' + rScale(maxValue * extension) * Math.sin(angleScale(i) - Math.PI / 2) * t);
       })
       .attr('class', 'line');
     axis.append('text')
@@ -295,19 +309,14 @@ export class UsersComponent implements OnInit {
       .attr('cy', (d, i) => rScale(+d.value) * Math.sin(angleScale(i) - Math.PI / 2))
       .style('fill', (d, i, j) => cfg.colour(+(<HTMLSelectElement>(j[i]).parentNode).getAttribute('data-index')))
       .style('pointer-events', 'all')
-      .on('mouseover', (d, i, j) => {
-        const newX = parseFloat(d3.select(j[i]).attr('cx')) - 10,
-          newY = parseFloat(d3.select(j[i]).attr('cy')) - 10,
-          fill = d3.select(j[i]).style('fill');
-        localTiptool
-          .attr('x', newX)
-          .attr('y', newY)
+      .on('mouseover', (d, i, j) => localTiptool
+          .attr('x', parseFloat(((j[i])).getAttribute('cx')) - 10)
+          .attr('y', parseFloat(((j[i])).getAttribute('cy')) - 10)
           .style('fill', 'none')
           .style('opacity', 1)
           .text(percentFormat(+d.value))
           .transition().duration(200)
-          .style('fill', fill);
-      })
+          .style('fill', (j[i]).style['fill']))
       .on('mouseout', () => localTiptool.transition().duration(200).style('fill', 'none'));
     const localTiptool = g.append('text')
       .attr('class', 'tooltipRadar')
