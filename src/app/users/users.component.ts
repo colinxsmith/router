@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { UserService } from './user.service';
 import * as d3 from 'd3';
-import { max } from 'd3';
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
@@ -67,7 +66,7 @@ export class UsersComponent implements OnInit {
             radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)', 'rgb(50,50,255)']),
             radarChartOptions = {
               w: width, h: height, margin: margin, maxValue: 0.1,
-              levels: 3, roundStrokes: true, colour: radarBlobColour
+              levels: 3, roundStrokes: false, colour: radarBlobColour
             };
           this.RadarChart('app-users', data, radarChartOptions);
           data.forEach((ddd) => {
