@@ -11,7 +11,8 @@
     "e2e": "ng e2e",
     "edith": "sed -i \"s/10.2.70.36/10.2.70.36/\" package.json src/app/users/user.service.ts",
     "find2": "sed -n \"/10.2.70.36/p\" package.json src/app/users/user.service.ts",
-    "json-server": "json-server --watch src/data/db.json --port 4023 --host 10.2.70.36"
+    "json-server": "json-server --watch src/data/db.json --port 4023 --host 10.2.70.36",
+    "json-servero": "json-server --watch ~/safeqp/json.json --port 4023 --host 10.2.70.36"
   },
   "private": true,
   "dependencies": {
