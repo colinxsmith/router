@@ -25,9 +25,10 @@ llambda=1e-5
 eps256=epsget()*256
 eps=epsget()*8 #pow(epsget(),.5)  #convergence for loop
 bound_eps=0 #better to use bound_eps=0 and > for kag lower limit, than bound_eps=small and >= for kag lower limit 
+typeOpt='KAG'
 if len(argv)>1:n=int(argv[1])
 else:n=40
-
+if len(argv)>2:typeOpt=argv[2]
 model='/home/colin/Dropbox/data/USE3S0407_31JUL03.csv'
 alpha=range(n)
 Quad=Opt()
@@ -36,13 +37,14 @@ Quad.n=n
 order=[0]*Quad.n
 Quad.names=[i for i in Quad.mnames[:n]]
 Quad.getmodel(model,Quad.names)
-Quad.simpleset()
-Quad.alpha=[i*.01 for i in range(Quad.n)]
+if typeOpt=='LONGSHORT':Quad.simplehedge()
+else:Quad.simpleset()
+Quad.alpha=[i*0.1 for i in range(Quad.n)]
 
-
-Quad.five=.05
-Quad.ten=.1
-Quad.forty=.4
+if typeOpt=='KAG':
+    Quad.five=.05
+    Quad.ten=.1
+    Quad.forty=.4
 
 
 Quad.log=2
@@ -59,11 +61,11 @@ print 'Relative Risk %20.5f, Relative Return %20.5f'%(Quad.risk,dot(Quad.w,Quad.
 print 'Absolute Risk %20.5f, Absolute Return %20.5f'%(Quad.arisk,dot(Quad.w,Quad.alpha))
 
 print 'JSON{'
-print 'JSON"KAG":[['
+print 'JSON"KAG":[{"gamma": %f, "risk": %f, "return": %f, "portfolio":['%(Quad.ogamma,Quad.risk,dot(Quad.w,Quad.alpha) - dot(Quad.bench,Quad.alpha))
 for i in range(Quad.n):
-    if i < Quad.n - 1:print 'JSON{"axis": "%s", "value": %f, "risk": %f, "return": %f},'%(Quad.names[i],Quad.w[i],Quad.risk,dot(Quad.w,Quad.alpha))
-    else:print 'JSON{"axis": "%s", "value": %f, "risk": %f, "return": %f}'%(Quad.names[i],Quad.w[i],Quad.risk,dot(Quad.w,Quad.alpha))
-print 'JSON],'
+    if i < Quad.n - 1:print 'JSON{"axis": "%s", "value": %f, "alpha": %f},'%(Quad.names[i],Quad.w[i],Quad.alpha[i])
+    else:print 'JSON{"axis": "%s", "value": %f, "alpha": %f}'%(Quad.names[i],Quad.w[i],Quad.alpha[i])
+print 'JSON]},'
 
 
 Quad.gamma = 1
@@ -77,11 +79,11 @@ print 'Kag total %20.5f, utility %20.15f'%(kag,Quad.utility)
 print 'Relative Risk %20.5f, Relative Return %20.5f'%(Quad.risk,dot(Quad.w,Quad.alpha) - dot(Quad.bench,Quad.alpha))
 print 'Absolute Risk %20.5f, Absolute Return %20.5f'%(Quad.arisk,dot(Quad.w,Quad.alpha))
 
-print 'JSON['
+print 'JSON{"gamma": %f, "risk": %f, "return": %f, "portfolio":['%(Quad.ogamma,Quad.risk,dot(Quad.w,Quad.alpha) - dot(Quad.bench,Quad.alpha))
 for i in range(Quad.n):
-    if i < Quad.n - 1:print 'JSON{"axis": "%s", "value": %f, "risk": %f, "return": %f},'%(Quad.names[i],Quad.w[i],Quad.risk,dot(Quad.w,Quad.alpha))
-    else:print 'JSON{"axis": "%s", "value": %f, "risk": %f, "return": %f}'%(Quad.names[i],Quad.w[i],Quad.risk,dot(Quad.w,Quad.alpha))
-print 'JSON],'
+    if i < Quad.n - 1:print 'JSON{"axis": "%s", "value": %f, "alpha": %f},'%(Quad.names[i],Quad.w[i],Quad.alpha[i])
+    else:print 'JSON{"axis": "%s", "value": %f, "alpha": %f}'%(Quad.names[i],Quad.w[i],Quad.alpha[i])
+print 'JSON]},'
 
 Quad.minrisk = (riskbot + risktop) / 2
 Quad.maxrisk = (riskbot + risktop) / 2
@@ -97,8 +99,8 @@ print 'Kag total %20.5f, utility %20.15f'%(kag,Quad.utility)
 print 'Relative Risk %20.5f, Relative Return %20.5f'%(Quad.risk,dot(Quad.w,Quad.alpha) - dot(Quad.bench,Quad.alpha))
 print 'Absolute Risk %20.5f, Absolute Return %20.5f'%(Quad.arisk,dot(Quad.w,Quad.alpha))
 
-print 'JSON['
+print 'JSON{"gamma": %f, "risk": %f, "return": %f, "portfolio":['%(Quad.ogamma,Quad.risk,dot(Quad.w,Quad.alpha) - dot(Quad.bench,Quad.alpha))
 for i in range(Quad.n):
-    if i < Quad.n - 1:print 'JSON{"axis": "%s", "value": %f, "risk": %f, "return": %f},'%(Quad.names[i],Quad.w[i],Quad.risk,dot(Quad.w,Quad.alpha))
-    else:print 'JSON{"axis": "%s", "value": %f, "risk": %f, "return": %f}'%(Quad.names[i],Quad.w[i],Quad.risk,dot(Quad.w,Quad.alpha))
-print 'JSON]]}'
+    if i < Quad.n - 1:print 'JSON{"axis": "%s", "value": %f, "alpha": %f},'%(Quad.names[i],Quad.w[i],Quad.alpha[i])
+    else:print 'JSON{"axis": "%s", "value": %f, "alpha": %f}'%(Quad.names[i],Quad.w[i],Quad.alpha[i])
+print 'JSON]}]}'
