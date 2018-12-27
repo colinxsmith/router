@@ -68,6 +68,7 @@ export class UsersComponent implements OnInit {
               w: width, h: height, margin: margin, maxValue: 0.1,
               levels: 3, roundStrokes: false, colour: radarBlobColour
             };
+
             const data1 = data[0].portfolio !== undefined ? data.map((ddd) => ddd.portfolio) : data;
             if (data1[0] [0].alpha !== undefined) {
               data1.forEach((ddd) => {
@@ -82,10 +83,11 @@ export class UsersComponent implements OnInit {
                 });
               });
           }
+
           this.RadarChart('app-users', data1, radarChartOptions);
           data1.forEach((ddd, i: number) => {
-            d3.select('app-users').append('svg').attr('width', 100).attr('height', 0).append('g').append('text')
-            .attr('transform', 'translate(0,0)').attr('class', 'users')
+            d3.select('app-users').append('svg').attr('width', 500).attr('height', 50).append('g').append('text')
+            .attr('transform', 'translate(0,30)').attr('class', 'users')
               .text(() => `Risk: ${data[i].risk}, Return: ${data[i].return}, gamma: ${data[i].gamma}`);
             this.stockbars(ddd, ww * 0.5, hh * 0.5, 2000, 'Weights', 'Assets');
             this.simpleDisplay(ddd);

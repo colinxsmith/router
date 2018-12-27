@@ -51,6 +51,9 @@ Quad.log=2
 
 Quad.gamma = 0
 ret=Quad.opt()
+if typeOpt=='LONGSHORT':
+    if dot(Quad.alpha,Quad.w) < 0:
+        Quad.w = [-i for i in Quad.w]
 Quad.risks()
 Quad.margutility()
 riskbot = Quad.risk
