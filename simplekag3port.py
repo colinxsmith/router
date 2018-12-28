@@ -88,8 +88,8 @@ for i in range(Quad.n):
     else:print 'JSON{"axis": "%s", "value": %f, "alpha": %f}'%(Quad.names[i],Quad.w[i],Quad.alpha[i])
 print 'JSON]},'
 
-Quad.minrisk = (riskbot + risktop) / 2
-Quad.maxrisk = (riskbot + risktop) / 2
+Quad.minrisk = (3*riskbot + risktop) / 4
+Quad.maxrisk = (3*riskbot + risktop) / 4
 Quad.gamma = 0
 
 ret=Quad.opt()

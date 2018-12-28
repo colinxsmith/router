@@ -54,8 +54,8 @@ export class UsersComponent implements OnInit {
               w: width, h: height, margin: margin, maxValue: 0.1,
               levels: 3, roundStrokes: true, colour: radarBlobColour
             };
-          this.RadarChart('app-users', data, radarChartOptions);
-          data.forEach((ddd) => {
+          this.RadarChart('app-users', this.displayData, radarChartOptions);
+          this.displayData.forEach((ddd) => {
             this.stockbars(ddd, ww * 0.5, hh * 0.5, 2000);
             this.simpleDisplay(ddd);
           });
@@ -66,10 +66,10 @@ export class UsersComponent implements OnInit {
             radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)', 'rgb(50,50,255)']),
             radarChartOptions = {
               w: width, h: height, margin: margin, maxValue: 0.1,
-              levels: 3, roundStrokes: false, colour: radarBlobColour
+              levels: 3, roundStrokes: true, colour: radarBlobColour
             };
 
-            const data1 = data[0].portfolio !== undefined ? data.map((ddd) => ddd.portfolio) : data;
+            const data1 = this.displayData[0].portfolio !== undefined ? this.displayData.map((ddd) => ddd.portfolio) : this.displayData;
             if (data1[0] [0].alpha !== undefined) {
               data1.forEach((ddd) => {
                 ddd.sort((d1, d2) => {
@@ -88,15 +88,15 @@ export class UsersComponent implements OnInit {
           data1.forEach((ddd, i: number) => {
             d3.select('app-users').append('svg').attr('width', 500).attr('height', 50).append('g').append('text')
             .attr('transform', 'translate(0,30)').attr('class', 'users')
-              .text(() => `Risk: ${data[i].risk}, Return: ${data[i].return}, gamma: ${data[i].gamma}`);
+              .text(() => `Risk: ${this.displayData[i].risk}, Return: ${this.displayData[i].return}, gamma: ${this.displayData[i].gamma}`);
             this.stockbars(ddd, ww * 0.5, hh * 0.5, 2000, 'Weights', 'Assets');
             this.simpleDisplay(ddd);
           });
         } else if (this.getKey === 'newData') {
           if (data.length !== undefined) {
-            this.simpleDisplay(data);
+            this.simpleDisplay(this.displayData);
           } else {
-            this.simpleDisplay([data]);
+            this.simpleDisplay([this.displayData]);
           }
         }
       }, res => {
