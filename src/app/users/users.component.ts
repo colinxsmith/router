@@ -69,19 +69,20 @@ export class UsersComponent implements OnInit {
               levels: 3, roundStrokes: true, colour: radarBlobColour
             };
 
-            const data1 = this.displayData[0].portfolio !== undefined ? this.displayData.map((ddd) => ddd.portfolio) : this.displayData;
-            if (data1[0] [0].alpha !== undefined) {
-              data1.forEach((ddd) => {
-                ddd.sort((d1, d2) => {
-                  if (+d2.alpha < +d1.alpha) { // Want high alpha at end of list
-                    return 1;
-                  } else if (+d1.alpha === +d2.alpha) {
-                    return 0;
-                  } else {
-                    return -1;
-                  }
-                });
+          const data1: [{ alpha: number, axis: string, value: number }[]]
+            = this.displayData[0].portfolio !== undefined ? this.displayData.map((ddd) => ddd.portfolio) : this.displayData;
+          if (data1[0][0].alpha !== undefined) {
+            data1.forEach((ddd) => {
+              ddd.sort((d1, d2) => {
+                if (d2.alpha < d1.alpha) { // Want high alpha at end of list
+                  return 1;
+                } else if (d1.alpha === d2.alpha) {
+                  return 0;
+                } else {
+                  return -1;
+                }
               });
+            });
           }
 
           this.RadarChart('app-users', data1, radarChartOptions);
