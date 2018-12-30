@@ -39,7 +39,10 @@ Quad.names=[i for i in Quad.mnames[:n]]
 Quad.getmodel(model,Quad.names)
 if typeOpt=='LONGSHORT':Quad.simplehedge()
 else:Quad.simpleset()
-Quad.alpha=[i*0.1 for i in range(Quad.n)]
+
+Quad.w = [1.0/Quad.n for i in range(Quad.n)]
+Quad.props()
+Quad.alpha=[Quad.w[i]*Quad.MCAR[i] for i in range(Quad.n)]
 
 if typeOpt=='KAG':
     Quad.five=.05
