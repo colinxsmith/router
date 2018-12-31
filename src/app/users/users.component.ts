@@ -9,55 +9,18 @@ import * as d3 from 'd3';
 })
 export class UsersComponent implements OnInit {
   displayData: any;
+  updateLabel = 'UPDATE';
   getKey = '';
-  itemData = ['radarData', 'results', 'newData', 'KAG'];
+  itemData = ['radarData', 'results', 'newData', 'KAG'].reverse();
   constructor(private userService: UserService) { }
   ngOnInit() {
     this.chooseData(this.itemData[0]);
   }
   changeDat() {
     d3.select('app-users').selectAll('svg').remove();
-    this.userService
-      .getData(this.getKey)
-      .subscribe(data => {
-        this.displayData = data;
-      });
-
-    const margin = { top: 150, right: 150, bottom: 150, left: 150 }, ww = 1000, hh = 1000,
-    width = ww - margin.left - margin.right,
-    height = hh - margin.top - margin.bottom,
-    radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)', 'rgb(50,50,255)']),
-    radarChartOptions = {
-      w: width, h: height, margin: margin, maxValue: 0.1,
-      levels: 3, roundStrokes: true, colour: radarBlobColour
-    };
-
-  const data1: [{ alpha: number, axis: string, value: number }[]]
-    = this.displayData[0].portfolio !== undefined ? this.displayData.map((ddd) => ddd.portfolio) : this.displayData;
-  if (data1[0][0].alpha !== undefined) {
-    data1.forEach((ddd) => {
-      ddd.sort((d1, d2) => {
-        if (d2.alpha < d1.alpha) { // Want high alpha at end of list
-          return 1;
-        } else if (d1.alpha === d2.alpha) {
-          return 0;
-        } else {
-          return -1;
-        }
-      });
-    });
+    this.chooseData(this.getKey, true);
   }
-
-  this.RadarChart('app-users', data1, radarChartOptions);
-  data1.forEach((ddd, i: number) => {
-    d3.select('app-users').append('svg').attr('width', 500).attr('height', 50).append('g').append('text')
-    .attr('transform', 'translate(0,30)').attr('class', 'users')
-      .text(() => `Risk: ${this.displayData[i].risk}, Return: ${this.displayData[i].return}, gamma: ${this.displayData[i].gamma}`);
-    this.stockbars(ddd, ww * 0.5, hh * 0.5, 2000, 'Weights', 'Assets');
-    this.simpleDisplay(ddd);
-  });
-  }
-  chooseData(dd: string) {
+  chooseData(dd: string, joinLinear = false) {
     d3.select('app-users').selectAll('svg').remove();
     this.getKey = dd;
     this.userService.postResult().subscribe(res => {
@@ -108,7 +71,7 @@ export class UsersComponent implements OnInit {
             radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)', 'rgb(50,50,255)']),
             radarChartOptions = {
               w: width, h: height, margin: margin, maxValue: 0.1,
-              levels: 3, roundStrokes: true, colour: radarBlobColour
+              levels: 3, roundStrokes: !joinLinear, colour: radarBlobColour
             };
 
           const data1: [{ alpha: number, axis: string, value: number }[]]
@@ -216,7 +179,7 @@ export class UsersComponent implements OnInit {
     const allAxis = (data[0].map((i) => i.axis)),	// Names of each axis
       total = allAxis.length,					// The number of different axes
       radius = Math.min(cfg.w / 2, cfg.h / 2), 	// Radius of the outermost circle
-      percentFormat = d3.format('.0%');		// The width in radians of each "slice"
+      percentFormat = d3.format('.1%');
 
     const rScale = d3.scaleLinear<number, number>()
       .range([0, radius])
