@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Injectable()
 export class UserService {
   constructor(private http: HttpClient) { }
-  url = 'http://10.2.70.36:4023';
+  url = environment.serverUrl;
   getData(key = 'results') {
     return this
       .http

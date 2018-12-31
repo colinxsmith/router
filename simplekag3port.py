@@ -29,7 +29,7 @@ typeOpt='KAG'
 if len(argv)>1:n=int(argv[1])
 else:n=40
 if len(argv)>2:typeOpt=argv[2]
-model='/home/colin/Dropbox/data/USE3S0407_31JUL03.csv'
+model='/home/colin/Dropbox/data/USE30305_30MAY03.csv'
 alpha=range(n)
 Quad=Opt()
 Quad.getmodel(model,[])
