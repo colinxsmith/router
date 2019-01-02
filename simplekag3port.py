@@ -41,9 +41,11 @@ alpha = range(n)
 Quad = Opt()
 Quad.getmodel(model, [])
 Quad.n = n
-order = [0]*Quad.n
 Quad.names = [i for i in Quad.mnames[:n]]
 Quad.getmodel(model, Quad.names)
+annus = 25200
+Quad.SV = [Quad.SV[i] / annus for i in range(len(Quad.SV))]
+Quad.FC = [Quad.FC[i] / annus for i in range(len(Quad.FC))]
 if typeOpt == 'LONGSHORT':
     Quad.simplehedge()
 else:
@@ -82,11 +84,11 @@ print 'JSON"KAG":[{"gamma": %f, "risk": %f, "return": %f, "portfolio":[' % (
     Quad.ogamma, Quad.risk, dot(Quad.w, Quad.alpha) - dot(Quad.bench, Quad.alpha))
 for i in range(Quad.n):
     if i < Quad.n - 1:
-        print 'JSON{"axis": "%s", "value": %f, "alpha": %f},' % (
-            Quad.names[i], Quad.w[i], Quad.alpha[i])
+        print 'JSON{"index": %d, "axis": "%s", "value": %f, "alpha": %f},' % (
+            i+1,Quad.names[i], Quad.w[i], Quad.alpha[i])
     else:
-        print 'JSON{"axis": "%s", "value": %f, "alpha": %f}' % (
-            Quad.names[i], Quad.w[i], Quad.alpha[i])
+        print 'JSON{"index": %d, "axis": "%s", "value": %f, "alpha": %f}' % (
+            i+1,Quad.names[i], Quad.w[i], Quad.alpha[i])
 print 'JSON]},'
 
 
@@ -107,15 +109,15 @@ print 'JSON{"gamma": %f, "risk": %f, "return": %f, "portfolio":[' % (
     Quad.ogamma, Quad.risk, dot(Quad.w, Quad.alpha) - dot(Quad.bench, Quad.alpha))
 for i in range(Quad.n):
     if i < Quad.n - 1:
-        print 'JSON{"axis": "%s", "value": %f, "alpha": %f},' % (
-            Quad.names[i], Quad.w[i], Quad.alpha[i])
+        print 'JSON{"index": %d, "axis": "%s", "value": %f, "alpha": %f},' % (
+            i+1,Quad.names[i], Quad.w[i], Quad.alpha[i])
     else:
-        print 'JSON{"axis": "%s", "value": %f, "alpha": %f}' % (
-            Quad.names[i], Quad.w[i], Quad.alpha[i])
+        print 'JSON{"index": %d, "axis": "%s", "value": %f, "alpha": %f}' % (
+            i+1,Quad.names[i], Quad.w[i], Quad.alpha[i])
 print 'JSON]},'
 
 Quad.minrisk = 0
-Quad.maxrisk = (3*riskbot + risktop) / 4
+Quad.maxrisk = (riskbot + risktop) / 2
 Quad.gamma = 1
 
 ret = Quad.opt()
@@ -134,9 +136,9 @@ print 'JSON{"gamma": %f, "risk": %f, "return": %f, "portfolio":[' % (
     Quad.ogamma, Quad.risk, dot(Quad.w, Quad.alpha) - dot(Quad.bench, Quad.alpha))
 for i in range(Quad.n):
     if i < Quad.n - 1:
-        print 'JSON{"axis": "%s", "value": %f, "alpha": %f},' % (
-            Quad.names[i], Quad.w[i], Quad.alpha[i])
+        print 'JSON{"index": %d, "axis": "%s", "value": %f, "alpha": %f},' % (
+            i+1,Quad.names[i], Quad.w[i], Quad.alpha[i])
     else:
-        print 'JSON{"axis": "%s", "value": %f, "alpha": %f}' % (
-            Quad.names[i], Quad.w[i], Quad.alpha[i])
+        print 'JSON{"index": %d, "axis": "%s", "value": %f, "alpha": %f}' % (
+            i+1,Quad.names[i], Quad.w[i], Quad.alpha[i])
 print 'JSON]}]}'
