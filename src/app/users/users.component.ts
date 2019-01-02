@@ -11,10 +11,10 @@ export class UsersComponent implements OnInit {
   displayData: any;
   updateLabel = 'UPDATE';
   getKey = '';
-  itemData = ['radarData', 'results', 'newData', 'KAG'].reverse();
+  dbKeyData = ['radarData', 'results', 'newData', 'KAG'].reverse();
   constructor(private userService: UserService) { }
   ngOnInit() {
-    this.chooseData(this.itemData[0]);
+    this.chooseData(this.dbKeyData[0]);
   }
   changeDat() {
     d3.select('app-users').selectAll('svg').remove();
