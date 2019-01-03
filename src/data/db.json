@@ -61,7 +61,7 @@
     { "axis": "Cash", "value": 0.002 }
   ]
 ],
-"KAG":[{"gamma": 0.000000, "risk": 17.381604, "return": 0.988957, "portfolio":[
+"OPT":[{"gamma": 0.000000, "risk": 17.381604, "return": 0.988957, "portfolio":[
   {"axis": "USD.SYXI", "value": 0.034878, "alpha": 0.000000},
   {"axis": "USD.EBAY", "value": 0.050000, "alpha": 0.100000},
   {"axis": "USD.EMA", "value": 0.000000, "alpha": 0.200000},

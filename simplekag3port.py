@@ -80,14 +80,14 @@ print 'Absolute Risk %20.5f, Absolute Return %20.5f' % (
     Quad.arisk, dot(Quad.w, Quad.alpha))
 
 print 'JSON{'
-print 'JSON"KAG":[{"gamma": %f, "risk": %f, "return": %f, "portfolio":[' % (
+print 'JSON"OPT":[{"gamma": %f, "risk": %f, "return": %f, "portfolio":[' % (
     Quad.ogamma, Quad.risk, dot(Quad.w, Quad.alpha) - dot(Quad.bench, Quad.alpha))
 for i in range(Quad.n):
     if i < Quad.n - 1:
-        print 'JSON{"index": %d, "axis": "%s", "value": %f, "alpha": %f},' % (
+        print 'JSON{"id": %d, "axis": "%s", "value": %f, "alpha": %f},' % (
             i+1,Quad.names[i], Quad.w[i], Quad.alpha[i])
     else:
-        print 'JSON{"index": %d, "axis": "%s", "value": %f, "alpha": %f}' % (
+        print 'JSON{"id": %d, "axis": "%s", "value": %f, "alpha": %f}' % (
             i+1,Quad.names[i], Quad.w[i], Quad.alpha[i])
 print 'JSON]},'
 
@@ -109,10 +109,10 @@ print 'JSON{"gamma": %f, "risk": %f, "return": %f, "portfolio":[' % (
     Quad.ogamma, Quad.risk, dot(Quad.w, Quad.alpha) - dot(Quad.bench, Quad.alpha))
 for i in range(Quad.n):
     if i < Quad.n - 1:
-        print 'JSON{"index": %d, "axis": "%s", "value": %f, "alpha": %f},' % (
+        print 'JSON{"id": %d, "axis": "%s", "value": %f, "alpha": %f},' % (
             i+1,Quad.names[i], Quad.w[i], Quad.alpha[i])
     else:
-        print 'JSON{"index": %d, "axis": "%s", "value": %f, "alpha": %f}' % (
+        print 'JSON{"id": %d, "axis": "%s", "value": %f, "alpha": %f}' % (
             i+1,Quad.names[i], Quad.w[i], Quad.alpha[i])
 print 'JSON]},'
 
@@ -136,9 +136,9 @@ print 'JSON{"gamma": %f, "risk": %f, "return": %f, "portfolio":[' % (
     Quad.ogamma, Quad.risk, dot(Quad.w, Quad.alpha) - dot(Quad.bench, Quad.alpha))
 for i in range(Quad.n):
     if i < Quad.n - 1:
-        print 'JSON{"index": %d, "axis": "%s", "value": %f, "alpha": %f},' % (
+        print 'JSON{"id": %d, "axis": "%s", "value": %f, "alpha": %f},' % (
             i+1,Quad.names[i], Quad.w[i], Quad.alpha[i])
     else:
-        print 'JSON{"index": %d, "axis": "%s", "value": %f, "alpha": %f}' % (
+        print 'JSON{"id": %d, "axis": "%s", "value": %f, "alpha": %f}' % (
             i+1,Quad.names[i], Quad.w[i], Quad.alpha[i])
 print 'JSON]}]}'

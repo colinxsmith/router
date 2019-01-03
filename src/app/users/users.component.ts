@@ -12,7 +12,7 @@ export class UsersComponent implements OnInit {
   displayData: any;
   updateLabel = 'UPDATE';
   getKey = '';
-  dbKeyData = ['radarData', 'results', 'newData', 'KAG'].reverse();
+  dbKeyData = ['radarData', 'results', 'newData', 'OPT'].reverse();
   constructor(private userService: UserService) { }
   ngOnInit() {
     this.chooseData(this.dbKeyData[0]);
@@ -66,7 +66,7 @@ export class UsersComponent implements OnInit {
             this.stockbars(ddd, ww * 0.5, hh * 0.5, 2000);
             this.simpleDisplay(ddd);
           });
-        } else if (this.getKey === 'KAG') {
+        } else if (this.getKey === 'OPT') {
           const margin = { top: 150, right: 150, bottom: 150, left: 150 }, ww = 1000, hh = 1000,
             width = ww - margin.left - margin.right,
             height = hh - margin.top - margin.bottom,
