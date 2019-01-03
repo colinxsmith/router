@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class UserService {
@@ -9,7 +10,8 @@ export class UserService {
   getData(key = 'results') {
     return this
       .http
-      .get<any>(`${this.url}/${key}`);
+      .get<any>(`${this.url}/db`) // Use map from rxjs and .pipe() to choose the route. In json-server /db gives all routes
+      .pipe(map(ddd => ddd[key]));
   }
   postResult() {
     const options = { headers: new HttpHeaders().set('Content-Type', 'application/json') };

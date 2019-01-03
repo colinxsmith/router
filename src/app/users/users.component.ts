@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { UserService } from './user.service';
 import * as d3 from 'd3';
+import { map } from 'rxjs/operators';
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
@@ -37,8 +38,9 @@ export class UsersComponent implements OnInit {
       });
     this.userService
       .getData(this.getKey)
+      .pipe(map(data => {this.displayData = data; return data; }))
       .subscribe(data => {
-        this.displayData = data;
+//        this.displayData = data;
         if (this.getKey === 'results') {
           this.displayData.sort((d1, d2) => {
             if (+d2.movies > +d1.movies) {
@@ -99,7 +101,7 @@ export class UsersComponent implements OnInit {
             this.simpleDisplay(ddd);
           });
         } else if (this.getKey === 'newData') {
-          if (data.length !== undefined) {
+          if (this.displayData.length !== undefined) {
             this.simpleDisplay(this.displayData);
           } else {
             this.simpleDisplay([this.displayData]);
