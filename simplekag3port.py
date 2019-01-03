@@ -30,12 +30,15 @@ eps256 = epsget()*256
 eps = epsget()*8  # pow(epsget(),.5)  #convergence for loop
 bound_eps = 0  # better to use bound_eps=0 and > for kag lower limit, than bound_eps=small and >= for kag lower limit
 typeOpt = 'KAG'
+riskfac = 1e-1
 if len(argv) > 1:
     n = int(argv[1])
 else:
     n = 40
 if len(argv) > 2:
     typeOpt = argv[2]
+if len(argv) > 3:
+    riskfac = float(argv[3])
 model = '/home/colin/Dropbox/data/USE30305_30MAY03.csv'
 alpha = range(n)
 Quad = Opt()
@@ -117,7 +120,8 @@ for i in range(Quad.n):
 print 'JSON]},'
 
 Quad.minrisk = 0
-Quad.maxrisk = (riskbot + risktop) / 2
+Quad.maxrisk = riskbot + (risktop - riskbot) * riskfac
+
 Quad.gamma = 1
 
 ret = Quad.opt()
