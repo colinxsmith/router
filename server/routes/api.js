@@ -1,10 +1,5 @@
 const express = require('express');
 const router = express.Router();
-
-// declare axios for making http requests
-const axios = require('axios');
-const API = 'http://10.2.70.36:4023';
-
 const mocked = { 
     'OPT':[{'gamma': 0.000000, 'risk': 0.059686, 'return': -0.000072, 'portfolio':[ 
     {'id': 1, 'axis': 'USD.SYXI', 'value': -0.014823, 'alpha': 0.007012}, 
@@ -107,27 +102,18 @@ const mocked = {
     {'id': 30, 'axis': 'USD.BSML', 'value': 0.047955, 'alpha': 0.005411}, 
     {'id': 31, 'axis': 'USD.LACO', 'value': 0.032731, 'alpha': 0.003846}, 
     {'id': 32, 'axis': 'USD.PBCP', 'value': -0.097958, 'alpha': 0.001627} 
-    ]}]};
+        ]
+        }]
+};
+
 /* GET api listing. */
 router.get('/', (req, res) => {
     res.send('api works');
 });
-
 // Get all posts
 router.get('/db', (req, res) => {
-    // Get posts from the mock api
-    // This should ideally be replaced with a service that connects to MongoDB
-//    axios.get(`${API}/OPT`)
-//        .then(posts => {
-            res
-                .status(200)
-                .json(mocked);
-//        })
-//        .catch(error => {
-//            res
-//                .status(500)
-//                .send(error)
-//        });
+    res
+        .status(200)
+        .json(mocked);
 });
-
 module.exports = router;
