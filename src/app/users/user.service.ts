@@ -17,7 +17,11 @@ export class UserService {
     const options = { headers: new HttpHeaders().set('Content-Type', 'application/json') };
     return this
       .http
-      .post<{ name: String, id: number, movies: number }>(`${this.url}/results`, { id: 6, name: 'Colin', movies: 0 }, options);
+      .post<any>(`${this.url}/db`, { id: 6, name: 'Colin', movies: 0 }, options)
+      .pipe(map(ddd => {
+        console.log(ddd);
+        return ddd;
+      }));
   }
   putResult(key = 'results', id = 6) {
     const options = { headers: new HttpHeaders().set('Content-Type', 'application/json') };
@@ -26,6 +30,7 @@ export class UserService {
       .put<{
         name: String, id: number,
         movies: number
-      }>(`${this.url}/${key}/${id}`, { id: 8, name: 'Colin', movies: Math.floor(Math.random() * 200) }, options);
+      }>(`${this.url}/db`, { id: 8, name: 'Colin', movies: Math.floor(Math.random() * 200) }, options)
+      .pipe(map(ddd => ddd));
   }
 }
