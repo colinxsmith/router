@@ -12,10 +12,24 @@ export class UsersComponent implements OnInit {
   displayData: any;
   updateLabel = 'UPDATE';
   getKey = '';
+  plotLab = [];
+  plotLabels = {'Low Risk': 1, 'High Risk': 2, 'Medium Risk': 3};
+  choose2 = [0 , 0];
   dbKeyData = ['radarData', 'results', 'newData', 'OPT'].reverse();
   constructor(private userService: UserService) { }
   ngOnInit() {
+    this.plotLab = Object.keys(this.plotLabels);
     this.chooseData(this.dbKeyData[0]);
+  }
+  choosePlot1(dd: string) {
+    this.choose2[0] = this.plotLabels[dd] - 1;
+    d3.select('app-users').selectAll('svg').remove();
+    this.chooseData(this.getKey);
+  }
+  choosePlot2(dd: string) {
+    this.choose2[1] = this.plotLabels[dd] - 1;
+    d3.select('app-users').selectAll('svg').remove();
+    this.chooseData(this.getKey);
   }
   changeDat() {
     d3.select('app-users').selectAll('svg').remove();
@@ -23,6 +37,7 @@ export class UsersComponent implements OnInit {
   }
   chooseData(dd: string, joinLinear = false) {
     d3.select('app-users').selectAll('svg').remove();
+
     this.getKey = dd;
     this.userService.postResult().subscribe(res => {
       console.log(res);
@@ -276,8 +291,11 @@ export class UsersComponent implements OnInit {
     if (cfg.roundStrokes) {
       radarLine.curve(d3.curveCardinalClosed);
     }
+
+    const sData = this.choose2[0] === this.choose2[1] ? data : [data[this.choose2[0]], data[this.choose2[1]]];
+
     const blobWrapper = g.selectAll('.radarWrapper')
-      .data(data)
+      .data(sData)
       .enter().append('g')
       .attr('data-index', (d, i) => i)
       .attr('class', 'radarWrapper');
@@ -322,7 +340,7 @@ export class UsersComponent implements OnInit {
       .style('fill', (d, i, j) => cfg.colour(+(<HTMLSelectElement>(j[i]).parentNode).getAttribute('data-index')))
       .style('fill-opacity', 0.8);
     const blobCircleWrapper = g.selectAll('.radarCircleWrapper')
-      .data(data)
+      .data(sData)
       .enter().append('g')
       .attr('data-index', (d, i) => i)
       .attr('class', 'radarCircleWrapper');
