@@ -17,7 +17,10 @@ export class UserService {
     const options = { headers: new HttpHeaders().set('Content-Type', 'application/json') };
     return this
       .http
-      .post<any>(`${this.url}/db`, { id: 6, name: 'Colin', movies: 0 }, options)
+      .post<{
+        name: String, id: number,
+        movies: number
+      }>(`${this.url}/results`, { id: 6, name: 'Colin', movies: 0 }, options)
       .pipe(map(ddd => {
         console.log(ddd);
         return ddd;
@@ -26,11 +29,14 @@ export class UserService {
   putResult(key = 'results', id = 6) {
     const options = { headers: new HttpHeaders().set('Content-Type', 'application/json') };
     return this
-      .http // Can't change the id here.... the id:8 is ignored
+      .http
       .put<{
         name: String, id: number,
         movies: number
-      }>(`${this.url}/db`, { id: 8, name: 'Colin', movies: Math.floor(Math.random() * 200) }, options)
-      .pipe(map(ddd => ddd));
+      }>(`${this.url}/${key}/${id}`, { id: id, name: 'Colin', movies: Math.floor(Math.random() * 200) }, options)
+      .pipe(map(ddd => {
+        console.log(ddd);
+        return ddd;
+      }));
   }
 }
