@@ -14,8 +14,13 @@ const diagRisk = (n,w,R) => {
 /*
     short SimleOpt(dimen n,long nfac,int ls,int full,vector SV,vector FL,vector FC,
     vector w, dimen m, vector L, vector U, vector A,vector alpha,double gamma, double*ogamma,double minRisk,double maxRisk,
-    double five, double ten, double forty)
-*/
+    double five, double ten, double forty);
+
+    void factor_model_process(unsigned long n,unsigned long nfac,vector FL,vector FC,vector SV,vector Q);
+
+    void Get_RisksC(unsigned long n,long nfac,vector Q,vector w,vector benchmark,double* arisk,
+                                double* risk,double* Rrisk,double* brisk,
+                                double *pbeta,unsigned long ncomp,vector Composite);*/
 
 var n = 20,nfac = 0, ls = 0,full =1, SV=[],FL=[],FC=[],w=[],m=1,L=[],U=[],A=[],alpha=[],gamma=0.5,ogamma=[],minRisk=-1,maxRisk=-1,
 five=0.05,ten=0.1,forty=0.4;
@@ -72,3 +77,17 @@ output.medium.risk=Math.sqrt(diagRisk(n,w,SV));
 console.log(output)
 
 exports.output=output;
+
+Q=[];
+for(let i = 0;i<n*(nfac+1);++i){
+    Q.push(0);
+}
+
+// Get it from the optimiser
+test.factor_model_process(n,nfac,FL,FC,SV,Q);
+var arisk=[0],risk=[0],Rrisk=[0],brisk=[0],pbeta=[0];
+test.Get_RisksC(n,nfac,Q,w,0,arisk,
+    risk,Rrisk,brisk,
+    pbeta,0,0);
+
+console.log(risk);
