@@ -7,6 +7,10 @@
         char* Return_Message(int);
         char* version(char*);
         double ddotvec(unsigned long n,vector a,vector b);
+        void Get_RisksC(dimen n,long nfac,vector Q,vector w,vector benchmark,double* arisk,
+                            double* risk,double* Rrisk,double* brisk,
+                            double *pbeta,dimen ncomp,vector Composite);
+        void factor_model_process(dimen n,dimen nfac,vector FL,vector FC,vector SV,vector Q);
         short  Optimise_internalCVPAFblSaMSoftQ(dimen n,long nfac,char** names,vector w,dimen m,
             vector A,vector L,vector U,vector alpha,
             vector benchmark,vector Q,real gamma,vector initial,
@@ -113,6 +117,7 @@
 char* Return_Message(int);
 char* version(char*asetup);
 double ddotvec(unsigned long n,vector a,vector b);
-
-
-
+void factor_model_process(unsigned long n,unsigned long nfac,vector FL,vector FC,vector SV,vector Q);
+void Get_RisksC(unsigned long n,long nfac,vector Q,vector w,vector benchmark,double* arisk,
+                                double* risk,double* Rrisk,double* brisk,
+                                double *pbeta,unsigned long ncomp,vector Composite);
