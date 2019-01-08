@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const mocked = { 
     'version': opt.version(),
+    'simpleopt': opt.output,
     'results': [
         {        'id': 1,        'name': 'RDJ',        'movies': 100    },
         {        'id': 2,        'name': 'Tom Holland',        'movies': 3    },

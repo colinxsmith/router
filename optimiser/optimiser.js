@@ -1,4 +1,5 @@
 const test = require("../build/Release/OPT");
+const output={}
 console.log(test);
 Object.keys(test).forEach(function (key) {
     exports[key] = test[key];
@@ -29,23 +30,30 @@ for(let i = 0;i<n;++i){
 L.push(1);
 U.push(1);
 ogamma.push(gamma);
-console.log(test.version());
 
 gamma=0;
 let back = test.SimpleOpt(n,nfac,ls,full,SV,FL,FC,
     w, m, L, U, A,alpha,gamma,ogamma,minRisk,maxRisk,
     five, ten, forty)
 
-console.log(w);
 const minV=diagRisk(n,w,SV);
+output.low={};
+output.low.gamma=ogamma[0];
+output.low.portfolio=w.map((d) => d);
+output.low.alpha=alpha;
+output.low.risk=Math.sqrt(minV);
 
 gamma=1;
 back = test.SimpleOpt(n,nfac,ls,full,SV,FL,FC,
     w, m, L, U, A,alpha,gamma,ogamma,minRisk,maxRisk,
     five, ten, forty)
 
-console.log(w);
 const maxV=diagRisk(n,w,SV);
+output.high={};
+output.high.gamma=ogamma[0];
+output.high.portfolio=w.map((d) => d);
+output.high.alpha=alpha;
+output.high.risk=Math.sqrt(maxV);
 
 minRisk = (Math.sqrt(minV) + Math.sqrt(maxV)) / 2;
 maxRisk = minRisk;
@@ -55,5 +63,12 @@ back = test.SimpleOpt(n,nfac,ls,full,SV,FL,FC,
     w, m, L, U, A,alpha,gamma,ogamma,minRisk,maxRisk,
     five, ten, forty)
 
-console.log(w);
-console.log(ogamma);
+output.medium={};
+output.medium.gamma=ogamma[0];
+output.medium.portfolio=w.map((d) => d);
+output.medium.alpha=alpha;
+output.medium.risk=Math.sqrt(diagRisk(n,w,SV));
+
+console.log(output)
+
+exports.output=output;
