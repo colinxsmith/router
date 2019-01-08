@@ -1,7 +1,9 @@
 'use strict;'
+const opt = require('../../optimiser/optimiser');
 const express = require('express');
 const router = express.Router();
 const mocked = { 
+    'version': opt.version(),
     'results': [
         {        'id': 1,        'name': 'RDJ',        'movies': 100    },
         {        'id': 2,        'name': 'Tom Holland',        'movies': 3    },
@@ -10,7 +12,7 @@ const mocked = {
         {        'id': 5,        'name': 'Chris Evans',        'movies': 20    }
         ]
       ,
-          'OPT':[{'gamma': 0.000000, 'risk': 0.059686, 'return': -0.000072, 'portfolio':[ 
+    'OPT':[{'gamma': 0.000000, 'risk': 0.059686, 'return': -0.000072, 'portfolio':[ 
     {'id': 1, 'axis': 'USD.SYXI', 'value': -0.014823, 'alpha': 0.007012}, 
     {'id': 2, 'axis': 'USD.EBAY', 'value': 0.037393, 'alpha': 0.005849}, 
     {'id': 3, 'axis': 'USD.LBAI', 'value': -0.068549, 'alpha': 0.001918}, 
