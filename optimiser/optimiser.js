@@ -11,6 +11,17 @@ const diagRisk = (n,w,R) => {
     });
     return back;
 }
+const getRisk = (n,w,nfac,SV,FL,FC) => {
+    const Q=[];
+    for(let i = 0;i<n*(nfac+1);++i){
+        Q.push(0);
+    }
+    test.factor_model_process(n,nfac,FL,FC,SV,Q);
+    const arisk=[0],risk=[0],Rrisk=[0],brisk=[0],pbeta=[0];
+    test.Get_RisksC(n,nfac,Q,w,0,arisk,risk,Rrisk,brisk,
+        pbeta,0,0);
+    return risk[0];
+}
 /*
     short SimleOpt(dimen n,long nfac,int ls,int full,vector SV,vector FL,vector FC,
     vector w, dimen m, vector L, vector U, vector A,vector alpha,double gamma, double*ogamma,double minRisk,double maxRisk,
@@ -78,16 +89,7 @@ console.log(output)
 
 exports.output=output;
 
-Q=[];
-for(let i = 0;i<n*(nfac+1);++i){
-    Q.push(0);
-}
 
 // Get it from the optimiser
-test.factor_model_process(n,nfac,FL,FC,SV,Q);
-var arisk=[0],risk=[0],Rrisk=[0],brisk=[0],pbeta=[0];
-test.Get_RisksC(n,nfac,Q,w,0,arisk,
-    risk,Rrisk,brisk,
-    pbeta,0,0);
-
+const risk = getRisk(n,w,nfac,SV,FL,FC);
 console.log(risk);
