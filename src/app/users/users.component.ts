@@ -73,7 +73,7 @@ export class UsersComponent implements OnInit {
             height = hh - margin.top - margin.bottom,
             radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)', 'rgb(50,50,255)']),
             radarChartOptions = {
-              w: width, h: height, margin: margin, maxValue: 0.1,
+              w: width, h: height, choose2: [0, 0], margin: margin, maxValue: 0.1,
               levels: 3, roundStrokes: true, colour: radarBlobColour
             };
           this.RadarChart('app-users', this.displayData, radarChartOptions);
@@ -87,7 +87,7 @@ export class UsersComponent implements OnInit {
             height = hh - margin.top - margin.bottom,
             radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)', 'rgb(50,50,255)']),
             radarChartOptions = {
-              w: width, h: height, margin: margin, maxValue: 0.1,
+              w: width, h: height, choose2: this.choose2, margin: margin, maxValue: 0.1,
               levels: 3, roundStrokes: !joinLinear, colour: radarBlobColour
             };
 
@@ -167,13 +167,14 @@ export class UsersComponent implements OnInit {
       .attr('y', 32);
   }
   RadarChart(id: string, data: { axis: string; value: number; }[][], options: {
-    w: number; h: number;
+    w: number; h: number; choose2: number[];
     margin: { top: number; right: number; bottom: number; left: number; };
     maxValue: number; levels: number; roundStrokes: boolean; colour: d3.ScaleOrdinal<number, string>;
   }) {
     const cfg = {
       w: 600,				// Width of the circle
       h: 600,				// Height of the circle
+      choose2: [0, 0],
       margin: { top: 20, right: 20, bottom: 20, left: 20 }, // The margins of the SVG
       levels: 3,				// How many levels or inner circles should there be drawn
       maxValue: 0, 			// The value that the biggest circle will represent
@@ -192,6 +193,7 @@ export class UsersComponent implements OnInit {
         if ('undefined' !== typeof options[i]) { cfg[i] = options[i]; }
       }
     }
+    const choose2 = cfg.choose2;
     const maxValue = Math.max(cfg.maxValue, +d3.max(data, (i) => d3.max(i.map((o) => o.value))));
     const allAxis = (data[0].map((i) => i.axis)),	// Names of each axis
       total = allAxis.length,					// The number of different axes
@@ -292,7 +294,7 @@ export class UsersComponent implements OnInit {
       radarLine.curve(d3.curveCardinalClosed);
     }
 
-    const sData = this.choose2[0] === this.choose2[1] ? data : [data[this.choose2[0]], data[this.choose2[1]]];
+    const sData = choose2[0] === choose2[1] ? data : [data[choose2[0]], data[choose2[1]]];
 
     const blobWrapper = g.selectAll('.radarWrapper')
       .data(sData)
