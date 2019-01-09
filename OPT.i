@@ -108,9 +108,22 @@
         }
     }
 }
-%typemap(freearg) double*,char*,int*,unsigned long*,vector,char**
+%typemap(freearg) double*,char*,int*,unsigned long*,vector
 {
    if($1) {delete[] $1;}
+}
+%typemap(freearg) char**
+{
+    if($1 && $input->IsArray())
+    {
+        v8::Handle<v8::Array> arr= v8::Handle<v8::Array>::Cast($input);
+        size_t i;
+        for(i=0;i<arr->Length();++i)
+        {
+            delete [] $1[i];
+        }     
+        delete[] $1;
+    }
 }
 %typemap(in,numinputs=0) char*asetup
 {
@@ -147,11 +160,16 @@
     }
     extern "C" void testchars(int n,char** in,char** out)
     {
-        int i;
+        int i,l1,l2,j;
         for(i=0;i<n;++i){
+            l1=strlen(in[i]);
+            l2=strlen(out[i]);
             printf("%s\n",in[i]);
             printf("Before %s\n",out[i]);
-            out[i] = in[i];
+            for(j=0;j<l2;++j)
+            {
+               if(j<l1)out[i][j]=in[i][j];
+            }
             printf("Changed %s\n",out[i]);
         }
     }
