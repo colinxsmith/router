@@ -7,6 +7,12 @@
         char* Return_Message(int);
         char* version(char*);
         double ddotvec(unsigned long n,vector a,vector b);
+        void getdata(size_t nstocks,size_t nfac,char** namelist,double* FLOUT,double* SVOUT,double* FCOUT,char* name=(char*)"modelgen.txt");
+        void get_w(size_t n,vector s,vector x,vector w);
+        size_t get_nfac(char* name=(char*)"modelgen.txt");
+        void get_stocknames(char** sname,char*name=(char*)"modelgen.txt");
+        size_t get_nstocks(char*name=(char*)"modelgen.txt");
+        void get_factornames(char** fname,char*name=(char*)"modelgen.txt");
         void Get_RisksC(dimen n,long nfac,vector Q,vector w,vector benchmark,double* arisk,
                             double* risk,double* Rrisk,double* brisk,
                             double *pbeta,dimen ncomp,vector Composite);
@@ -31,6 +37,7 @@
             int never_slow,size_t*mem_kbytes,dimen soft_m,vector soft_l,vector soft_b,
             vector soft_L,vector soft_U,vector soft_A,vector qbuy,vector qsell,double five,double ten,double forty,int* issues);
     }
+
 %};
 
 %typemap(in) double*,int*,unsigned long*
@@ -42,6 +49,32 @@
         $1 = new $*1_ltype[arr->Length()];
         for(size_t i = 0;i < arr->Length();++i) {
             $1[i] = ($*1_ltype) arr->Get(i)->NumberValue();
+        }
+    }
+}
+%typemap(argout) char**
+{
+    if($1 && $input->IsArray()) {
+        v8::Handle<v8::Array> arr= v8::Handle<v8::Array>::Cast($input);
+        for(size_t i = 0;i < arr->Length();++i) {
+            arr->Set(i,SWIG_FromCharPtr($1[i]));
+        }
+    }
+}
+%typemap(in) char**
+{
+    $1 = 0;
+
+    if($input->IsArray())
+    {
+        v8::Handle<v8::Array> arr= v8::Handle<v8::Array>::Cast($input);
+        $1 = new $*1_ltype[arr->Length()];
+        for(size_t i = 0;i < arr->Length();++i) {
+            v8::Handle<v8::String> kkk = arr->Get(i)->ToString();
+            char* kkkk = new char[kkk->Utf8Length()+ 1];
+            kkk->WriteUtf8(kkkk,kkk->Utf8Length());
+            kkkk[kkk->Utf8Length()] = '\0';
+            $1[i] = kkkk;
         }
     }
 }
@@ -75,7 +108,7 @@
         }
     }
 }
-%typemap(freearg) double*,char*,int*,unsigned long*,vector
+%typemap(freearg) double*,char*,int*,unsigned long*,vector,char**
 {
    if($1) {delete[] $1;}
 }
@@ -112,6 +145,16 @@
 									0,0,0,0,0,five,ten,forty,0);   
         return back;    
     }
+    extern "C" void testchars(int n,char** in,char** out)
+    {
+        int i;
+        for(i=0;i<n;++i){
+            printf("%s\n",in[i]);
+            printf("Before %s\n",out[i]);
+            out[i] = in[i];
+            printf("Changed %s\n",out[i]);
+        }
+    }
 %}
 //The following are programmed in the optimiser
 char* Return_Message(int);
@@ -121,3 +164,9 @@ void factor_model_process(unsigned long n,unsigned long nfac,vector FL,vector FC
 void Get_RisksC(unsigned long n,long nfac,vector Q,vector w,vector benchmark,double* arisk,
                                 double* risk,double* Rrisk,double* brisk,
                                 double *pbeta,unsigned long ncomp,vector Composite);
+void getdata(size_t nstocks,size_t nfac,char** namelist,double* FLOUT,double* SVOUT,double* FCOUT,char* name=(char*)"modelgen.txt");
+void get_w(size_t n,vector s,vector x,vector w);
+size_t get_nfac(char* name=(char*)"modelgen.txt");
+void get_stocknames(char** sname,char*name=(char*)"modelgen.txt");
+size_t get_nstocks(char*name=(char*)"modelgen.txt");
+void get_factornames(char** fname,char*name=(char*)"modelgen.txt");

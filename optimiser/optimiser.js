@@ -93,3 +93,40 @@ exports.output=output;
 // Get it from the optimiser
 const risk = getRisk(n,w,nfac,SV,FL,FC);
 console.log(risk);
+
+const s1=['Colin', 'Smith'];
+const s2=['h','k'];
+
+console.log(s1);
+console.log(s2);
+test.testchars(2,s1,s2);
+console.log(s1);
+console.log(s2);
+const model='/home/colin/safeqp/USE30305_30MAY03.csv';
+const nnn = test.get_nstocks(model);
+const nnf = test.get_nfac(model);
+console.log(nnn);
+console.log(nnf);
+const factors=[];
+for(let i=0;i<nnf;++i){
+    factors.push('');
+}
+test.get_factornames(factors,model);
+console.log(factors);
+const stocks=[];
+for(let i=0;i<nnn;++i){
+    stocks.push('');
+}
+test.get_stocknames(stocks,model);
+console.log(stocks);
+const FLOUT = Array(n*nnf);
+const SVOUT = Array(n);
+const FCOUT= Array(nnf*(nnf+1)/2);
+console.log(FLOUT);
+console.log(SVOUT);
+console.log(FCOUT);
+
+test.getdata(n,nnf,stocks,FLOUT,SVOUT,FCOUT,model);
+console.log(FLOUT);
+console.log(SVOUT);
+console.log(FCOUT);
