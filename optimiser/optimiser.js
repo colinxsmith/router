@@ -23,53 +23,85 @@ const getRisk = (n,w,nfac,SV,FL,FC) => {
     return risk[0];
 }
 /*
-    short SimleOpt(dimen n,long nfac,int ls,int full,vector SV,vector FL,vector FC,
-    vector w, dimen m, vector L, vector U, vector A,vector alpha,double gamma, double*ogamma,double minRisk,double maxRisk,
-    double five, double ten, double forty);
-
-    void factor_model_process(unsigned long n,unsigned long nfac,vector FL,vector FC,vector SV,vector Q);
-
-    void Get_RisksC(unsigned long n,long nfac,vector Q,vector w,vector benchmark,double* arisk,
+char* Return_Message(int);
+char* version(char*asetup);
+double ddotvec(unsigned long n,vector a,vector b);
+void factor_model_process(unsigned long n,unsigned long nfac,vector FL,vector FC,vector SV,vector Q);
+void Get_RisksC(unsigned long n,long nfac,vector Q,vector w,vector benchmark,double* arisk,
                                 double* risk,double* Rrisk,double* brisk,
-                                double *pbeta,unsigned long ncomp,vector Composite);*/
+                                double *pbeta,unsigned long ncomp,vector Composite);
+void getdata(size_t nstocks,size_t nfac,char** namelist,double* FLOUT,double* SVOUT,double* FCOUT,char* name=(char*)"modelgen.txt");
+void get_w(size_t n,vector s,vector x,vector w);
+size_t get_nfac(char* name=(char*)"modelgen.txt");
+void get_stocknames(char** sname,char*name=(char*)"modelgen.txt");
+size_t get_nstocks(char*name=(char*)"modelgen.txt");
+void get_factornames(char** fname,char*name=(char*)"modelgen.txt");*/
 
-var n = 20,nfac = 0, ls = 0,full =1, SV=[],FL=[],FC=[],w=[],m=1,L=[],U=[],A=[],alpha=[],gamma=0.5,ogamma=[],minRisk=-1,maxRisk=-1,
+var n = 20, ls = 0,full =1,w=[],m=1,L=[],U=[],A=[],alpha=[],gamma=0.5,ogamma=[],minRisk=-1,maxRisk=-1,
 five=0.05,ten=0.1,forty=0.4;
+
+const model='/home/colin/safeqp/USE30305_30MAY03.csv';
+const nnn = test.get_nstocks(model)+1;
+const nfac = test.get_nfac(model);
+const factors=Array(nfac);
+test.get_factornames(factors,model);
+const stocks=Array(nnn);
+test.get_stocknames(stocks,model);
+const FL = Array(n*nfac);
+const SV = Array(n);
+const FC= Array(nfac*(nfac+1)/2);
+// Use first n names to define portfolio
+test.getdata(n,nfac,stocks,FL,SV,FC,model);
+const annus=252;
+FC.forEach((d,ii) => {
+    FC[ii] /= annus;
+});
+SV.forEach((d,ii) => {
+    SV[ii] /= annus;
+});
+
 for(let i = 0;i<n;++i){
-    SV.push(1e-2*(i+1));
-    w.push(0);
+    w.push(1.0/n);
     L.push(0);
     U.push(1);
     A.push(1);
-    alpha.push((i+1)*(i+1)*1e-4);
+    alpha.push((i+1));
 }
 L.push(1);
 U.push(1);
 ogamma.push(gamma);
-
+const MC = Array(n);
+console.log(alpha);
+test.MCAR(n,nfac,w,alpha,FL,SV,FC,MC)
+alpha.forEach((d,ii) => {
+    alpha[ii]=w[ii]*MC[ii];
+});
 gamma=0;
 let back = test.SimpleOpt(n,nfac,ls,full,SV,FL,FC,
     w, m, L, U, A,alpha,gamma,ogamma,minRisk,maxRisk,
     five, ten, forty)
 
-const minV=diagRisk(n,w,SV);
+const minV=getRisk(n,w,nfac,SV,FL,FC);
 output.low={};
 output.low.gamma=ogamma[0];
 output.low.portfolio=w.map((d) => d);
 output.low.alpha=alpha;
-output.low.risk=Math.sqrt(minV);
+output.low.risk=getRisk(n,w,nfac,SV,FL,FC);
 
 gamma=1;
 back = test.SimpleOpt(n,nfac,ls,full,SV,FL,FC,
     w, m, L, U, A,alpha,gamma,ogamma,minRisk,maxRisk,
     five, ten, forty)
 
-const maxV=diagRisk(n,w,SV);
+const maxV=getRisk(n,w,nfac,SV,FL,FC);
+
+console.log(maxV);
+console.log(ogamma[0]);
 output.high={};
 output.high.gamma=ogamma[0];
 output.high.portfolio=w.map((d) => d);
 output.high.alpha=alpha;
-output.high.risk=Math.sqrt(maxV);
+output.high.risk=getRisk(n,w,nfac,SV,FL,FC);
 
 minRisk = (Math.sqrt(minV) + Math.sqrt(maxV)) / 2;
 maxRisk = minRisk;
@@ -83,7 +115,7 @@ output.medium={};
 output.medium.gamma=ogamma[0];
 output.medium.portfolio=w.map((d) => d);
 output.medium.alpha=alpha;
-output.medium.risk=Math.sqrt(diagRisk(n,w,SV));
+output.medium.risk=getRisk(n,w,nfac,SV,FL,FC);
 
 console.log(output)
 
@@ -102,31 +134,5 @@ console.log(s2);
 test.testchars(2,s1,s2);
 console.log(s1);
 console.log(s2);
-const model='/home/colin/safeqp/USE30305_30MAY03.csv';
-const nnn = test.get_nstocks(model);
-const nnf = test.get_nfac(model);
-console.log(nnn);
-console.log(nnf);
-const factors=[];
-for(let i=0;i<nnf;++i){
-    factors.push('');
-}
-test.get_factornames(factors,model);
-console.log(factors);
-const stocks=[];
-for(let i=0;i<nnn;++i){
-    stocks.push('');
-}
-test.get_stocknames(stocks,model);
-console.log(stocks);
-const FLOUT = Array(n*nnf);
-const SVOUT = Array(n);
-const FCOUT= Array(nnf*(nnf+1)/2);
-console.log(FLOUT);
-console.log(SVOUT);
-console.log(FCOUT);
 
-test.getdata(n,nnf,stocks,FLOUT,SVOUT,FCOUT,model);
-console.log(FLOUT);
-console.log(SVOUT);
-console.log(FCOUT);
+

@@ -17,6 +17,15 @@
                             double* risk,double* Rrisk,double* brisk,
                             double *pbeta,dimen ncomp,vector Composite);
         void factor_model_process(dimen n,dimen nfac,vector FL,vector FC,vector SV,vector Q);
+        void PropertiesC(dimen n,long nfac,char** stocknames,vector w,vector alpha,
+                                    vector benchmark,
+                                    vector QMATRIX,double* risk,double* arisk,double* Rrisk,
+									double* rreturn,
+                                    double* areturn,double* Rreturn,
+                                    vector MCAR,vector MCTR,vector MCRR,vector FMCRR,
+                                    vector FMCTR,vector   bbeta,vector FX,vector RFX,
+                                    vector  FLOAD,vector FFC,vector SSV,dimen ncomp,
+									vector Composite);
         short  Optimise_internalCVPAFblSaMSoftQ(dimen n,long nfac,char** names,vector w,dimen m,
             vector A,vector L,vector U,vector alpha,
             vector benchmark,vector Q,real gamma,vector initial,
@@ -71,7 +80,7 @@
         $1 = new $*1_ltype[arr->Length()];
         for(size_t i = 0;i < arr->Length();++i) {
             v8::Handle<v8::String> kkk = arr->Get(i)->ToString();
-            char* kkkk = new char[kkk->Utf8Length()+ 1];
+            char* kkkk = new char[kkk->Utf8Length() + 1];
             kkk->WriteUtf8(kkkk,kkk->Utf8Length());
             kkkk[kkk->Utf8Length()] = '\0';
             $1[i] = kkkk;
@@ -131,6 +140,22 @@
 }
 %inline
 %{
+    extern "C" void MCAR(unsigned long n,unsigned long nf,vector w,vector alpha,vector FL,vector SV,vector FC,vector MC)
+    {
+        vector Q=new double[n*(nf+1)],MCTR=new double[n],MCRR=new double[n],FMCRR=0,FMCTR=0,FX=0,RFX=0,bbeta=new double[n+1];
+        double risk=0,arisk=0,Rrisk=0,rreturn=0,areturn=0,Rreturn=0;
+        factor_model_process(n,nf,FL,FC,SV,Q);
+        PropertiesC(n,nf,0,w,alpha,0,Q,&risk,&arisk,&Rrisk,
+									&rreturn,
+                                    &areturn,&Rreturn,
+                                    MC,MCTR,MCRR,FMCRR,
+                                    FMCTR,bbeta,FX,RFX,
+                                    0,0,0,0,0);
+        delete[] Q;
+        delete[] MCTR;
+        delete[] MCRR;
+        delete[] bbeta;
+    }
     extern "C" short SimpleOpt(unsigned long n,long nfac,int ls,int full,vector SV,vector FL,vector FC,
     vector w, unsigned long m, vector L, vector U, vector A,vector alpha,double gamma, double*ogamma,double minRisk,double maxRisk,
     double five, double ten, double forty)
