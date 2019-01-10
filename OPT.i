@@ -119,7 +119,7 @@
 }
 %typemap(freearg) double*,char*,int*,unsigned long*,vector
 {
-   if($1) {delete[] $1;}
+   if($1 && $input->IsArray()) {delete[] $1;}
 }
 %typemap(freearg) char**
 {
@@ -162,6 +162,7 @@
     {
         int log = 2;
         char* logfile = "JSlog";
+        gamma=gamma>=1.0?gamma-1e-15:gamma;
         short back = Optimise_internalCVPAFblSaMSoftQ(n,nfac,0,w,m,
 									A,L,U,alpha,
 									0,0,gamma,0,
