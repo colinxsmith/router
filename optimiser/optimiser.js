@@ -1,5 +1,5 @@
 const test = require("../build/Release/OPT");
-const output={}
+const output={};
 console.log(test);
 Object.keys(test).forEach(function (key) {
     exports[key] = test[key];
@@ -76,12 +76,15 @@ test.MCAR(n,nfac,w,alpha,FL,SV,FC,MC)
 alpha.forEach((d,ii) => {
     alpha[ii]=w[ii]*MC[ii];
 });
+console.log(alpha);
 gamma=0;
 let back = test.SimpleOpt(n,nfac,ls,full,SV,FL,FC,
     w, m, L, U, A,alpha,gamma,ogamma,minRisk,maxRisk,
     five, ten, forty)
 
+    
 const minV=getRisk(n,w,nfac,SV,FL,FC);
+
 output.low={};
 output.low.gamma=ogamma[0];
 output.low.portfolio=w.map((d) => d);
@@ -92,20 +95,21 @@ gamma=1;
 back = test.SimpleOpt(n,nfac,ls,full,SV,FL,FC,
     w, m, L, U, A,alpha,gamma,ogamma,minRisk,maxRisk,
     five, ten, forty)
-
+/*
 const maxV=getRisk(n,w,nfac,SV,FL,FC);
 
 console.log(maxV);
 console.log(ogamma[0]);
+
+
 output.high={};
 output.high.gamma=ogamma[0];
 output.high.portfolio=w.map((d) => d);
 output.high.alpha=alpha;
 output.high.risk=getRisk(n,w,nfac,SV,FL,FC);
-
 minRisk = (Math.sqrt(minV) + Math.sqrt(maxV)) / 2;
 maxRisk = minRisk;
-
+console.log('LAST');
 gamma=1;
 back = test.SimpleOpt(n,nfac,ls,full,SV,FL,FC,
     w, m, L, U, A,alpha,gamma,ogamma,minRisk,maxRisk,
@@ -131,8 +135,8 @@ const s2=['h','k'];
 
 console.log(s1);
 console.log(s2);
-test.testchars(2,s1,s2);
+//test.testchars(2,s1,s2);
 console.log(s1);
 console.log(s2);
-
+*/
 
