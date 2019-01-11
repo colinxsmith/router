@@ -1,7 +1,7 @@
 const test = require('../build/Release/OPT');
 
 const output = [];
-console.log(test);
+
 Object.keys(test).forEach(function (key) {
     exports[key] = test[key];
 });
@@ -67,24 +67,30 @@ FC.forEach((d, ii) => {
 SV.forEach((d, ii) => {
     SV[ii] /= annus;
 });
-
+const optype='short';
 for (let i = 0; i < n; ++i) {
     w.push(1.0 / n);
-    L.push(0);
+    L.push(optype==='short'? -1:0);
     U.push(1);
     A.push(1);
     alpha.push((i + 1));
 }
-L.push(1);
-U.push(1);
+L.push(optype === 'short' ? 0 : 1);
+U.push(optype === 'short' ? 0 : 1);
+if (optype !== 'KAG') {
+    five = -1; ten = -1; forty = -1;
+}
+if (optype === 'short') {
+    ls = 1;
+}
 ogamma.push(gamma);
 const MC = Array(n);
-console.log(alpha);
+
 test.MCAR(n, nfac, w, alpha, FL, SV, FC, MC)
 alpha.forEach((d, ii) => {
     alpha[ii] *= w[ii] * MC[ii];
 });
-console.log(alpha);
+
 gamma = 0;
 let back = test.SimpleOpt(n, nfac, ls, full, SV, FL, FC,
     w, m, L, U, A, alpha, gamma, ogamma, minRisk, maxRisk,
@@ -103,15 +109,11 @@ back = test.SimpleOpt(n, nfac, ls, full, SV, FL, FC,
 
 const maxV = getRisk(n, w, nfac, SV, FL, FC);
 
-console.log(maxV);
-console.log(ogamma[0]);
-
-
 output.push({ gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), 'return': test.ddotvec(n, alpha, w), 'portfolio': portfolio(stocks, w, alpha) });
-minRisk = (Math.sqrt(minV) + Math.sqrt(maxV)) / 2;
+minRisk = (minV + maxV) / 2;
 maxRisk = minRisk;
-console.log('LAST');
-gamma = 1;
+
+gamma = 0;
 back = test.SimpleOpt(n, nfac, ls, full, SV, FL, FC,
     w, m, L, U, A, alpha, gamma, ogamma, minRisk, maxRisk,
     five, ten, forty);
@@ -119,21 +121,5 @@ back = test.SimpleOpt(n, nfac, ls, full, SV, FL, FC,
 output.push({ gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), 'return': test.ddotvec(n, alpha, w), 'portfolio': portfolio(stocks, w, alpha) });
 
 
-console.log(output)
 
 exports.output = output;
-
-
-// Get it from the optimiser
-const risk = getRisk(n, w, nfac, SV, FL, FC);
-console.log(risk);
-
-const s1 = ['Colin', 'Smith'];
-const s2 = ['h', 'k'];
-
-console.log(s1);
-console.log(s2);
-//test.testchars(2,s1,s2);
-console.log(s1);
-console.log(s2);
-

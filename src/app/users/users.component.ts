@@ -109,7 +109,7 @@ export class UsersComponent implements OnInit {
 
           this.RadarChart('app-users', data1, radarChartOptions);
           data1.forEach((ddd, i: number) => {
-            d3.select('app-users').append('svg').attr('width', 500).attr('height', 50).append('g').append('text')
+            d3.select('app-users').append('svg').attr('width', 800).attr('height', 50).append('g').append('text')
             .attr('transform', 'translate(0,30)').attr('class', 'users')
               .text(() => `Risk: ${this.displayData[i].risk}, Return: ${this.displayData[i].return}, gamma: ${this.displayData[i].gamma}`);
             this.stockbars(ddd, ww * 0.5, hh * 0.5, 2000, 'Weights', 'Assets');
