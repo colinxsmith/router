@@ -1,5 +1,6 @@
-const test = require("../build/Release/OPT");
-const output = {};
+const test = require('../build/Release/OPT');
+
+const output = [];
 console.log(test);
 Object.keys(test).forEach(function (key) {
     exports[key] = test[key];
@@ -22,6 +23,13 @@ const getRisk = (n, w, nfac, SV, FL, FC) => {
         pbeta, 0, 0);
     return risk[0];
 }
+const portfolio = (axis, value, alpha) => {
+    var portfolio = [];
+    value.forEach((d, i) => {
+        portfolio.push({ 'axis': axis[i], 'id': i + 1, 'value': d, 'alpha': alpha[i] });
+    });
+    return portfolio;
+};
 /*
 char* Return_Message(int);
 char* version(char*asetup);
@@ -37,7 +45,7 @@ void get_stocknames(char** sname,char*name=(char*)"modelgen.txt");
 size_t get_nstocks(char*name=(char*)"modelgen.txt");
 void get_factornames(char** fname,char*name=(char*)"modelgen.txt");*/
 
-var n = 20, ls = 0, full = 1, w = [], m = 1, L = [], U = [], A = [], alpha = [], gamma = 0.5, ogamma = [], minRisk = -1, maxRisk = -1,
+var n = 30, ls = 0, full = 1, w = [], m = 1, L = [], U = [], A = [], alpha = [], gamma = 0.5, ogamma = [], minRisk = -1, maxRisk = -1,
     five = 0.05, ten = 0.1, forty = 0.4;
 
 const model = '/home/colin/safeqp/USE30305_30MAY03.csv';
@@ -74,7 +82,7 @@ const MC = Array(n);
 console.log(alpha);
 test.MCAR(n, nfac, w, alpha, FL, SV, FC, MC)
 alpha.forEach((d, ii) => {
-    alpha[ii] = w[ii] * MC[ii];
+    alpha[ii] *= w[ii] * MC[ii];
 });
 console.log(alpha);
 gamma = 0;
@@ -85,11 +93,8 @@ let back = test.SimpleOpt(n, nfac, ls, full, SV, FL, FC,
 
 const minV = getRisk(n, w, nfac, SV, FL, FC);
 
-output.low = {};
-output.low.gamma = ogamma[0];
-output.low.portfolio = w.map((d) => d);
-output.low.alpha = alpha;
-output.low.risk = getRisk(n, w, nfac, SV, FL, FC);
+
+output.push({ gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), 'return': test.ddotvec(n, alpha, w), 'portfolio': portfolio(stocks, w, alpha) });
 
 gamma = 1;
 back = test.SimpleOpt(n, nfac, ls, full, SV, FL, FC,
@@ -102,24 +107,17 @@ console.log(maxV);
 console.log(ogamma[0]);
 
 
-output.high = {};
-output.high.gamma = ogamma[0];
-output.high.portfolio = w.map((d) => d);
-output.high.alpha = alpha;
-output.high.risk = getRisk(n, w, nfac, SV, FL, FC);
+output.push({ gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), 'return': test.ddotvec(n, alpha, w), 'portfolio': portfolio(stocks, w, alpha) });
 minRisk = (Math.sqrt(minV) + Math.sqrt(maxV)) / 2;
 maxRisk = minRisk;
 console.log('LAST');
 gamma = 1;
 back = test.SimpleOpt(n, nfac, ls, full, SV, FL, FC,
     w, m, L, U, A, alpha, gamma, ogamma, minRisk, maxRisk,
-    five, ten, forty)
+    five, ten, forty);
 
-output.medium = {};
-output.medium.gamma = ogamma[0];
-output.medium.portfolio = w.map((d) => d);
-output.medium.alpha = alpha;
-output.medium.risk = getRisk(n, w, nfac, SV, FL, FC);
+output.push({ gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), 'return': test.ddotvec(n, alpha, w), 'portfolio': portfolio(stocks, w, alpha) });
+
 
 console.log(output)
 
@@ -138,5 +136,4 @@ console.log(s2);
 //test.testchars(2,s1,s2);
 console.log(s1);
 console.log(s2);
-
 

@@ -128,7 +128,7 @@ export class UsersComponent implements OnInit {
   }
   simpleDisplay(displayData: any) {
     const www = Object.keys(displayData[0]).length;
-    const nDat = displayData.length, ww = Math.max(0, www * 100),
+    const nDat = displayData.length, ww = Math.max(0, www * 150),
       base = d3.select('app-users').append('svg')
         .attr('width', ww)
         .attr('height', (nDat + 2) * 21);
