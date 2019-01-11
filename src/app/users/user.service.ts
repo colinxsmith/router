@@ -26,6 +26,18 @@ export class UserService {
         return ddd;
       }));
   }
+  postType(type = 'short') {
+    const options = { headers: new HttpHeaders().set('Content-Type', 'application/json') };
+    return this
+      .http
+      .post<{
+        type: string
+      }>(`${this.url}/optype`, { type: type }, options)
+      .pipe(map(ddd => {
+        console.log(ddd);
+        return ddd;
+      }));
+  }
   putResult(key = 'results', id = 6) {
     const options = { headers: new HttpHeaders().set('Content-Type', 'application/json') };
     return this

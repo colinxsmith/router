@@ -10,16 +10,18 @@ import { map } from 'rxjs/operators';
 })
 export class UsersComponent implements OnInit {
   displayData: any;
-  updateLabel = 'UPDATE';
+  updateLabel = 'MAKE POINTED';
   getKey = '';
   plotLab = [];
   plotLabels = {'Low Risk': 1, 'High Risk': 2, 'Medium Risk': 3};
   choose2 = [0 , 0];
   dbKeyData = ['radarData', 'results', 'newData', 'OPT'].reverse();
+  optType = ['long', 'short', 'KAG'].reverse();
+  getType = '';
   constructor(private userService: UserService) { }
   ngOnInit() {
     this.plotLab = Object.keys(this.plotLabels);
-    this.chooseData(this.dbKeyData[0]);
+    this.firstLs(this.dbKeyData[0]);
   }
   choosePlot1(dd: string) {
     this.choose2[0] = this.plotLabels[dd] - 1;
@@ -33,13 +35,29 @@ export class UsersComponent implements OnInit {
   }
   changeDat() {
     d3.select('app-users').selectAll('svg').remove();
-    this.chooseData(this.getKey, true);
+    this.firstLs(this.getKey, true);
+  }
+  changeLs(type: string, pointed = false) {
+    this.getType = type;
+    d3.select('app-users').selectAll('svg').remove();
+    this.userService.postType(type).subscribe(res => {
+      console.log(res);
+      this.chooseData(this.getKey, pointed);
+    });
+  }
+  firstLs(Key: string, pointed = false) {
+    this.getType = this.getType === '' ? this.optType[0] : this.getType;
+    d3.select('app-users').selectAll('svg').remove();
+    this.userService.postType(this.getType).subscribe(res => {
+      console.log(res);
+      this.chooseData(Key, pointed);
+    });
   }
   chooseData(dd: string, joinLinear = false) {
     d3.select('app-users').selectAll('svg').remove();
 
     this.getKey = dd;
-    this.userService.postResult().subscribe(res => {
+/*    this.userService.postResult().subscribe(res => {
       console.log(res);
     },
       () => {
@@ -50,7 +68,7 @@ export class UsersComponent implements OnInit {
           () => {
             console.log('Error in put');
           });
-      });
+      });*/
     this.userService
       .getData(this.getKey)
       .pipe(map(data => {this.displayData = data; return data; }))

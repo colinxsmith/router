@@ -1,18 +1,22 @@
 'use strict;'
-const opt = require('../../optimiser/optimiser');
 const express = require('express');
 const router = express.Router();
-const mocked = { 
-    'version': opt.version(),
-    'OPT': opt.output,
+let mocked = {
     'results': [
-        {        'id': 1,        'name': 'RDJ',        'movies': 100    },
-        {        'id': 2,        'name': 'Tom Holland',        'movies': 3    },
-        {        'id': 3,        'name': 'Benedict Cumberbatch',        'movies': 10    },
-        {        'id': 4,        'name': 'Chris Hemsworth',        'movies': 30    },
-        {        'id': 5,        'name': 'Chris Evans',        'movies': 20    }
-        ]
+        { 'id': 1, 'name': 'RDJ', 'movies': 100 },
+        { 'id': 2, 'name': 'Tom Holland', 'movies': 3 },
+        { 'id': 3, 'name': 'Benedict Cumberbatch', 'movies': 10 },
+        { 'id': 4, 'name': 'Chris Hemsworth', 'movies': 30 },
+        { 'id': 5, 'name': 'Chris Evans', 'movies': 20 }
+    ]
 };
+const setMocked = (n, type) => {
+    const opt = require('../../optimiser/optimiser');
+    opt.opt(n, type)
+    mocked.OPT = opt.output;
+    mocked.version = opt.version();
+}
+
 let ind = -1;
 /* GET api listing. */
 router.get('/', (req, res) => {
@@ -24,6 +28,13 @@ router.get('/db', (req, res) => {
         .status(200)
         .json(mocked);
 });
+router.post('/optype', (req, res) => {
+    setMocked(40, req.body.type);
+    res
+        .status(200)
+        .json(mocked);
+    console.log('optype ' + req.body.type);
+});
 router.post('/results', (req, bbb) => {
     console.log('POST');
     let leave = false;
@@ -31,10 +42,10 @@ router.post('/results', (req, bbb) => {
         if (d.name === req.body.name) {
             bbb
                 .status(500)
-                .json(mocked); 
+                .json(mocked);
             leave = true;
             ind = i;
-            console.log('NOT NEW '  + ind);
+            console.log('NOT NEW ' + ind);
         }
     });
     if (leave) {
@@ -47,11 +58,11 @@ router.post('/results', (req, bbb) => {
                 .json(mocked);
         });
     } else {
-    mocked.results.push(req.body);
-    console.log(mocked.results);
-    bbb
-        .status(200)
-        .json(mocked);
+        mocked.results.push(req.body);
+        console.log(mocked.results);
+        bbb
+            .status(200)
+            .json(mocked);
     }
 });
 
