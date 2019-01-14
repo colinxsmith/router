@@ -103,7 +103,7 @@ export class UsersComponent implements OnInit {
           const margin = { top: 150, right: 150, bottom: 150, left: 150 }, ww = 1000, hh = 1000,
             width = ww - margin.left - margin.right,
             height = hh - margin.top - margin.bottom,
-            radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)', 'rgb(50,50,255)']),
+            radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)', 'rgb(50,50,255)', 'orange']),
             radarChartOptions = {
               w: width, h: height, choose2: this.choose2, margin: margin, maxValue: 0.1,
               levels: 3, roundStrokes: !joinLinear, colour: radarBlobColour
@@ -202,7 +202,7 @@ export class UsersComponent implements OnInit {
       opacityArea: 0.35, 	// The opacity of the area of the blob
       dotRadius: 3, 			// The size of the coloured circles of each blog
       opacityCircles: 0.1, 	// The opacity of the circles of each blob
-      strokeWidth: 2, 		// The width of the stroke around each blob
+      strokeWidth: 4, 		// The width of the stroke around each blob
       roundStrokes: false,	// If true the area and stroke will follow a round path (cardinal-closed)
       colour: d3.scaleOrdinal<number, string>(d3.schemeCategory10).domain([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
     };
