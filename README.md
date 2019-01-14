@@ -1,4 +1,6 @@
 run swigsetup.sh using CYGWIN to create OPT_wrap.cxx
+and python home must be on %PATH% and python executable must be called python27 (make a copy), this is due to node-gyp
+also the home of safeqp.dll must be on %PATH%
 
 
 # Router
