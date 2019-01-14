@@ -1,3 +1,6 @@
+run swigsetup.sh using CYGWIN to create OPT_wrap.cxx
+
+
 # Router
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.7.4.
