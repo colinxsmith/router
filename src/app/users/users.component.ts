@@ -146,7 +146,8 @@ export class UsersComponent implements OnInit {
   }
   simpleDisplay(displayData: any) {
     const www = Object.keys(displayData[0]).length;
-    const nDat = displayData.length, ww = Math.max(0, www * 150),
+    const nDat = displayData.length, ww = Math.max(0, www * 180), off = 20,
+      out = [0, (ww - off) / 4, 1.35 * (ww - off) / 4, 2.7 * (ww - off) / 4],
       base = d3.select('app-users').append('svg')
         .attr('width', ww)
         .attr('height', (nDat + 2) * 21);
@@ -154,32 +155,32 @@ export class UsersComponent implements OnInit {
     base.append('text')
       .attr('x', 5)
       .attr('y', 23)
-      .attr('transform', `translate(${10},${0})`)
-      .text(() => {
-        let back = '';
-        Object.keys(displayData[0]).forEach((k) => back += `${k} `);
+      .attr('transform', `translate(${off},${0})`)
+      .html(() => {
+        let back = '', i = 0;
+        Object.keys(displayData[0]).forEach((k) => back += `<tspan x=${out[i++]}>${k}</tspan> `);
         return back;
       })
       .attr('class', 'users');
     base.append('rect')
       .attr('class', 'users')
-      .attr('width', ww - 10)
+      .attr('width', ww - off)
       .attr('height', 24)
       .attr('x', 5)
       .attr('y', 3);
     base.selectAll('inner').data(displayData).enter().append('text')
       .attr('x', 5)
       .attr('y', 54)
-      .attr('transform', (d, i) => `translate(${10},${i * 20})`)
-      .text((d) => {
-        let back = '';
-        Object.keys(d).forEach((k) => back += `${d[k]} `);
+      .attr('transform', (d, i) => `translate(${off},${i * 20.75})`)
+      .html((d) => {
+        let back = '', i = 0;
+        Object.keys(d).forEach((k) => back += `<tspan x=${out[i++]}>${d[k]}</tspan>`);
         return back;
       })
       .attr('class', 'users');
     base.append('rect')
       .attr('class', 'users')
-      .attr('width', ww - 10)
+      .attr('width', ww - off)
       .attr('height', nDat * 21)
       .attr('x', 5)
       .attr('y', 32);
