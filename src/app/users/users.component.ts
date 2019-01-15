@@ -13,8 +13,8 @@ export class UsersComponent implements OnInit {
   updateLabel = 'MAKE POINTED';
   getKey = '';
   plotLab = [];
-  plotLabels = {'Low Risk': 1, 'High Risk': 2, 'Medium Risk': 3};
-  choose2 = [0 , 0];
+  plotLabels = { 'Low Risk': 1, 'High Risk': 2, 'Medium Risk': 3 };
+  choose2 = [0, 0];
   dbKeyData = ['radarData', 'results', 'newData', 'OPT'].reverse();
   optType = ['long', 'short', 'KAG'].reverse();
   getType = '';
@@ -57,23 +57,23 @@ export class UsersComponent implements OnInit {
     d3.select('app-users').selectAll('svg').remove();
 
     this.getKey = dd;
-/*    this.userService.postResult().subscribe(res => {
-      console.log(res);
-    },
-      () => {
-        console.log('Error in post, try put');
-        this.userService.putResult().subscribe(res => {
+    /*    this.userService.postResult().subscribe(res => {
           console.log(res);
         },
           () => {
-            console.log('Error in put');
-          });
-      });*/
+            console.log('Error in post, try put');
+            this.userService.putResult().subscribe(res => {
+              console.log(res);
+            },
+              () => {
+                console.log('Error in put');
+              });
+          });*/
     this.userService
       .getData(this.getKey)
-      .pipe(map(data => {this.displayData = data; return data; }))
+      .pipe(map(data => { this.displayData = data; return data; }))
       .subscribe(data => {
-//        this.displayData = data;
+        //        this.displayData = data;
         if (this.getKey === 'results') {
           this.displayData.sort((d1, d2) => {
             if (+d2.movies > +d1.movies) {
@@ -128,7 +128,7 @@ export class UsersComponent implements OnInit {
           this.RadarChart('app-users', data1, radarChartOptions);
           data1.forEach((ddd, i: number) => {
             d3.select('app-users').append('svg').attr('width', 800).attr('height', 50).append('g').append('text')
-            .attr('transform', 'translate(0,30)').attr('class', 'users')
+              .attr('transform', 'translate(0,30)').attr('class', 'users')
               .text(() => `Risk: ${this.displayData[i].risk}, Return: ${this.displayData[i].return}, gamma: ${this.displayData[i].gamma}`);
             this.stockbars(ddd, ww * 0.5, hh * 0.5, 2000, 'Weights', 'Assets');
             this.simpleDisplay(ddd);
@@ -148,19 +148,20 @@ export class UsersComponent implements OnInit {
     const www = Object.keys(displayData[0]).length;
     const nDat = displayData.length, ww = Math.max(0, www * 180), off = 20,
       out = [0, (ww - off) / 4, 1.35 * (ww - off) / 4, 2.7 * (ww - off) / 4],
-      base = d3.select('app-users').append('svg')
-        .attr('width', ww)
-        .attr('height', (nDat + 2) * 21);
+      base = d3.select('app-users').append('svg').attr('width', ww).attr('height', (nDat + 2) * 21);
     // base = d3.select('app-users').append('svg').attr('viewBox', `0 0 ${ww} ${(nDat + 2) * 21}`);
     base.append('text')
       .attr('x', 5)
       .attr('y', 23)
       .attr('transform', `translate(${off},${0})`)
-      .html(() => {
-        let back = '', i = 0;
-        Object.keys(displayData[0]).forEach((k) => back += `<tspan x=${out[i++]}>${k}</tspan> `);
-        return back;
-      })
+      .call((d) => d.each((dd, i, j) => {// We have to it like this with call() rather than html() to get the tspan on IE on Windows 7
+        const k = d3.select(j[i]);
+        const keys = Object.keys(displayData[0]);
+        let tspan = k.text(null).append('tspan').attr('x', out[0]).text(keys[0]);
+        for (let kk = 1; kk < keys.length; ++kk) {
+          tspan = k.append('tspan').attr('x', out[kk]).text(keys[kk]);
+        }
+      }))
       .attr('class', 'users');
     base.append('rect')
       .attr('class', 'users')
@@ -172,11 +173,14 @@ export class UsersComponent implements OnInit {
       .attr('x', 5)
       .attr('y', 54)
       .attr('transform', (d, i) => `translate(${off},${i * 20.75})`)
-      .html((d) => {
-        let back = '', i = 0;
-        Object.keys(d).forEach((k) => back += `<tspan x=${out[i++]}>${d[k]}</tspan>`);
-        return back;
-      })
+      .call((d) => d.each((dd, i, j) => {// We have to it like this with call() rather than html() to get the tspan on IE on Windows 7
+        const k = d3.select(j[i]);
+        const keys = Object.keys(dd);
+        let tspan = k.text(null).append('tspan').attr('x', out[0]).text(dd[keys[0]]);
+        for (let kk = 1; kk < keys.length; ++kk) {
+          tspan = k.append('tspan').attr('x', out[kk]).text(dd[keys[kk]]);
+        }
+      }))
       .attr('class', 'users');
     base.append('rect')
       .attr('class', 'users')
@@ -243,9 +247,9 @@ export class UsersComponent implements OnInit {
       feMergeNode_2 = feMerge.append('feMergeNode').attr('in', 'SourceGraphic'),
       axisGrid = g.append('g').attr('class', 'axisWrapper');
 
-      const circScale = d3.scaleLinear<number, number>().domain([-cfg.levels, cfg.levels]).range([0, radius]);
-      const circVal = d3.scaleLinear<number, number>().domain([-cfg.levels, cfg.levels]).range([-maxValue, maxValue]);
-      const angleScale = d3.scaleLinear<number, number>().domain([0, data[0].length]).range([0, Math.PI * 2]);
+    const circScale = d3.scaleLinear<number, number>().domain([-cfg.levels, cfg.levels]).range([0, radius]);
+    const circVal = d3.scaleLinear<number, number>().domain([-cfg.levels, cfg.levels]).range([-maxValue, maxValue]);
+    const angleScale = d3.scaleLinear<number, number>().domain([0, data[0].length]).range([0, Math.PI * 2]);
     axisGrid.selectAll('.levels')
       .data(d3.range(-(cfg.levels), (cfg.levels + 1)).reverse())
       .enter()
@@ -375,13 +379,13 @@ export class UsersComponent implements OnInit {
       .style('fill', (d, i, j) => cfg.colour(+(<HTMLSelectElement>(j[i]).parentNode).getAttribute('data-index')))
       .style('pointer-events', 'all')
       .on('mouseover', (d, i, j) => localTiptool
-          .attr('x', parseFloat(((j[i])).getAttribute('cx')) - 10)
-          .attr('y', parseFloat(((j[i])).getAttribute('cy')) - 10)
-          .style('fill', 'none')
-          .style('opacity', 1)
-          .text(percentFormat(+d.value))
-          .transition().duration(200)
-          .style('fill', (j[i]).style['fill']))
+        .attr('x', parseFloat(((j[i])).getAttribute('cx')) - 10)
+        .attr('y', parseFloat(((j[i])).getAttribute('cy')) - 10)
+        .style('fill', 'none')
+        .style('opacity', 1)
+        .text(percentFormat(+d.value))
+        .transition().duration(200)
+        .style('fill', (j[i]).style['fill']))
       .on('mouseout', () => localTiptool.transition().duration(200).style('fill', 'none'));
     const localTiptool = g.append('text')
       .attr('class', 'tooltipRadar')
@@ -473,24 +477,24 @@ export class UsersComponent implements OnInit {
       .on('mouseout', (d) => tooltip.style('display', 'none'));
     // --------------------------------------------------------------------------------------------
     chart.selectAll('.bar').data(DATA).enter().append('rect')
-    .attr('width', x.bandwidth() / bandfiddle)
-    .attr('x', (d) => x(d.axis) / bandfiddle)
-    .attr('height', (d) => {
-      const deviation = 0;
-      return deviation <= 0 ? y(deviation) - y(0) : y(0) - y(deviation);
-    })
-    .attr('y', (d) => {
-      const deviation = 0;
-      return deviation <= 0 ? y(0) : y(deviation);
-    })
-    .attr('class', (d) => d.value > 0 ? 'weightSinglePlus' : 'weightSingleMinus')
-    .on('mousemove', (d) => tooltip.style('left', d3.event.pageX - 50 + 'px')
+      .attr('width', x.bandwidth() / bandfiddle)
+      .attr('x', (d) => x(d.axis) / bandfiddle)
+      .attr('height', (d) => {
+        const deviation = 0;
+        return deviation <= 0 ? y(deviation) - y(0) : y(0) - y(deviation);
+      })
+      .attr('y', (d) => {
+        const deviation = 0;
+        return deviation <= 0 ? y(0) : y(deviation);
+      })
+      .attr('class', (d) => d.value > 0 ? 'weightSinglePlus' : 'weightSingleMinus')
+      .on('mousemove', (d) => tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px').style('display', 'inline-block')
         .html(`<i class="fa fa-gears leafy"></i>${d.axis}<br>weight:${d.value}`))
-    .on('mouseout', (d) => tooltip.style('display', 'none'))
-    .transition().duration(durationtime)
-    .attr('height', (d) => d.value <= 0 ? y(d.value) - y(0) : y(0) - y(d.value))
-    .attr('y', (d) => d.value <= 0 ? y(0) : y(d.value));
+      .on('mouseout', (d) => tooltip.style('display', 'none'))
+      .transition().duration(durationtime)
+      .attr('height', (d) => d.value <= 0 ? y(d.value) - y(0) : y(0) - y(d.value))
+      .attr('y', (d) => d.value <= 0 ? y(0) : y(d.value));
     if (scaleAll < 1) {
       chart.style('stroke-width', +chart.style('stroke-width').replace('px', '') * scaleAll);
       titleX.style('font-size', (+titleX.style('font-size').replace('px', '') * scaleAll) + 'px');
