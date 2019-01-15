@@ -46,7 +46,7 @@ export class UsersComponent implements OnInit {
     });
   }
   firstLs(Key: string, pointed = false) {
-    this.getType = Key === '' ? this.optType[0] : Key;
+    this.getType = this.getType === '' ? this.optType[0] : this.getType;
     d3.select('app-users').selectAll('svg').remove();
     this.userService.postType(this.getType).subscribe(res => {
       console.log(res);
