@@ -40,13 +40,13 @@ export class UsersComponent implements OnInit {
   changeLs(type: string, pointed = false) {
     this.getType = type;
     d3.select('app-users').selectAll('svg').remove();
-    this.userService.postType(type).subscribe(res => {
+    this.userService.postType(this.getType).subscribe(res => {
       console.log(res);
       this.chooseData(this.getKey, pointed);
     });
   }
   firstLs(Key: string, pointed = false) {
-    this.getType = this.getType === '' ? this.optType[0] : this.getType;
+    this.getType = Key === '' ? this.optType[0] : Key;
     d3.select('app-users').selectAll('svg').remove();
     this.userService.postType(this.getType).subscribe(res => {
       console.log(res);
@@ -146,7 +146,7 @@ export class UsersComponent implements OnInit {
   }
   simpleDisplay(displayData: any) {
     const www = Object.keys(displayData[0]).length;
-    const nDat = displayData.length, ww = Math.max(0, www * 180), off = 20,
+    const nDat = displayData.length, ww = Math.max(0, www * 200), off = 20,
       out = [0, (ww - off) / 4, 1.35 * (ww - off) / 4, 2.7 * (ww - off) / 4],
       base = d3.select('app-users').append('svg').attr('width', ww).attr('height', (nDat + 2) * 21);
     // base = d3.select('app-users').append('svg').attr('viewBox', `0 0 ${ww} ${(nDat + 2) * 21}`);
