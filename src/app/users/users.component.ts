@@ -142,12 +142,13 @@ export class UsersComponent implements OnInit {
         }
       }, res => {
         console.log(res);
-      });
+        });
   }
   simpleDisplay(displayData: any) {
     const www = Object.keys(displayData[0]).length;
     const nDat = displayData.length, ww = Math.max(0, www * 200), off = 20,
       out = [0, (ww - off) / 4, 1.35 * (ww - off) / 4, 2.7 * (ww - off) / 4],
+      xPos = (f: number) => out[f % out.length],
       base = d3.select('app-users').append('svg').attr('width', ww).attr('height', (nDat + 2) * 21);
     // base = d3.select('app-users').append('svg').attr('viewBox', `0 0 ${ww} ${(nDat + 2) * 21}`);
     base.append('text')
@@ -157,9 +158,9 @@ export class UsersComponent implements OnInit {
       .call((d) => d.each((dd, i, j) => {// We have to it like this with call() rather than html() to get the tspan on IE on Windows 7
         const k = d3.select(j[i]);
         const keys = Object.keys(displayData[0]);
-        let tspan = k.text(null).append('tspan').attr('x', out[0]).text(keys[0]);
+        let tspan = k.text(null).append('tspan').attr('x', xPos(0)).text(keys[0]);
         for (let kk = 1; kk < keys.length; ++kk) {
-          tspan = k.append('tspan').attr('x', out[kk]).text(keys[kk]);
+          tspan = k.append('tspan').attr('x', xPos(kk)).text(keys[kk]);
         }
       }))
       .attr('class', 'users');
@@ -176,9 +177,9 @@ export class UsersComponent implements OnInit {
       .call((d) => d.each((dd, i, j) => {// We have to it like this with call() rather than html() to get the tspan on IE on Windows 7
         const k = d3.select(j[i]);
         const keys = Object.keys(dd);
-        let tspan = k.text(null).append('tspan').attr('x', out[0]).text(dd[keys[0]]);
+        let tspan = k.text(null).append('tspan').attr('x', xPos(0)).text(dd[keys[0]]);
         for (let kk = 1; kk < keys.length; ++kk) {
-          tspan = k.append('tspan').attr('x', out[kk]).text(dd[keys[kk]]);
+          tspan = k.append('tspan').attr('x', xPos(kk)).text(dd[keys[kk]]);
         }
       }))
       .attr('class', 'users');
