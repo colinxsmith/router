@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation , OnChanges, SimpleChanges, Input} from '@angular/core';
 import { UserService } from './user.service';
 import * as d3 from 'd3';
 import { map } from 'rxjs/operators';
@@ -8,8 +8,8 @@ import { map } from 'rxjs/operators';
   styleUrls: ['./users.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class UsersComponent implements OnInit {
-  displayData: any;
+export class UsersComponent implements OnInit, OnChanges {
+  @Input() public displayData: any;
   updateLabel = 'MAKE POINTED';
   getKey = '';
   plotLab = [];
@@ -22,6 +22,9 @@ export class UsersComponent implements OnInit {
   ngOnInit() {
     this.plotLab = Object.keys(this.plotLabels);
     this.firstLs(this.dbKeyData[0]);
+  }
+  ngOnChanges(changed: SimpleChanges) {
+    console.log(changed);
   }
   choosePlot1(dd: string) {
     this.choose2[0] = this.plotLabels[dd] - 1;

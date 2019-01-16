@@ -10,10 +10,13 @@ import { UserService } from './users/user.service';
   declarations: [
     AppComponent,
     UsersComponent
+  ], exports: [
+    UsersComponent
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
+  //  UsersComponent
   ],
   providers: [UserService],
   bootstrap: [AppComponent]
