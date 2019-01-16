@@ -9,7 +9,7 @@ import { map } from 'rxjs/operators';
   encapsulation: ViewEncapsulation.None
 })
 export class UsersComponent implements OnInit, OnChanges {
-  @Input() public displayData: any;
+  @Input() displayData: any;
   updateLabel = 'MAKE POINTED';
   getKey = '';
   plotLab = [];
