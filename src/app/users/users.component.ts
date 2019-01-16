@@ -142,13 +142,16 @@ export class UsersComponent implements OnInit {
         }
       }, res => {
         console.log(res);
-        });
+      });
   }
   simpleDisplay(displayData: any) {
     const www = Object.keys(displayData[0]).length;
-    const nDat = displayData.length, ww = Math.max(0, www * 200), off = 20,
-      out = [0, (ww - off) / 4, 1.35 * (ww - off) / 4, 2.7 * (ww - off) / 4],
-      xPos = (f: number) => out[f % out.length],
+    const xPosArray: number[] = Array(www), off = 20, ww = Math.max(0, www * 250);
+    for (let i = 0; i < www; ++i) {
+      xPosArray[i] = ((ww - off) / www * i);
+    }
+    const nDat = displayData.length,
+      xPos = (f: number) => xPosArray[f],
       base = d3.select('app-users').append('svg').attr('width', ww).attr('height', (nDat + 2) * 21);
     // base = d3.select('app-users').append('svg').attr('viewBox', `0 0 ${ww} ${(nDat + 2) * 21}`);
     base.append('text')
