@@ -10,11 +10,12 @@ let mocked = {
         { 'id': 5, 'name': 'Chris Evans', 'movies': 20 }
     ]
 };
-const setMocked = (n, type) => {
+const setMocked = (n, type, res) => {
     const opt = require('../../optimiser/optimiser');
     opt.opt(n, type)
     mocked.OPT = opt.output;
     mocked.version = opt.version();
+    res.status(200).json(mocked);
 }
 
 let ind = -1;
@@ -29,11 +30,8 @@ router.get('/db', (req, res) => {
         .json(mocked);
 });
 router.post('/optype', (req, res) => {
-    setMocked(40, req.body.type);
-    res
-        .status(200)
-        .json(mocked);
-    console.log('optype ' + req.body.type);
+    setMocked(30, req.body.type,res);
+    console.log('optType', req.body.type);
 });
 router.post('/results', (req, bbb) => {
     console.log('POST');
