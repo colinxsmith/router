@@ -18,12 +18,11 @@ export class UsersComponent implements OnChanges {
   plotLabels = { 'Low Risk': 1, 'High Risk': 2, 'Medium Risk': 3 };
   choose2 = [0, 0];
   dbKeyData = ['radarData', 'results', 'newData', 'OPT'].reverse();
-  appComp = new AppComponent();
   optType: string[];
   @Input() getType = '';
-  constructor(private userService: UserService) {
-    this.optType = this.appComp.optType;
-   }
+  constructor(private userService: UserService, private appComponent: AppComponent) {
+    this.optType = this.appComponent.optType;
+  }
   ngOnChanges(changed: SimpleChanges) {
     if (changed.getType.firstChange) {
       this.getType = this.optType[0];
