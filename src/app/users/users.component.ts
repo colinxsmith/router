@@ -1,44 +1,53 @@
-import { Component, OnInit, ViewEncapsulation , OnChanges, SimpleChanges, Input} from '@angular/core';
+import { Component, ViewEncapsulation, OnChanges, SimpleChanges, Input } from '@angular/core';
+import { AppComponent } from '../app.component';
 import { UserService } from './user.service';
 import * as d3 from 'd3';
 import { map } from 'rxjs/operators';
+import { getTestBed } from '@angular/core/testing';
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class UsersComponent implements OnInit, OnChanges {
-  @Input() displayData: any;
+export class UsersComponent implements OnChanges {
+  displayData: any;
   updateLabel = 'MAKE POINTED';
   getKey = '';
   plotLab = [];
   plotLabels = { 'Low Risk': 1, 'High Risk': 2, 'Medium Risk': 3 };
   choose2 = [0, 0];
   dbKeyData = ['radarData', 'results', 'newData', 'OPT'].reverse();
-  optType = ['long', 'short', 'KAG'].reverse();
-  getType = '';
+  optType = new AppComponent().optType;
+  @Input() getType = '';
   constructor(private userService: UserService) { }
-  ngOnInit() {
-    this.plotLab = Object.keys(this.plotLabels);
-    this.firstLs(this.dbKeyData[0]);
-  }
   ngOnChanges(changed: SimpleChanges) {
+    if (changed.getType.firstChange) {
+      this.getType = this.optType[0];
+      this.plotLab = Object.keys(this.plotLabels);
+      this.getKey = this.dbKeyData[0];
+      this.changeLs(this.getType, this.updateLabel !== 'MAKE POINTED');
+    } else {
+      this.getType = changed.getType.currentValue;
+      this.changeLs(this.getType, this.updateLabel !== 'MAKE POINTED');
+    }
     console.log(changed);
   }
   choosePlot1(dd: string) {
     this.choose2[0] = this.plotLabels[dd] - 1;
     d3.select('app-users').selectAll('svg').remove();
-    this.chooseData(this.getKey);
+    this.chooseData(this.getKey, this.updateLabel !== 'MAKE POINTED');
   }
   choosePlot2(dd: string) {
     this.choose2[1] = this.plotLabels[dd] - 1;
     d3.select('app-users').selectAll('svg').remove();
-    this.chooseData(this.getKey);
+    this.chooseData(this.getKey, this.updateLabel !== 'MAKE POINTED');
   }
   changeDat() {
     d3.select('app-users').selectAll('svg').remove();
-    this.firstLs(this.getKey, true);
+    const pointed = this.updateLabel === 'MAKE POINTED';
+    this.chooseData(this.getKey, pointed);
+    this.updateLabel = pointed ? 'MAKE ROUND' : 'MAKE POINTED';
   }
   changeLs(type: string, pointed = false) {
     this.getType = type;
@@ -46,14 +55,6 @@ export class UsersComponent implements OnInit, OnChanges {
     this.userService.postType(this.getType).subscribe(res => {
       console.log(res);
       this.chooseData(this.getKey, pointed);
-    });
-  }
-  firstLs(Key: string, pointed = false) {
-    this.getType = this.getType === '' ? this.optType[0] : this.getType;
-    d3.select('app-users').selectAll('svg').remove();
-    this.userService.postType(this.getType).subscribe(res => {
-      console.log(res);
-      this.chooseData(Key, pointed);
     });
   }
   chooseData(dd: string, joinLinear = false) {

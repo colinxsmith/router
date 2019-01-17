@@ -7,4 +7,8 @@ import { Component } from '@angular/core';
 export class AppComponent {
   title = 'app';
   data: any;
+  optType = ['long', 'short', 'KAG'].reverse();
+  changeLs(dd: string) {
+    this.data = dd;
+  }
 }
