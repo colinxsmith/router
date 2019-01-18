@@ -54,6 +54,10 @@ const opt = (n, optype) => {
     const factors = Array(nfac);
     test.get_factornames(factors, model);
     const stocks = Array(nnn);
+    if (n > nnn) {
+        n = nnn;
+        console.log('Max n is ' + n);
+    }
     test.get_stocknames(stocks, model);
     const FL = Array(n * nfac);
     const SV = Array(n);
