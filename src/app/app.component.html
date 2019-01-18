@@ -2,5 +2,7 @@
     <h1>Radar Plot and its data shown in bar charts and tables</h1>
 <select (change)="changeLs($event.target.value)">
     <option *ngFor="let i of optType">{{i}}</option>
-</select><app-users [getType]="data"></app-users> 
+</select>
+Number of stock in portfolio<input (change)="stocks=+$event.target.value" size="1" maxlength="4" value={{stocks}}>
+<app-users [getType]="type" [nStocks]="stocks"></app-users> 
 </div>

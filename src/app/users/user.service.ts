@@ -26,13 +26,14 @@ export class UserService {
         return ddd;
       }));
   }
-  postType(type = 'short') {
+  postType(n: number = 20, type: string = 'short') {
     const options = { headers: new HttpHeaders().set('Content-Type', 'application/json') };
     return this
       .http
       .post<{
+        n: number,
         type: string
-      }>(`${this.url}/optype`, { type: type }, options)
+      }>(`${this.url}/optype`, { n: n, type: type }, options)
       .pipe(map(ddd => {
         console.log(ddd);
         return ddd;

@@ -6,9 +6,10 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'app';
-  data: any;
+  type: string;
+  stocks = 16;
   optType = ['long', 'short', 'KAG'].reverse();
   changeLs(dd: string) {
-    this.data = dd;
+    this.type = dd;
   }
 }

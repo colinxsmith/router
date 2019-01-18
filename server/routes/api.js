@@ -30,8 +30,10 @@ router.get('/db', (req, res) => {
         .json(mocked);
 });
 router.post('/optype', (req, res) => {
-    setMocked(30, req.body.type,res);
+    console.log(req.body);
+    setMocked(req.body.n, req.body.type,res);
     console.log('optType', req.body.type);
+    console.log('n', req.body.n);
 });
 router.post('/results', (req, bbb) => {
     console.log('POST');

@@ -20,19 +20,21 @@ export class UsersComponent implements OnChanges {
   dbKeyData = ['radarData', 'results', 'newData', 'OPT'].reverse();
   optType: string[];
   @Input() getType = '';
+  @Input() nStocks: number;
   constructor(private userService: UserService, private appComponent: AppComponent) {
     this.optType = this.appComponent.optType;
   }
   ngOnChanges(changed: SimpleChanges) {
-    if (changed.getType.firstChange) {
-      this.getType = this.optType[0];
-      this.plotLab = Object.keys(this.plotLabels);
-      this.getKey = this.dbKeyData[0];
-      this.changeLs(this.getType, this.updateLabel !== 'MAKE POINTED');
-    } else {
-      this.getType = changed.getType.currentValue;
-      this.changeLs(this.getType, this.updateLabel !== 'MAKE POINTED');
+    for (const piggy in changed) {
+      if (piggy === 'getType') {
+        if (changed.getType.firstChange) {
+          this.getType = this.optType[0];
+          this.plotLab = Object.keys(this.plotLabels);
+          this.getKey = this.dbKeyData[0];
+        }
+      }
     }
+    this.changeLs(this.getType, this.updateLabel !== 'MAKE POINTED');
     console.log(changed);
   }
   choosePlot1(dd: string) {
@@ -54,7 +56,7 @@ export class UsersComponent implements OnChanges {
   changeLs(type: string, pointed = false) {
     this.getType = type;
     d3.select('app-users').selectAll('svg').remove();
-    this.userService.postType(this.getType).subscribe(res => {
+    this.userService.postType(this.nStocks, this.getType).subscribe(res => {
       console.log(res);
       this.chooseData(this.getKey, pointed);
     });
