@@ -160,8 +160,8 @@ export class UsersComponent implements OnChanges {
     }
     const nDat = displayData.length,
       xPos = (f: number) => xPosArray[f],
-      base = d3.select('app-users').append('svg').attr('width', ww).attr('height', (nDat + 2) * 21);
-    // base = d3.select('app-users').append('svg').attr('viewBox', `0 0 ${ww} ${(nDat + 2) * 21}`);
+      base = d3.select('app-users').append('svg').attr('width', ww).attr('height', (nDat + 1) * 21 + 30);
+    // base = d3.select('app-users').append('svg').attr('viewBox', `${0} 0 ${ww} ${(nDat + 1) * 21 + 30}`);
     base.append('text')
       .attr('x', 5)
       .attr('y', 23)
@@ -184,7 +184,7 @@ export class UsersComponent implements OnChanges {
     base.selectAll('inner').data(displayData).enter().append('text')
       .attr('x', 5)
       .attr('y', 54)
-      .attr('transform', (d, i) => `translate(${off},${i * 20.75})`)
+      .attr('transform', (d, i) => `translate(${off},${i * 21})`)
       .call((d) => d.each((dd, i, j) => {// We have to it like this with call() rather than html() to get the tspan on IE on Windows 7
         const k = d3.select(j[i]);
         const keys = Object.keys(dd);
@@ -197,7 +197,7 @@ export class UsersComponent implements OnChanges {
     base.append('rect')
       .attr('class', 'users')
       .attr('width', ww - off)
-      .attr('height', nDat * 21)
+      .attr('height', nDat * 21 + 10)
       .attr('x', 5)
       .attr('y', 32);
   }
