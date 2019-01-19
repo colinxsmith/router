@@ -158,12 +158,12 @@
     }
     extern "C" short SimpleOpt(unsigned long n,long nfac,int ls,int full,vector SV,vector FL,vector FC,
     vector w, unsigned long m, vector L, vector U, vector A,vector alpha,double gamma, double*ogamma,double minRisk,double maxRisk,
-    double five, double ten, double forty)
+    double five, double ten, double forty, char** names)
     {
         int log = 2;
         char* logfile = "JSlog";
         gamma=gamma>=1.0?gamma-1e-15:gamma;
-        short back = Optimise_internalCVPAFblSaMSoftQ(n,nfac,0,w,m,
+        short back = Optimise_internalCVPAFblSaMSoftQ(n,nfac,names,w,m,
 									A,L,U,alpha,
 									0,0,gamma,0,
 									-1.0,0,0,-1.0,n,

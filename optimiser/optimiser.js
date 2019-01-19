@@ -55,7 +55,7 @@ const opt = (n, optype) => {
     test.get_factornames(factors, model);
     const stocks = Array(nnn);
     if (n > nnn) {
-        n = nnn;
+        n = nnn - 1;
         console.log('Max n is ' + n);
     }
     test.get_stocknames(stocks, model);
@@ -98,7 +98,7 @@ const opt = (n, optype) => {
     gamma = 0;
     let back = test.SimpleOpt(n, nfac, ls, full, SV, FL, FC,
         w, m, L, U, A, alpha, gamma, ogamma, minRisk, maxRisk,
-        five, ten, forty)
+        five, ten, forty, stocks)
 
 
     const minV = getRisk(n, w, nfac, SV, FL, FC);
@@ -109,7 +109,7 @@ const opt = (n, optype) => {
     gamma = 1;
     back = test.SimpleOpt(n, nfac, ls, full, SV, FL, FC,
         w, m, L, U, A, alpha, gamma, ogamma, minRisk, maxRisk,
-        five, ten, forty)
+        five, ten, forty, stocks)
 
     const maxV = getRisk(n, w, nfac, SV, FL, FC);
 
@@ -120,7 +120,7 @@ const opt = (n, optype) => {
     gamma = 0;
     back = test.SimpleOpt(n, nfac, ls, full, SV, FL, FC,
         w, m, L, U, A, alpha, gamma, ogamma, minRisk, maxRisk,
-        five, ten, forty);
+        five, ten, forty, stocks);
 
     output.push({ gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), 'return': test.ddotvec(n, alpha, w), 'portfolio': portfolio(stocks, w, alpha) });
     exports.output = output;
