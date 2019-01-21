@@ -128,7 +128,7 @@ export class UsersComponent implements OnChanges {
             'rgb(255,255,50)', 'rgb(50,255,255)']),
             radarChartOptions = {
               w: width, h: height, choose2: this.choose2, margin: margin, maxValue: 0.1,
-              levels: 3, roundStrokes: !joinLinear, colour: radarBlobColour
+              levels: 4, roundStrokes: !joinLinear, colour: radarBlobColour
             };
 
           const data1: [{ alpha: number, axis: string, value: number }[]]
