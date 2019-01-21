@@ -103,7 +103,8 @@ export class UsersComponent implements OnChanges {
           }          const margin = { top: 150, right: 150, bottom: 150, left: 150 }, ww = 1000, hh = 1000,
             width = ww - margin.left - margin.right,
             height = hh - margin.top - margin.bottom,
-            radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)', 'rgb(50,50,255)']),
+            radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)',
+            'rgb(255,255,50)', 'rgb(50,255,255)']),
             radarChartOptions = {
               w: width, h: height, choose2: this.choose2, margin: margin, maxValue: 0.1,
               levels: 3, roundStrokes: true, colour: radarBlobColour
