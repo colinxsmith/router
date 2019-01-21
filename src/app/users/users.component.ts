@@ -107,7 +107,7 @@ export class UsersComponent implements OnChanges {
             'rgb(255,255,50)', 'rgb(50,255,255)']),
             radarChartOptions = {
               w: width, h: height, choose2: this.choose2, margin: margin, maxValue: 0.1,
-              levels: 3, roundStrokes: true, colour: radarBlobColour
+              levels: 3, roundStrokes: !joinLinear, colour: radarBlobColour
             };
           this.RadarChart('app-users', this.displayData, radarChartOptions);
           this.displayData.forEach((ddd) => {
@@ -248,7 +248,7 @@ export class UsersComponent implements OnChanges {
     const allAxis = (data[0].map((i) => i.axis)),	// Names of each axis
       total = allAxis.length,					// The number of different axes
       radius = Math.min(cfg.w / 2, cfg.h / 2), 	// Radius of the outermost circle
-      percentFormat = d3.format('.1%');
+      percentFormat = maxValue < 1 ? d3.format('.1%') : d3.format('0.1f');
 
     const rScale = d3.scaleLinear<number, number>()
       .range([0, radius])
