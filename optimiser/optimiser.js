@@ -28,8 +28,16 @@ const portfolio = (axis, value, alpha) => {
     });
     return portfolio;
 };
+const factorval = (axis, value) => {
+    const factorval = [];
+    value.forEach((d, i) => {
+        factorval.push({ 'axis': axis[i], 'id': i + 1, 'value': d });
+    });
+    return factorval;
+};
 const opt = (n, optype) => {
     const output = [];
+    const radar = [];
     /*
     char* Return_Message(int);
     char* version(char*asetup);
@@ -102,8 +110,10 @@ const opt = (n, optype) => {
 
 
     const minV = getRisk(n, w, nfac, SV, FL, FC);
+    const FX = Array(nfac);
+    test.FX_get(n, nfac, w, FL, SV, FC, FX);
 
-
+    radar.push(factorval(factors,FX));
     output.push({ gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), 'return': test.ddotvec(n, alpha, w), 'portfolio': portfolio(stocks, w, alpha) });
 
     gamma = 1;
@@ -112,28 +122,35 @@ const opt = (n, optype) => {
         five, ten, forty, stocks)
 
     const maxV = getRisk(n, w, nfac, SV, FL, FC);
+    test.FX_get(n, nfac, w, FL, SV, FC, FX);
+    radar.push(factorval(factors,FX));
 
     output.push({ gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), 'return': test.ddotvec(n, alpha, w), 'portfolio': portfolio(stocks, w, alpha) });
-    minRisk = (3*minV + maxV) / 4;
+    minRisk = (3 * minV + maxV) / 4;
     maxRisk = minRisk;
 
     gamma = 0;
     back = test.SimpleOpt(n, nfac, ls, full, SV, FL, FC,
         w, m, L, U, A, alpha, gamma, ogamma, minRisk, maxRisk,
         five, ten, forty, stocks);
+    test.FX_get(n, nfac, w, FL, SV, FC, FX);
+    radar.push(factorval(factors,FX));
 
     output.push({ gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), 'return': test.ddotvec(n, alpha, w), 'portfolio': portfolio(stocks, w, alpha) });
 
-    minRisk = (minV + 3*maxV) / 4;
+    minRisk = (minV + 3 * maxV) / 4;
     maxRisk = minRisk;
 
     gamma = 0;
     back = test.SimpleOpt(n, nfac, ls, full, SV, FL, FC,
         w, m, L, U, A, alpha, gamma, ogamma, minRisk, maxRisk,
         five, ten, forty, stocks);
+    test.FX_get(n, nfac, w, FL, SV, FC, FX);
+    radar.push(factorval(factors,FX));
 
     output.push({ gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), 'return': test.ddotvec(n, alpha, w), 'portfolio': portfolio(stocks, w, alpha) });
     exports.output = output;
+    exports.radar = radar;
 }
 
 exports.opt = opt;

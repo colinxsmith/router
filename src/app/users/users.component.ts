@@ -17,7 +17,7 @@ export class UsersComponent implements OnChanges {
   plotLab = [];
   plotLabels = { 'Low Risk': 1, 'High Risk': 2, 'Low Medium Risk': 3,  'High Medium Risk': 4 };
   choose2 = [0, 0];
-  dbKeyData = ['radarData', 'results', 'newData', 'OPT'].reverse();
+  dbKeyData = ['radarData', 'OPT'].reverse();
   optType: string[];
   @Input() getType = '';
   @Input() nStocks: number;
@@ -105,12 +105,12 @@ export class UsersComponent implements OnChanges {
             height = hh - margin.top - margin.bottom,
             radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)', 'rgb(50,50,255)']),
             radarChartOptions = {
-              w: width, h: height, choose2: [0, 0], margin: margin, maxValue: 0.1,
+              w: width, h: height, choose2: this.choose2, margin: margin, maxValue: 0.1,
               levels: 3, roundStrokes: true, colour: radarBlobColour
             };
           this.RadarChart('app-users', this.displayData, radarChartOptions);
           this.displayData.forEach((ddd) => {
-            this.stockbars(ddd, ww * 0.5, hh * 0.5, 2000);
+            this.stockbars(ddd, ww * 0.5, hh * 0.5, 2000, 'Factor Exposure', 'Factor');
             this.simpleDisplay(ddd);
           });
         } else if (this.getKey === 'OPT') {

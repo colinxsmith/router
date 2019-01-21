@@ -14,6 +14,7 @@ const setMocked = (n, type, res) => {
     const opt = require('../../optimiser/optimiser');
     opt.opt(n, type)
     mocked.OPT = opt.output;
+    mocked.radarData = opt.radar;
     mocked.version = opt.version();
     res.status(200).json(mocked);
 }
@@ -25,6 +26,11 @@ router.get('/', (req, res) => {
 });
 // Get all posts
 router.get('/db', (req, res) => {
+    res
+        .status(200)
+        .json(mocked);
+});
+router.post('/db', (req, res) => {
     res
         .status(200)
         .json(mocked);

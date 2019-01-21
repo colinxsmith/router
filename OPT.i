@@ -142,19 +142,33 @@
 %{
     extern "C" void MCAR(unsigned long n,unsigned long nf,vector w,vector alpha,vector FL,vector SV,vector FC,vector MC)
     {
-        vector Q=new double[n*(nf+1)],MCTR=new double[n],MCRR=new double[n],FMCRR=0,FMCTR=0,FX=0,RFX=0,bbeta=new double[n+1];
+        vector Q=0,MCTR=new double[n],MCRR=new double[n],FMCRR=0,FMCTR=0,FX=0,RFX=0,bbeta=new double[n+1];
         double risk=0,arisk=0,Rrisk=0,rreturn=0,areturn=0,Rreturn=0;
-        factor_model_process(n,nf,FL,FC,SV,Q);
         PropertiesC(n,nf,0,w,alpha,0,Q,&risk,&arisk,&Rrisk,
 									&rreturn,
                                     &areturn,&Rreturn,
                                     MC,MCTR,MCRR,FMCRR,
                                     FMCTR,bbeta,FX,RFX,
-                                    0,0,0,0,0);
-        delete[] Q;
+                                    FL,FC,SV,0,0);
         delete[] MCTR;
         delete[] MCRR;
         delete[] bbeta;
+    }
+    extern "C" void FX_get(unsigned long n,unsigned long nf,vector w,vector FL,vector SV,vector FC,vector FX)
+    {
+        vector Q=0,MCAR=new double[n],MCTR=new double[n],MCRR=new double[n],FMCRR=0,FMCTR=new double[n+nf],alpha=0,RFX=0,bbeta=new double[n+1];
+        double risk=0,arisk=0,Rrisk=0,rreturn=0,areturn=0,Rreturn=0;
+        PropertiesC(n,nf,0,w,alpha,0,Q,&risk,&arisk,&Rrisk,
+									&rreturn,
+                                    &areturn,&Rreturn,
+                                    MCAR,MCTR,MCRR,FMCRR,
+                                    FMCTR,bbeta,FX,RFX,
+                                    FL,FC,SV,0,0);
+        delete[] MCAR;
+        delete[] MCTR;
+        delete[] MCRR;
+        delete[] bbeta;
+        delete[] FMCTR;
     }
     extern "C" short SimpleOpt(unsigned long n,long nfac,int ls,int full,vector SV,vector FL,vector FC,
     vector w, unsigned long m, vector L, vector U, vector A,vector alpha,double gamma, double*ogamma,double minRisk,double maxRisk,
