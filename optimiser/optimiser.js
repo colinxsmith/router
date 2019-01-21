@@ -114,7 +114,17 @@ const opt = (n, optype) => {
     const maxV = getRisk(n, w, nfac, SV, FL, FC);
 
     output.push({ gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), 'return': test.ddotvec(n, alpha, w), 'portfolio': portfolio(stocks, w, alpha) });
-    minRisk = (minV + maxV) / 2;
+    minRisk = (3*minV + maxV) / 4;
+    maxRisk = minRisk;
+
+    gamma = 0;
+    back = test.SimpleOpt(n, nfac, ls, full, SV, FL, FC,
+        w, m, L, U, A, alpha, gamma, ogamma, minRisk, maxRisk,
+        five, ten, forty, stocks);
+
+    output.push({ gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), 'return': test.ddotvec(n, alpha, w), 'portfolio': portfolio(stocks, w, alpha) });
+
+    minRisk = (minV + 3*maxV) / 4;
     maxRisk = minRisk;
 
     gamma = 0;

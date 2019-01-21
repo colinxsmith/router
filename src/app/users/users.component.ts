@@ -15,7 +15,7 @@ export class UsersComponent implements OnChanges {
   updateLabel = 'MAKE POINTED';
   getKey = '';
   plotLab = [];
-  plotLabels = { 'Low Risk': 1, 'High Risk': 2, 'Medium Risk': 3 };
+  plotLabels = { 'Low Risk': 1, 'High Risk': 2, 'Low Medium Risk': 3,  'High Medium Risk': 4 };
   choose2 = [0, 0];
   dbKeyData = ['radarData', 'results', 'newData', 'OPT'].reverse();
   optType: string[];
@@ -94,7 +94,13 @@ export class UsersComponent implements OnChanges {
           });
           this.simpleDisplay(this.displayData);
         } else if (this.getKey === 'radarData') {
-          const margin = { top: 150, right: 150, bottom: 150, left: 150 }, ww = 1000, hh = 1000,
+          if (this.displayData.length < 4) {
+            this.plotLab.forEach((d, i) => {
+              if (i >= this.displayData.length) {
+                this.plotLab[i] = undefined;
+              }
+            });
+          }          const margin = { top: 150, right: 150, bottom: 150, left: 150 }, ww = 1000, hh = 1000,
             width = ww - margin.left - margin.right,
             height = hh - margin.top - margin.bottom,
             radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)', 'rgb(50,50,255)']),
@@ -108,10 +114,18 @@ export class UsersComponent implements OnChanges {
             this.simpleDisplay(ddd);
           });
         } else if (this.getKey === 'OPT') {
+          if (this.displayData.length < 4) {
+            this.plotLab.forEach((d, i) => {
+              if (i >= this.displayData.length) {
+                this.plotLab[i] = undefined;
+              }
+            });
+          }
           const margin = { top: 150, right: 150, bottom: 150, left: 150 }, ww = 1000, hh = 1000,
             width = ww - margin.left - margin.right,
             height = hh - margin.top - margin.bottom,
-            radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)', 'rgb(50,50,255)', 'orange']),
+            radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)',
+            'rgb(255,255,50)', 'rgb(50,255,255)']),
             radarChartOptions = {
               w: width, h: height, choose2: this.choose2, margin: margin, maxValue: 0.1,
               levels: 3, roundStrokes: !joinLinear, colour: radarBlobColour
