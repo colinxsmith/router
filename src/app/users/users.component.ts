@@ -247,6 +247,7 @@ export class UsersComponent implements OnChanges {
     }
     const choose2 = cfg.choose2;
     const maxValue = Math.max(cfg.maxValue, +d3.max(data, (i) => d3.max(i.map((o) => o.value))));
+    const minValue = Math.min(cfg.maxValue, +d3.min(data, (i) => d3.min(i.map((o) => o.value))));
     const allAxis = (data[0].map((i) => i.axis)),	// Names of each axis
       total = allAxis.length,					// The number of different axes
       radius = Math.min(cfg.w / 2, cfg.h / 2), 	// Radius of the outermost circle
@@ -254,7 +255,7 @@ export class UsersComponent implements OnChanges {
 
     const rScale = d3.scaleLinear<number, number>()
       .range([0, radius])
-      .domain([-maxValue, maxValue]);
+      .domain([Math.min(-maxValue, minValue), maxValue]);
     const svg = d3.select(id).append('svg'), doView = false;
     if (doView) {
       svg.attr('viewBox', `0 0 ${cfg.w + cfg.margin.left + cfg.margin.right} ${cfg.h + cfg.margin.top + cfg.margin.bottom}`)
@@ -277,7 +278,8 @@ export class UsersComponent implements OnChanges {
       axisGrid = g.append('g').attr('class', 'axisWrapper');
 
     const circScale = d3.scaleLinear<number, number>().domain([-cfg.levels, cfg.levels]).range([0, radius]);
-    const circVal = d3.scaleLinear<number, number>().domain([-cfg.levels, cfg.levels]).range([-maxValue, maxValue]);
+    const circVal = d3.scaleLinear<number, number>().domain([-cfg.levels, cfg.levels])
+    .range([Math.min(Math.min(-maxValue, minValue), minValue), maxValue]);
     const angleScale = d3.scaleLinear<number, number>().domain([0, data[0].length]).range([0, Math.PI * 2]);
     axisGrid.selectAll('.levels')
       .data(d3.range(-(cfg.levels), (cfg.levels + 1)).reverse())
