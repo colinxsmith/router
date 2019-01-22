@@ -6,7 +6,7 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'app';
-  display = 'Radar Plot and its data shown in bar charts and tables'
+  display = 'Radar Plot and its data shown in bar charts and tables';
   type: string;
   stocks = 21;
   optType = ['long', 'short', 'KAG'].reverse();

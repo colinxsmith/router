@@ -77,6 +77,7 @@ export class UsersComponent implements OnChanges {
                 console.log('Error in put');
               });
           });*/
+
     this.userService
       .getData(this.getKey)
       .pipe(map(data => { this.displayData = data; return data; }))
@@ -100,11 +101,12 @@ export class UsersComponent implements OnChanges {
                 this.plotLab[i] = undefined;
               }
             });
-          }          const margin = { top: 150, right: 150, bottom: 150, left: 150 }, ww = 1000, hh = 1000,
+          }
+          const margin = { top: 150, right: 150, bottom: 150, left: 150 }, ww = 1000, hh = 1000,
             width = ww - margin.left - margin.right,
             height = hh - margin.top - margin.bottom,
             radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)',
-            'rgb(255,255,50)', 'rgb(50,255,255)']),
+              'rgb(255,255,50)', 'rgb(50,255,255)']),
             radarChartOptions = {
               w: width, h: height, choose2: this.choose2, margin: margin, maxValue: 0.1,
               levels: 3, roundStrokes: !joinLinear, colour: radarBlobColour

@@ -16,6 +16,7 @@ const setMocked = (n, type, res) => {
     mocked.OPT = opt.output;
     mocked.radarData = opt.radar;
     mocked.version = opt.version();
+    mocked.nstocks = n;
     res.status(200).json(mocked);
 }
 
