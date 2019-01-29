@@ -13,6 +13,7 @@ import { getTestBed } from '@angular/core/testing';
 export class UsersComponent implements OnChanges {
   displayData: any;
   updateLabel = 'MAKE POINTED';
+  dataChanged = false;
   getKey = '';
   plotLab = [];
   plotLabels = { 'Low Risk': 1, 'High Risk': 2, 'Low Medium Risk': 3, 'High Medium Risk': 4 };
@@ -56,11 +57,16 @@ export class UsersComponent implements OnChanges {
   }
   changeLs(type: string, pointed = false) {
     // this.getType = type;
+    console.log('Data changed is ' + this.dataChanged);
     d3.select('app-users').selectAll('svg').remove();
-    this.userService.postType(this.nStocks, this.getType).subscribe(res => {
-      console.log(res);
+    if (this.dataChanged) {
       this.chooseData(this.getKey, pointed);
-    });
+    } else {
+      this.userService.postType(this.nStocks, this.getType).subscribe(res => {
+        console.log(res);
+        this.chooseData(this.getKey, pointed);
+      });
+    }
   }
   chooseData(dd: string, joinLinear = false) {
     d3.select('app-users').selectAll('svg').remove();
@@ -82,6 +88,7 @@ export class UsersComponent implements OnChanges {
     this.userService
       .getData('')
       .pipe(map(da2 => {
+        this.dataChanged = !(this.nStocks === +da2.nstocks && this.getType === da2.type);
         this.appComponent.changeStocks(+da2.nstocks);
         this.nStocks = +da2.nstocks;
         this.appComponent.changeType(da2.type);
