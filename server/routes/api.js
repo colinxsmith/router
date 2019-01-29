@@ -13,7 +13,7 @@ let mocked = {
 const setMocked = (n, type, res) => {
     const opt = require('../../optimiser/optimiser');
     opt.opt(n, type)
-    mocked.version = opt.version().split(/\r\n/g);
+    mocked.version = opt.version().split('\r\n');
     mocked.type = type;
     mocked.nstocks = n;
     mocked.OPT = opt.output;
@@ -39,7 +39,7 @@ router.post('/db', (req, res) => {
 });
 router.post('/optype', (req, res) => {
     console.log(req.body);
-    setMocked(req.body.n, req.body.type,res);
+    setMocked(req.body.n, req.body.type, res);
     console.log('optType', req.body.type);
     console.log('n', req.body.n);
 });

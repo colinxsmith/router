@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { type } from 'os';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -7,10 +8,18 @@ import { Component } from '@angular/core';
 export class AppComponent {
   title = 'app';
   display = 'Radar Plot and its data shown in bar charts and tables';
-  type: string;
+  type = 'short';
   stocks = 21;
   optType = ['long', 'short', 'KAG'].reverse();
-  changeLs(dd: string) {
+  getType() {
+    console.log(this.type);
+    return this.type;
+  }
+  changeType(dd: string) {
+    console.log(dd);
     this.type = dd;
+  }
+  changeStocks(dd: number) {
+    this.stocks = dd;
   }
 }

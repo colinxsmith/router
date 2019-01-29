@@ -1,8 +1,8 @@
 <div style="text-align:center">
     <h1>{{display}}</h1>
-<select (change)="changeLs($event.target.value)">
-    <option *ngFor="let i of optType">{{i}}</option>
+<select [ngModel] = "type" (ngModelChange)="changeType($event)" >
+    <option *ngFor="let i of optType;"   [value]="i" >{{i}}</option>
 </select>
-Number of stock in portfolio<input (change)="stocks=+$event.target.value" size="1" maxlength="4" value={{stocks}}>
+Number of stock in portfolio<input (change)="changeStocks(+$event.target.value)" size="1" maxlength="4" value={{stocks}}>
 <app-users [getType]="type" [nStocks]="stocks"></app-users> 
 </div>

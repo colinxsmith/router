@@ -11,7 +11,7 @@ export class UserService {
     return this
       .http
       .get<any>(`${this.url}/db`) // Use map from rxjs and .pipe() to choose the route. In json-server /db gives all routes
-      .pipe(map(ddd => ddd[key]));
+      .pipe(map(ddd => key === '' ? ddd : ddd[key]));
   }
   postResult() {
     const options = { headers: new HttpHeaders().set('Content-Type', 'application/json') };

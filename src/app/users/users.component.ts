@@ -15,7 +15,7 @@ export class UsersComponent implements OnChanges {
   updateLabel = 'MAKE POINTED';
   getKey = '';
   plotLab = [];
-  plotLabels = { 'Low Risk': 1, 'High Risk': 2, 'Low Medium Risk': 3,  'High Medium Risk': 4 };
+  plotLabels = { 'Low Risk': 1, 'High Risk': 2, 'Low Medium Risk': 3, 'High Medium Risk': 4 };
   choose2 = [0, 0];
   dbKeyData = ['radarData', 'OPT'].reverse();
   optType: string[];
@@ -25,6 +25,7 @@ export class UsersComponent implements OnChanges {
     this.optType = this.appComponent.optType;
   }
   ngOnChanges(changed: SimpleChanges) {
+    console.log('ngOnChanges '); console.log(changed);
     for (const piggy in changed) {
       if (piggy === 'getType') {
         if (changed.getType.firstChange) {
@@ -54,7 +55,7 @@ export class UsersComponent implements OnChanges {
     this.updateLabel = pointed ? 'MAKE ROUND' : 'MAKE POINTED';
   }
   changeLs(type: string, pointed = false) {
-    this.getType = type;
+    // this.getType = type;
     d3.select('app-users').selectAll('svg').remove();
     this.userService.postType(this.nStocks, this.getType).subscribe(res => {
       console.log(res);
@@ -79,10 +80,16 @@ export class UsersComponent implements OnChanges {
           });*/
 
     this.userService
-      .getData(this.getKey)
-      .pipe(map(data => { this.displayData = data; return data; }))
+      .getData('')
+      .pipe(map(da2 => {
+        this.appComponent.changeStocks(+da2.nstocks);
+        this.nStocks = +da2.nstocks;
+        this.appComponent.changeType(da2.type);
+        this.getType = da2.type;
+        this.displayData = da2[this.getKey];
+        return da2;
+      }))
       .subscribe(data => {
-        //        this.displayData = data;
         if (this.getKey === 'results') {
           this.displayData.sort((d1, d2) => {
             if (+d2.movies > +d1.movies) {
@@ -128,7 +135,7 @@ export class UsersComponent implements OnChanges {
             width = ww - margin.left - margin.right,
             height = hh - margin.top - margin.bottom,
             radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)',
-            'rgb(255,255,50)', 'rgb(50,255,255)']),
+              'rgb(255,255,50)', 'rgb(50,255,255)']),
             radarChartOptions = {
               w: width, h: height, choose2: this.choose2, margin: margin, maxValue: 0.1,
               levels: 4, roundStrokes: !joinLinear, colour: radarBlobColour
@@ -154,7 +161,8 @@ export class UsersComponent implements OnChanges {
           data1.forEach((ddd, i: number) => {
             d3.select('app-users').append('svg').attr('width', 800).attr('height', 50).append('g').append('text')
               .attr('transform', 'translate(0,30)').attr('class', 'users')
-              .text(() => `Risk: ${this.displayData[i].risk}, Return: ${this.displayData[i].return}, gamma: ${this.displayData[i].gamma}`);
+              .text(() => `Risk: ${this.displayData[i].risk}, Return: ${this.displayData[i].return},
+                  gamma: ${this.displayData[i].gamma}`);
             this.stockbars(ddd, ww * 0.5, hh * 0.5, 2000, 'Weights', 'Assets');
             this.simpleDisplay(ddd);
           });
@@ -168,6 +176,7 @@ export class UsersComponent implements OnChanges {
       }, res => {
         console.log(res);
       });
+
   }
   simpleDisplay(displayData: any) {
     const www = Object.keys(displayData[0]).length;
@@ -279,7 +288,7 @@ export class UsersComponent implements OnChanges {
 
     const circScale = d3.scaleLinear<number, number>().domain([-cfg.levels, cfg.levels]).range([0, radius]);
     const circVal = d3.scaleLinear<number, number>().domain([-cfg.levels, cfg.levels])
-    .range([Math.min(Math.min(-maxValue, minValue), minValue), maxValue]);
+      .range([Math.min(Math.min(-maxValue, minValue), minValue), maxValue]);
     const angleScale = d3.scaleLinear<number, number>().domain([0, data[0].length]).range([0, Math.PI * 2]);
     axisGrid.selectAll('.levels')
       .data(d3.range(-(cfg.levels), (cfg.levels + 1)).reverse())
