@@ -14,6 +14,7 @@ const setMocked = (n, type, res) => {
     const opt = require('../../optimiser/optimiser');
     opt.opt(n, type)
     mocked.version = opt.version().split(/\r\n/g);
+    mocked.type = type;
     mocked.nstocks = n;
     mocked.OPT = opt.output;
     mocked.radarData = opt.radar;
