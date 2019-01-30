@@ -40,8 +40,8 @@ export class UsersComponent implements OnChanges {
     this.changeLs(this.getType, this.updateLabel !== 'MAKE POINTED');
     console.log(changed);
   }
-  pickOutNonZeroValues(data: {alpha: number, axis: string, value: number}[][]) {
-    const displayData: {alpha: number, axis: string, value: number}[][] = [];
+  pickOutNonZeroValues(data: { alpha: number, axis: string, value: number }[][]) {
+    const displayData: { alpha: number, axis: string, value: number }[][] = [];
     const maxFac: number[] = Array(data[0].length);
     const minFac: number[] = Array(data[0].length);
     for (let i = 0; i < data[0].length; ++i) {
@@ -55,7 +55,7 @@ export class UsersComponent implements OnChanges {
       });
     });
     data.forEach((dad) => {
-      const newDat: {alpha: number, axis: string, value: number} [] = [];
+      const newDat: { alpha: number, axis: string, value: number }[] = [];
       dad.forEach((vals, i) => {
         if (!(minFac[i] > -1e-5 && maxFac[i] < 1e-5)) {
           newDat.push(vals);
@@ -137,7 +137,7 @@ export class UsersComponent implements OnChanges {
           this.simpleDisplay(this.displayData);
         } else if (this.getKey === 'radarData') {
           const displayData = this.pickOutNonZeroValues(this.displayData);
-         if (this.displayData.length < 4) {
+          if (this.displayData.length < 4) {
             this.plotLab.forEach((d, i) => {
               if (i >= this.displayData.length) {
                 this.plotLab[i] = undefined;
@@ -191,7 +191,7 @@ export class UsersComponent implements OnChanges {
               });
             });
           }
-data1 = this.pickOutNonZeroValues(data1);
+          data1 = this.pickOutNonZeroValues(data1);
           this.RadarChart('app-users', data1, radarChartOptions);
           data1.forEach((ddd, i: number) => {
             d3.select('app-users').append('svg').attr('width', 800).attr('height', 50).append('g').append('text')
@@ -383,7 +383,7 @@ data1 = this.pickOutNonZeroValues(data1);
       .attr('y', (d, i) => rScale(maxValue * cfg.labelFactor) * Math.sin(angleScale(i) - Math.PI / 2))
       .text((d) => d)
       .call(this.wrapFunction, cfg.wrapWidth, cfg.lineHeight);
-    const radarLine = d3.lineRadial<{ axis: string, value: number }>()
+      const radarLine = d3.lineRadial<{ axis: string, value: number }>()
       .curve(d3.curveLinearClosed)
       .radius((d) => rScale(d.value))
       .angle((d, i) => angleScale(i));
