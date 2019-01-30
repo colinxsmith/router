@@ -296,10 +296,12 @@ export class UsersComponent implements OnChanges {
       total = allAxis.length,					// The number of different axes
       radius = Math.min(cfg.w / 2, cfg.h / 2), 	// Radius of the outermost circle
       percentFormat = maxValue < 1 ? d3.format('.1%') : d3.format('0.1f');
+    const pMin = Math.min(-maxValue, minValue);
+    const pMax = Math.max(-minValue, maxValue);
 
     const rScale = d3.scaleLinear<number, number>()
       .range([0, radius])
-      .domain([Math.min(-maxValue, minValue), maxValue]);
+      .domain([pMin, pMax]);
     const svg = d3.select(id).append('svg'), doView = false;
     if (doView) {
       svg.attr('viewBox', `0 0 ${cfg.w + cfg.margin.left + cfg.margin.right} ${cfg.h + cfg.margin.top + cfg.margin.bottom}`)
@@ -323,7 +325,7 @@ export class UsersComponent implements OnChanges {
 
     const circScale = d3.scaleLinear<number, number>().domain([-cfg.levels, cfg.levels]).range([0, radius]);
     const circVal = d3.scaleLinear<number, number>().domain([-cfg.levels, cfg.levels])
-      .range([Math.min(Math.min(-maxValue, minValue), minValue), maxValue]);
+      .range([pMin, pMax]);
     const angleScale = d3.scaleLinear<number, number>().domain([0, data[0].length]).range([0, Math.PI * 2]);
     axisGrid.selectAll('.levels')
       .data(d3.range(-(cfg.levels), (cfg.levels + 1)).reverse())
@@ -372,15 +374,15 @@ export class UsersComponent implements OnChanges {
       .duration(2000)
       .tween('lines', (d, i, j) => (t) => {
         const HERE = j[i], extension = 1.13;
-        HERE.setAttribute('x2', '' + rScale(maxValue * extension) * Math.cos(angleScale(i) - Math.PI / 2) * t);
-        HERE.setAttribute('y2', '' + rScale(maxValue * extension) * Math.sin(angleScale(i) - Math.PI / 2) * t);
+        HERE.setAttribute('x2', '' + rScale(pMax * extension) * Math.cos(angleScale(i) - Math.PI / 2) * t);
+        HERE.setAttribute('y2', '' + rScale(pMax * extension) * Math.sin(angleScale(i) - Math.PI / 2) * t);
       })
       .attr('class', 'line');
     axis.append('text')
       .attr('class', 'legendRadar')
       .attr('dy', '0.35em')
-      .attr('x', (d, i) => rScale(maxValue * cfg.labelFactor) * Math.cos(angleScale(i) - Math.PI / 2))
-      .attr('y', (d, i) => rScale(maxValue * cfg.labelFactor) * Math.sin(angleScale(i) - Math.PI / 2))
+      .attr('x', (d, i) => rScale(pMax * cfg.labelFactor) * Math.cos(angleScale(i) - Math.PI / 2))
+      .attr('y', (d, i) => rScale(pMax * cfg.labelFactor) * Math.sin(angleScale(i) - Math.PI / 2))
       .text((d) => d)
       .call(this.wrapFunction, cfg.wrapWidth, cfg.lineHeight);
       const radarLine = d3.lineRadial<{ axis: string, value: number }>()
