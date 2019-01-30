@@ -4,6 +4,7 @@ import { UserService } from './user.service';
 import * as d3 from 'd3';
 import { map } from 'rxjs/operators';
 import { getTestBed } from '@angular/core/testing';
+import { DomAdapter } from '@angular/platform-browser/src/dom/dom_adapter';
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
@@ -13,9 +14,9 @@ import { getTestBed } from '@angular/core/testing';
 export class UsersComponent implements OnChanges {
   displayData: any;
   updateLabel = 'MAKE POINTED';
-  dataChanged = false;
+  dataChangedDueToAnotherSessionOptimising = false;
   getKey = '';
-  plotLab = [];
+  plotLab: string[] = [];
   plotLabels = { 'Low Risk': 1, 'High Risk': 2, 'Low Medium Risk': 3, 'High Medium Risk': 4 };
   choose2 = [0, 0];
   dbKeyData = ['radarData', 'OPT'].reverse();
@@ -39,6 +40,31 @@ export class UsersComponent implements OnChanges {
     this.changeLs(this.getType, this.updateLabel !== 'MAKE POINTED');
     console.log(changed);
   }
+  pickOutNonZeroValues(data: {alpha: number, axis: string, value: number}[][]) {
+    const displayData: {alpha: number, axis: string, value: number}[][] = [];
+    const maxFac: number[] = Array(data[0].length);
+    const minFac: number[] = Array(data[0].length);
+    for (let i = 0; i < data[0].length; ++i) {
+      maxFac[i] = -1e9;
+      minFac[i] = 1e9;
+    }
+    data.forEach((dad) => {
+      dad.forEach((vals, i) => {
+        minFac[i] = Math.min(minFac[i], vals.value);
+        maxFac[i] = Math.max(maxFac[i], vals.value);
+      });
+    });
+    data.forEach((dad) => {
+      const newDat: {alpha: number, axis: string, value: number} [] = [];
+      dad.forEach((vals, i) => {
+        if (!(minFac[i] > -1e-5 && maxFac[i] < 1e-5)) {
+          newDat.push(vals);
+        }
+      });
+      displayData.push(newDat);
+    });
+    return displayData;
+  }
   choosePlot1(dd: string) {
     this.choose2[0] = this.plotLabels[dd] - 1;
     d3.select('app-users').selectAll('svg').remove();
@@ -57,11 +83,12 @@ export class UsersComponent implements OnChanges {
   }
   changeLs(type: string, pointed = false) {
     // this.getType = type;
-    console.log('Data changed is ' + this.dataChanged);
+    console.log('Data changed is ' + this.dataChangedDueToAnotherSessionOptimising);
     d3.select('app-users').selectAll('svg').remove();
-    if (this.dataChanged) {
+    if (this.dataChangedDueToAnotherSessionOptimising) {
       this.chooseData(this.getKey, pointed);
     } else {
+      // Only optimise to get new OPT and radarData if changes were made to getType and nStocks here.
       this.userService.postType(this.nStocks, this.getType).subscribe(res => {
         console.log(res);
         this.chooseData(this.getKey, pointed);
@@ -88,7 +115,7 @@ export class UsersComponent implements OnChanges {
     this.userService
       .getData('')
       .pipe(map(da2 => {
-        this.dataChanged = !(this.nStocks === +da2.nstocks && this.getType === da2.type);
+        this.dataChangedDueToAnotherSessionOptimising = !(this.nStocks === +da2.nstocks && this.getType === da2.type);
         this.appComponent.changeStocks(+da2.nstocks);
         this.nStocks = +da2.nstocks;
         this.appComponent.changeType(da2.type);
@@ -109,7 +136,8 @@ export class UsersComponent implements OnChanges {
           });
           this.simpleDisplay(this.displayData);
         } else if (this.getKey === 'radarData') {
-          if (this.displayData.length < 4) {
+          const displayData = this.pickOutNonZeroValues(this.displayData);
+         if (this.displayData.length < 4) {
             this.plotLab.forEach((d, i) => {
               if (i >= this.displayData.length) {
                 this.plotLab[i] = undefined;
@@ -125,8 +153,8 @@ export class UsersComponent implements OnChanges {
               w: width, h: height, choose2: this.choose2, margin: margin, maxValue: 0.1,
               levels: 3, roundStrokes: !joinLinear, colour: radarBlobColour
             };
-          this.RadarChart('app-users', this.displayData, radarChartOptions);
-          this.displayData.forEach((ddd) => {
+          this.RadarChart('app-users', displayData, radarChartOptions);
+          displayData.forEach((ddd) => {
             this.stockbars(ddd, ww * 0.5, hh * 0.5, 2000, 'Factor Exposure', 'Factor');
             this.simpleDisplay(ddd);
           });
@@ -148,7 +176,7 @@ export class UsersComponent implements OnChanges {
               levels: 4, roundStrokes: !joinLinear, colour: radarBlobColour
             };
 
-          const data1: [{ alpha: number, axis: string, value: number }[]]
+          let data1: { alpha: number, axis: string, value: number }[][]
             = this.displayData[0].portfolio !== undefined ? this.displayData.map((ddd) => ddd.portfolio) : this.displayData;
           if (data1[0][0].alpha !== undefined) {
             data1.forEach((ddd) => {
@@ -163,7 +191,7 @@ export class UsersComponent implements OnChanges {
               });
             });
           }
-
+data1 = this.pickOutNonZeroValues(data1);
           this.RadarChart('app-users', data1, radarChartOptions);
           data1.forEach((ddd, i: number) => {
             d3.select('app-users').append('svg').attr('width', 800).attr('height', 50).append('g').append('text')

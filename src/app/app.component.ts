@@ -10,10 +10,6 @@ export class AppComponent {
   type = 'short';
   stocks = 21;
   optType = ['long', 'short', 'KAG'].reverse();
-  getType() {
-    console.log(this.type);
-    return this.type;
-  }
   changeType(dd: string) {
     console.log(dd);
     this.type = dd;
