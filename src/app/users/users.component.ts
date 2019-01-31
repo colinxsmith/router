@@ -503,7 +503,7 @@ export class UsersComponent implements OnChanges {
         }
       }
     })
-  stockbars = (DATA: { axis: string, value: number }[], ww: number, hh: number,
+  stockbars = (DATA: { axis: string, value: number, alpha: number }[], ww: number, hh: number,
     durationtime: number, xText = 'Weight', yText = 'Class') => {
     const svg = d3.select('app-users').append('svg')
       .attr('width', ww)
@@ -581,7 +581,8 @@ export class UsersComponent implements OnChanges {
       .attr('class', (d) => d.value > 0 ? 'weightSinglePlus' : 'weightSingleMinus')
       .on('mousemove', (d) => tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px').style('display', 'inline-block')
-        .html(`<i class="fa fa-gears leafy"></i>${d.axis}<br>weight:${d.value}`))
+        .html(`<i class="fa fa-gears leafy"></i>${d.axis}<br>weight:${d3.format('0.5f')(d.value)}<br>
+        ${d.alpha === undefined ? '' : 'alpha:' + d3.format('0.5f')(d.alpha)}`))
       .on('mouseout', (d) => tooltip.style('display', 'none'))
       .transition().duration(durationtime)
       .attr('height', (d) => d.value <= 0 ? y(d.value) - y(0) : y(0) - y(d.value))
