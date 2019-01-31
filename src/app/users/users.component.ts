@@ -40,7 +40,7 @@ export class UsersComponent implements OnChanges {
     this.changeLs(this.getType, this.updateLabel !== 'MAKE POINTED');
     console.log(changed);
   }
-  pickOutNonZeroValues(data: { alpha: number, axis: string, value: number, id: number}[][]) {
+  pickOutNonZeroValues(data: { alpha: number, axis: string, value: number, id: number }[][]) {
     data = this.choose2[0] === this.choose2[1] ? data : [data[this.choose2[0]], data[this.choose2[1]]];
     const displayData: { alpha: number, axis: string, value: number, id: number }[][] = [];
     const maxFac: number[] = Array(data[0].length);
@@ -384,15 +384,32 @@ export class UsersComponent implements OnChanges {
       .attr('y', (d, i) => rScale(pMax * cfg.labelFactor) * Math.sin(angleScale(i) - Math.PI / 2))
       .text((d) => d)
       .call(this.wrapFunction, cfg.wrapWidth, cfg.lineHeight);
-      const radarLine = d3.lineRadial<{ axis: string, value: number }>()
+    const radarLine = d3.lineRadial<{ axis: string, value: number }>()
       .curve(d3.curveLinearClosed)
       .radius((d) => rScale(d.value))
       .angle((d, i) => angleScale(i));
 
+    const radarPoints = (dad: { value: number; }[]) => {
+      const rp: { r: number, th: number }[] = [];
+      dad.forEach((pp, i) => {
+        if (i === 0 && pp.value * dad[dad.length - 1].value < 0) {
+          rp.push({ r: rScale(0), th: Math.PI + (angleScale(0) + angleScale(dad.length - 1)) * 0.5 });
+        }
+        rp.push({ r: rScale(pp.value), th: angleScale(i) });
+        if (i + 1 < dad.length && pp.value * dad[i + 1].value < 0) {
+          rp.push({ r: rScale(0), th: (angleScale(i) + angleScale(i + 1)) * 0.5 });
+        }
+      });
+      return rp;
+    };
+    const radarLinePP = d3.lineRadial<{ r: number, th: number }>()
+      .curve(d3.curveLinearClosed)
+      .radius((d) => d.r)
+      .angle((d) => d.th);
     if (cfg.roundStrokes) {
       radarLine.curve(d3.curveCardinalClosed);
+      radarLinePP.curve(d3.curveCardinalClosed);
     }
-
     const blobWrapper = g.selectAll('.radarWrapper')
       .data(data)
       .enter().append('g')
@@ -401,7 +418,7 @@ export class UsersComponent implements OnChanges {
     blobWrapper
       .append('path')
       .attr('class', 'radarArea')
-      .attr('d', (d) => radarLine(d))
+      .attr('d', (d) => radarLinePP(radarPoints(d)))
       .style('fill', (d, i) => cfg.colour(i))
       .style('fill-opacity', cfg.opacityArea)
       .on('mouseover', (d, i, jj) => {
@@ -425,7 +442,7 @@ export class UsersComponent implements OnChanges {
       .transition()
       .ease(d3.easeBounce)
       .duration(2000)
-      .attr('d', (d) => radarLine(d))
+      .attr('d', (d) => radarLinePP(radarPoints(d)))
       .style('stroke', (d, i) => cfg.colour(i))
       .style('fill', 'none')
       .style('filter', 'url(#glow)');
@@ -434,8 +451,8 @@ export class UsersComponent implements OnChanges {
       .enter().append('circle')
       .attr('class', 'radarCircle')
       .attr('r', cfg.dotRadius)
-      .attr('cx', (d, i) => rScale(+d.value) * Math.cos(angleScale(i) - Math.PI / 2))
-      .attr('cy', (d, i) => rScale(+d.value) * Math.sin(angleScale(i) - Math.PI / 2))
+      .attr('cx', (d, i) => rScale(d.value) * Math.cos(angleScale(i) - Math.PI / 2))
+      .attr('cy', (d, i) => rScale(d.value) * Math.sin(angleScale(i) - Math.PI / 2))
       .style('fill', (d, i, j) => cfg.colour(+(<HTMLSelectElement>(j[i]).parentNode).getAttribute('data-index')))
       .style('fill-opacity', 0.8);
     const blobCircleWrapper = g.selectAll('.radarCircleWrapper')
@@ -448,8 +465,8 @@ export class UsersComponent implements OnChanges {
       .enter().append('circle')
       .attr('class', 'radarInvisibleCircle')
       .attr('r', cfg.dotRadius * 1.1)
-      .attr('cx', (d, i) => rScale(+d.value) * Math.cos(angleScale(i) - Math.PI / 2))
-      .attr('cy', (d, i) => rScale(+d.value) * Math.sin(angleScale(i) - Math.PI / 2))
+      .attr('cx', (d, i) => rScale(d.value) * Math.cos(angleScale(i) - Math.PI / 2))
+      .attr('cy', (d, i) => rScale(d.value) * Math.sin(angleScale(i) - Math.PI / 2))
       .style('fill', (d, i, j) => cfg.colour(+(<HTMLSelectElement>(j[i]).parentNode).getAttribute('data-index')))
       .style('pointer-events', 'all')
       .on('mouseover', (d, i, j) => localTiptool
