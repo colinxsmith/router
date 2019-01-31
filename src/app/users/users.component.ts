@@ -40,9 +40,9 @@ export class UsersComponent implements OnChanges {
     this.changeLs(this.getType, this.updateLabel !== 'MAKE POINTED');
     console.log(changed);
   }
-  pickOutNonZeroValues(data: { alpha: number, axis: string, value: number }[][]) {
+  pickOutNonZeroValues(data: { alpha: number, axis: string, value: number, id: number}[][]) {
     data = this.choose2[0] === this.choose2[1] ? data : [data[this.choose2[0]], data[this.choose2[1]]];
-    const displayData: { alpha: number, axis: string, value: number }[][] = [];
+    const displayData: { alpha: number, axis: string, value: number, id: number }[][] = [];
     const maxFac: number[] = Array(data[0].length);
     const minFac: number[] = Array(data[0].length);
     for (let i = 0; i < data[0].length; ++i) {
@@ -56,7 +56,7 @@ export class UsersComponent implements OnChanges {
       });
     });
     data.forEach((dad) => {
-      const newDat: { alpha: number, axis: string, value: number }[] = [];
+      const newDat: { alpha: number, axis: string, value: number, id: number }[] = [];
       dad.forEach((vals, i) => {
         if (!(minFac[i] > -1e-5 && maxFac[i] < 1e-5)) {
           newDat.push(vals);
@@ -177,7 +177,7 @@ export class UsersComponent implements OnChanges {
               levels: 4, roundStrokes: !joinLinear, colour: radarBlobColour
             };
 
-          let data1: { alpha: number, axis: string, value: number }[][]
+          let data1: { alpha: number, axis: string, value: number, id: number }[][]
             = this.displayData[0].portfolio !== undefined ? this.displayData.map((ddd) => ddd.portfolio) : this.displayData;
           if (data1[0][0].alpha !== undefined) {
             data1.forEach((ddd) => {
