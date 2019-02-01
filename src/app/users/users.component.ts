@@ -5,6 +5,7 @@ import * as d3 from 'd3';
 import { map } from 'rxjs/operators';
 import { getTestBed } from '@angular/core/testing';
 import { DomAdapter } from '@angular/platform-browser/src/dom/dom_adapter';
+import { start } from 'repl';
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
@@ -392,24 +393,70 @@ export class UsersComponent implements OnChanges {
     const radarPoints = (dad: { value: number; }[]) => {
       const rp: { r: number, th: number }[] = [];
       dad.forEach((pp, i) => {
-        if (i === 0 && pp.value * dad[dad.length - 1].value < 0) {
-          rp.push({ r: rScale(0), th: Math.PI + (angleScale(0) + angleScale(dad.length - 1)) * 0.5 });
+        if (i === 0 && pp.value * dad[dad.length - 1].value <= 0) {
+          rp.push({ r: rScale(0), th: Math.PI + (angleScale(i) + angleScale(dad.length - 1)) * 0.5 });
         }
+
         rp.push({ r: rScale(pp.value), th: angleScale(i) });
-        if (i + 1 < dad.length && pp.value * dad[i + 1].value < 0) {
+
+        if (i + 1 < dad.length && pp.value * dad[i + 1].value <= 0) {
           rp.push({ r: rScale(0), th: (angleScale(i) + angleScale(i + 1)) * 0.5 });
+        } else if (i === (dad.length - 1) && pp.value * dad[0].value <= 0) {
+          rp.push({ r: rScale(0), th: Math.PI + (angleScale(i) + angleScale(0)) * 0.5 });
         }
       });
-      return rp;
+      const moveon: { r: number, th: number, segment: number }[] = [];
+      let startI = -1, segment = 0;
+      rp.forEach((dd, i) => {
+        if (dd.r === rScale(0) && startI === -1) {
+          startI = i;
+          moveon.push({ r: dd.r, th: dd.th, segment: segment });
+        } else if (startI !== -1) {
+          if (dd.r === rScale(0)) {
+            segment++;
+          }
+          moveon.push({ r: dd.r, th: dd.th, segment: segment });
+        }
+      });
+      for (let i = rp.length - startI; i < rp.length; ++i) {
+        const pp = rp[(i + startI) % rp.length];
+        if (pp.r === rScale(0)) {
+          segment++;
+        }
+        moveon.push({ r: pp.r, th: pp.th, segment: segment });
+      }
+      const lastSeg = moveon[moveon.length - 1].segment;
+      const back: { r: number, th: number, segment: number }[][] = [];
+      let seg = 0, backI: { r: number, th: number, segment: number }[] = [];
+      for (let mI = 0; seg <= lastSeg && mI < moveon.length; mI++) {
+        if (moveon[mI].segment === seg) {
+          backI.push(moveon[mI]);
+        } else {
+          backI.push(moveon[mI]); seg++;
+          for (let i = backI.length - 2; i >= 1; --i) {
+            backI.push({ r: rScale(0), th: backI[i].th, segment: backI[i].segment });
+          }
+          console.log(backI);
+          back.push(backI);
+          backI = [];
+          backI.push(moveon[mI]);
+        }
+      }
+      return back;
     };
-    const radarLinePP = d3.lineRadial<{ r: number, th: number }>()
+    const radarLinePPi = d3.lineRadial<{ r: number, th: number }>()
       .curve(d3.curveLinearClosed)
       .radius((d) => d.r)
       .angle((d) => d.th);
     if (cfg.roundStrokes) {
       radarLine.curve(d3.curveCardinalClosed);
-      radarLinePP.curve(d3.curveCardinalClosed);
+      radarLinePPi.curve(d3.curveCardinalClosed);
     }
+    const radarLinePP = (kkk: { r: number, th: number, segment: number }[][]) => {
+      let back = '';
+      kkk.forEach((curve) => back += radarLinePPi(curve));
+      return back;
+    };
     const blobWrapper = g.selectAll('.radarWrapper')
       .data(data)
       .enter().append('g')
