@@ -3,9 +3,6 @@ import { AppComponent } from '../app.component';
 import { UserService } from './user.service';
 import * as d3 from 'd3';
 import { map } from 'rxjs/operators';
-import { getTestBed } from '@angular/core/testing';
-import { DomAdapter } from '@angular/platform-browser/src/dom/dom_adapter';
-import { start } from 'repl';
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
@@ -281,7 +278,7 @@ export class UsersComponent implements OnChanges {
       opacityArea: 0.35, 	// The opacity of the area of the blob
       dotRadius: 3, 			// The size of the coloured circles of each blog
       opacityCircles: 0.1, 	// The opacity of the circles of each blob
-      strokeWidth: 4, 		// The width of the stroke around each blob
+      strokeWidth: 2, 		// The width of the stroke around each blob
       roundStrokes: false,	// If true the area and stroke will follow a round path (cardinal-closed)
       colour: d3.scaleOrdinal<number, string>(d3.schemeCategory10).domain([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
     };
@@ -296,7 +293,7 @@ export class UsersComponent implements OnChanges {
       total = allAxis.length,					// The number of different axes
       radius = Math.min(cfg.w / 2, cfg.h / 2), 	// Radius of the outermost circle
       percentFormat = maxValue < 1 ? d3.format('.1%') : d3.format('0.1f');
-    const pMin = Math.min(-maxValue, minValue);
+    const pMin = Math.min(Math.max(minValue, -maxValue), minValue);
     const pMax = Math.max(-minValue, maxValue);
 
     const rScale = d3.scaleLinear<number, number>()
@@ -323,8 +320,8 @@ export class UsersComponent implements OnChanges {
       feMergeNode_2 = feMerge.append('feMergeNode').attr('in', 'SourceGraphic'),
       axisGrid = g.append('g').attr('class', 'axisWrapper');
 
-    const circScale = d3.scaleLinear<number, number>().domain([-cfg.levels, cfg.levels]).range([0, radius]);
-    const circVal = d3.scaleLinear<number, number>().domain([-cfg.levels, cfg.levels])
+    const circScale = d3.scaleLinear<number, number>().domain([pMin < 0 ? -cfg.levels : 0, cfg.levels]).range([0, radius]);
+    const circVal = d3.scaleLinear<number, number>().domain([pMin < 0 ? -cfg.levels : 0, cfg.levels])
       .range([pMin, pMax]);
     const angleScale = d3.scaleLinear<number, number>().domain([0, data[0].length]).range([0, Math.PI * 2]);
     axisGrid.selectAll('.levels')
@@ -336,21 +333,23 @@ export class UsersComponent implements OnChanges {
       .style('fill-opacity', cfg.opacityCircles)
       .style('stroke-opacity', cfg.opacityCircles)
       .style('filter', 'url(#glow)');
-    axisGrid.append('path')
-      .attr('class', 'gridZero')
-      .attr('d', () => d3.arc()({
-        innerRadius: circScale(0),
-        outerRadius: circScale(0),
-        startAngle: 0,
-        endAngle: 0
-      }))
-      .transition().duration(2000)
-      .attrTween('d', () => (t) => d3.arc()({
-        innerRadius: circScale(0),
-        outerRadius: circScale(0),
-        startAngle: -(t + 0.5) * Math.PI,
-        endAngle: (t - 0.5) * Math.PI
-      }));
+    if (pMin < 0) {
+      axisGrid.append('path')
+        .attr('class', 'gridZero')
+        .attr('d', () => d3.arc()({
+          innerRadius: circScale(0),
+          outerRadius: circScale(0),
+          startAngle: 0,
+          endAngle: 0
+        }))
+        .transition().duration(2000)
+        .attrTween('d', () => (t) => d3.arc()({
+          innerRadius: circScale(0),
+          outerRadius: circScale(0),
+          startAngle: -(t + 0.5) * Math.PI,
+          endAngle: (t - 0.5) * Math.PI
+        }));
+    }
     axisGrid.selectAll('.axisLabel')
       .data(d3.range(-(cfg.levels), (cfg.levels + 1)).reverse())
       .enter().append('text')
@@ -394,14 +393,15 @@ export class UsersComponent implements OnChanges {
       const rp: { r: number, th: number }[] = [];
       dad.forEach((pp, i) => {
         if (i === 0 && pp.value * dad[dad.length - 1].value <= 0) {
-          rp.push({ r: rScale(0), th: Math.PI + (angleScale(i) + angleScale(dad.length - 1)) * 0.5 });
+          rp.push({ r: rScale(0), th: -Math.PI + (angleScale(i) + angleScale(dad.length - 1)) * 0.5 });
         }
 
         rp.push({ r: rScale(pp.value), th: angleScale(i) });
 
         if (i + 1 < dad.length && pp.value * dad[i + 1].value <= 0) {
           rp.push({ r: rScale(0), th: (angleScale(i) + angleScale(i + 1)) * 0.5 });
-        } else if (i === (dad.length - 1) && pp.value * dad[0].value <= 0) {
+        }
+        if (i === (dad.length - 1) && pp.value * dad[0].value <= 0) {
           rp.push({ r: rScale(0), th: Math.PI + (angleScale(i) + angleScale(0)) * 0.5 });
         }
       });
@@ -418,18 +418,18 @@ export class UsersComponent implements OnChanges {
           moveon.push({ r: dd.r, th: dd.th, segment: segment });
         }
       });
-      for (let i = rp.length - startI; i < rp.length; ++i) {
+      for (let i = rp.length - startI; i <= rp.length; ++i) {
         const pp = rp[(i + startI) % rp.length];
         if (pp.r === rScale(0)) {
           segment++;
         }
-        moveon.push({ r: pp.r, th: pp.th, segment: segment });
+        moveon.push({ r: pp.r, th: Math.PI * 2 + pp.th, segment: segment });
       }
       const lastSeg = moveon[moveon.length - 1].segment;
       const back: { r: number, th: number, segment: number }[][] = [];
       let seg = 0, backI: { r: number, th: number, segment: number }[] = [];
       for (let mI = 0; seg <= lastSeg && mI < moveon.length; mI++) {
-        if (moveon[mI].segment === seg) {
+        if (moveon[mI].segment === seg && mI < moveon.length - 1) {
           backI.push(moveon[mI]);
         } else {
           backI.push(moveon[mI]); seg++;
@@ -437,7 +437,10 @@ export class UsersComponent implements OnChanges {
             backI.push({ r: rScale(0), th: backI[i].th, segment: backI[i].segment });
           }
           console.log(backI);
-          back.push(backI);
+          if (backI.length > 3) {
+            back.push(backI);
+          }
+          console.log('END ' + back.length);
           backI = [];
           backI.push(moveon[mI]);
         }
@@ -465,7 +468,7 @@ export class UsersComponent implements OnChanges {
     blobWrapper
       .append('path')
       .attr('class', 'radarArea')
-      .attr('d', (d) => radarLinePP(radarPoints(d)))
+      .attr('d', (d) => pMin < 0 ? radarLinePP(radarPoints(d)) : radarLine(d))
       .style('fill', (d, i) => cfg.colour(i))
       .style('fill-opacity', cfg.opacityArea)
       .on('mouseover', (d, i, jj) => {
@@ -489,7 +492,7 @@ export class UsersComponent implements OnChanges {
       .transition()
       .ease(d3.easeBounce)
       .duration(2000)
-      .attr('d', (d) => radarLinePP(radarPoints(d)))
+      .attr('d', (d) => pMin < 0 ? radarLinePP(radarPoints(d)) : radarLine(d))
       .style('stroke', (d, i) => cfg.colour(i))
       .style('fill', 'none')
       .style('filter', 'url(#glow)');
