@@ -354,10 +354,10 @@ export class UsersComponent implements OnChanges {
         }));
     }
     axisGrid.selectAll('.axisLabel')
-      .data(d3.range(-(cfg.levels), (cfg.levels + 1)).reverse())
+      .data(d3.range(pMin < 0 ? -cfg.levels : 0, (cfg.levels + 1)).reverse())
       .enter().append('text')
       .attr('class', 'axisRadar')
-      .attr('x', 4)
+      .attr('x', -12)
       .attr('y', (d) => -circScale(d))
       .attr('dy', '0.4em')
       .text((d, i) => percentFormat(circVal(d)));
