@@ -293,8 +293,11 @@ export class UsersComponent implements OnChanges {
       total = allAxis.length,					// The number of different axes
       radius = Math.min(cfg.w / 2, cfg.h / 2), 	// Radius of the outermost circle
       percentFormat = maxValue < 1 ? d3.format('.1%') : d3.format('0.1f');
-    const pMin = Math.min(Math.max(minValue, -maxValue), minValue);
+    let pMin = Math.min(-maxValue, minValue);
     const pMax = Math.max(-minValue, maxValue);
+    if (minValue >= 0) {
+      pMin = 0;
+    }
 
     const rScale = d3.scaleLinear<number, number>()
       .range([0, radius])

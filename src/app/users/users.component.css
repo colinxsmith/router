@@ -54,7 +54,7 @@ path.gridZero {
     fill: black;
     stroke:black;
     stroke-dasharray: 15, 15;
-    stroke-width: 2px;
+    stroke-width: 5px;
 }
 line.line {
     stroke:rgb(248, 230, 230);
