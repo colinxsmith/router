@@ -73,7 +73,7 @@ const opt = (n, optype) => {
         ten = 0.1,
         forty = 0.4;
 
-    const model = '/home/colin/safeqp/USE30305_30MAY03.csv';
+    const model = 'c:/Users/colin/safeqp/USE30305_30MAY03.csv';
     const nnn = test.get_nstocks(model) + 1;
     const nfac = test.get_nfac(model);
     const factors = Array(nfac);
