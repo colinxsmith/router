@@ -353,114 +353,39 @@ export class UsersComponent implements OnChanges {
           endAngle: (t - 0.5) * Math.PI
         }));
     }
-    axisGrid.selectAll('.axisLabel')
-      .data(d3.range(pMin < 0 ? -cfg.levels : 0, (cfg.levels + 1)).reverse())
-      .enter().append('text')
-      .attr('class', 'axisRadar')
-      .attr('x', -12)
-      .attr('y', (d) => -circScale(d))
-      .attr('dy', '0.4em')
-      .text((d, i) => percentFormat(circVal(d)));
-    const axis = axisGrid.selectAll('.axis')
-      .data(allAxis)
-      .enter()
-      .append('g')
-      .attr('class', 'axis');
-    axis.append('line')
-      .attr('x1', 0)
-      .attr('y1', 0)
-      .attr('x2', 10)
-      .attr('y2', -10)
-      .transition()
-      .ease(d3.easeBounce)
-      .duration(2000)
-      .tween('lines', (d, i, j) => (t) => {
-        const HERE = j[i], extension = 1.13;
-        HERE.setAttribute('x2', '' + rScale(pMax * extension) * Math.cos(angleScale(i) - Math.PI / 2) * t);
-        HERE.setAttribute('y2', '' + rScale(pMax * extension) * Math.sin(angleScale(i) - Math.PI / 2) * t);
-      })
-      .attr('class', 'line');
-    axis.append('text')
-      .attr('class', 'legendRadar')
-      .attr('dy', '0.35em')
-      .attr('x', (d, i) => rScale(pMax * cfg.labelFactor) * Math.cos(angleScale(i) - Math.PI / 2))
-      .attr('y', (d, i) => rScale(pMax * cfg.labelFactor) * Math.sin(angleScale(i) - Math.PI / 2))
-      .text((d) => d)
-      .call(this.wrapFunction, cfg.wrapWidth, cfg.lineHeight);
     const radarLine = d3.lineRadial<{ axis: string, value: number }>()
       .curve(d3.curveLinearClosed)
       .radius((d) => rScale(d.value))
       .angle((d, i) => angleScale(i));
-
-    const radarPoints = (dad: { value: number; }[]) => {
-      const rp: { r: number, th: number }[] = [];
-      dad.forEach((pp, i) => {
-        if (i === 0 && pp.value * dad[dad.length - 1].value <= 0) {
-          rp.push({ r: rScale(0), th: -Math.PI + (angleScale(i) + angleScale(dad.length - 1)) * 0.5 });
-        }
-
-        rp.push({ r: rScale(pp.value), th: angleScale(i) });
-
-        if (i + 1 < dad.length && pp.value * dad[i + 1].value <= 0) {
-          rp.push({ r: rScale(0), th: (angleScale(i) + angleScale(i + 1)) * 0.5 });
-        }
-        if (i === (dad.length - 1) && pp.value * dad[0].value <= 0) {
-          rp.push({ r: rScale(0), th: Math.PI + (angleScale(i) + angleScale(0)) * 0.5 });
-        }
-      });
-      const moveon: { r: number, th: number, segment: number }[] = [];
-      let startI = -1, segment = 0;
-      rp.forEach((dd, i) => {
-        if (dd.r === rScale(0) && startI === -1) {
-          startI = i;
-          moveon.push({ r: dd.r, th: dd.th, segment: segment });
-        } else if (startI !== -1) {
-          if (dd.r === rScale(0)) {
-            segment++;
-          }
-          moveon.push({ r: dd.r, th: dd.th, segment: segment });
-        }
-      });
-      for (let i = rp.length - startI; i <= rp.length; ++i) {
-        const pp = rp[(i + startI) % rp.length];
-        if (pp.r === rScale(0)) {
-          segment++;
-        }
-        moveon.push({ r: pp.r, th: Math.PI * 2 + pp.th, segment: segment });
-      }
-      const lastSeg = moveon[moveon.length - 1].segment;
-      const back: { r: number, th: number, segment: number }[][] = [];
-      let seg = 0, backI: { r: number, th: number, segment: number }[] = [];
-      for (let mI = 0; seg <= lastSeg && mI < moveon.length; mI++) {
-        if (moveon[mI].segment === seg && mI < moveon.length - 1) {
-          backI.push(moveon[mI]);
-        } else {
-          backI.push(moveon[mI]); seg++;
-          for (let i = backI.length - 2; i >= 1; --i) {
-            backI.push({ r: rScale(0), th: backI[i].th, segment: backI[i].segment });
-          }
-          console.log(backI);
-          if (backI.length > 3) {
-            back.push(backI);
-          }
-          console.log('END ' + back.length);
-          backI = [];
-          backI.push(moveon[mI]);
-        }
-      }
-      return back;
-    };
-    const radarLinePPi = d3.lineRadial<{ r: number, th: number }>()
+    const radarLineExtendedShort = d3.lineRadial<{ r: number, th: number }>()
       .curve(d3.curveLinearClosed)
       .radius((d) => d.r)
       .angle((d) => d.th);
     if (cfg.roundStrokes) {
       radarLine.curve(d3.curveCardinalClosed);
-      radarLinePPi.curve(d3.curveCardinalClosed);
+      radarLineExtendedShort.curve(d3.curveCardinalClosed);
     }
-    const radarLinePP = (kkk: { r: number, th: number, segment: number }[][]) => {
-      let back = '';
-      kkk.forEach((curve) => back += radarLinePPi(curve));
+    const extendRadarLineForShort = (radar: { value: number }[]) => {
+      const back: { r: number, th: number }[] = [];
+      let firstZero = -1;
+      radar.forEach((dd, i) => {
+        if (dd.value === 0) {
+          firstZero = i;
+        }
+      });
+      for (let i = 0; i < radar.length; ++i) {
+        back.push({
+          r: rScale(radar[(i + firstZero + radar.length) % radar.length].value),
+          th: angleScale((i + firstZero + radar.length) % radar.length)
+        });
+      }
+      back.push({
+        r: rScale(radar[(firstZero + radar.length) % radar.length].value),
+        th: angleScale((firstZero + radar.length) % radar.length)
+      });
+      for (let i = radar.length * 10 - 10; i >= 0; --i) {
+        back.push({ r: rScale(0), th: angleScale((i / 10 + firstZero + radar.length) % radar.length) });
+      }
       return back;
     };
     const blobWrapper = g.selectAll('.radarWrapper')
@@ -471,7 +396,7 @@ export class UsersComponent implements OnChanges {
     blobWrapper
       .append('path')
       .attr('class', 'radarArea')
-      .attr('d', (d) => pMin < 0 ? radarLinePP(radarPoints(d)) : radarLine(d))
+      .attr('d', (d) => pMin < 0 ? radarLineExtendedShort(extendRadarLineForShort(d)) : radarLine(d))
       .style('fill', (d, i) => cfg.colour(i))
       .style('fill-opacity', cfg.opacityArea)
       .on('mouseover', (d, i, jj) => {
@@ -495,7 +420,7 @@ export class UsersComponent implements OnChanges {
       .transition()
       .ease(d3.easeBounce)
       .duration(2000)
-      .attr('d', (d) => pMin < 0 ? radarLinePP(radarPoints(d)) : radarLine(d))
+      .attr('d', (d) => radarLine(d))
       .style('stroke', (d, i) => cfg.colour(i))
       .style('fill', 'none')
       .style('filter', 'url(#glow)');
@@ -531,7 +456,41 @@ export class UsersComponent implements OnChanges {
         .transition().duration(200)
         .style('fill', (j[i]).style['fill']))
       .on('mouseout', () => localTiptool.transition().duration(200).style('fill', 'none'));
-    const localTiptool = g.append('text')
+
+    const axis = axisGrid.selectAll('.axis')
+      .data(allAxis)
+      .enter()
+      .append('g')
+      .attr('class', 'axis');
+    axis.append('line')
+      .attr('x1', 0)
+      .attr('y1', 0)
+      .attr('x2', 10)
+      .attr('y2', -10)
+      .transition()
+      .ease(d3.easeBounce)
+      .duration(2000)
+      .tween('lines', (d, i, j) => (t) => {
+        const HERE = j[i], extension = 1.13;
+        HERE.setAttribute('x2', '' + rScale(pMax * extension) * Math.cos(angleScale(i) - Math.PI / 2) * t);
+        HERE.setAttribute('y2', '' + rScale(pMax * extension) * Math.sin(angleScale(i) - Math.PI / 2) * t);
+      })
+      .attr('class', 'line');
+    axis.append('text')
+      .attr('class', 'legendRadar')
+      .attr('dy', '0.35em')
+      .attr('x', (d, i) => rScale(pMax * cfg.labelFactor) * Math.cos(angleScale(i) - Math.PI / 2))
+      .attr('y', (d, i) => rScale(pMax * cfg.labelFactor) * Math.sin(angleScale(i) - Math.PI / 2))
+      .text((d) => d)
+      .call(this.wrapFunction, cfg.wrapWidth, cfg.lineHeight);
+      axisGrid.selectAll('.axisLabel')
+      .data(d3.range(pMin < 0 ? -cfg.levels : 0, (cfg.levels + 1)).reverse())
+      .enter().append('text')
+      .attr('class', 'axisRadar')
+      .attr('x', -12)
+      .attr('y', (d) => -circScale(d))
+      .attr('dy', '0.4em')
+      .text((d, i) => percentFormat(circVal(d)));    const localTiptool = g.append('text')
       .attr('class', 'tooltipRadar')
       .style('opacity', 0);
   }
