@@ -56,14 +56,15 @@ const opt = (n, optype) => {
     var ls = 0, full = 1, w = [], m = 1, L = [], U = [], A = [], alpha = [], gamma = 0.5, ogamma = [], minRisk = -1, maxRisk = -1,
         five = 0.05, ten = 0.1, forty = 0.4;
 
-    const model = '/home/colin/safeqp/USE30305_30MAY03.csv';
-    const nnn = test.get_nstocks(model) + 1;
+   // const model = '/home/colin/safeqp/USE30305_30MAY03.csv';
+   const model = '/SDrive/newmodel.csv';
+    const nnn = test.get_nstocks(model);
     const nfac = test.get_nfac(model);
     const factors = Array(nfac);
     test.get_factornames(factors, model);
     const stocks = Array(nnn);
     if (n > nnn) {
-        n = nnn - 1;
+        n = nnn;
         console.log('Max n is ' + n);
     }
     test.get_stocknames(stocks, model);

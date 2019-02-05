@@ -80,7 +80,7 @@
         $1 = new $*1_ltype[arr->Length()];
         for(size_t i = 0;i < arr->Length();++i) {
             v8::Handle<v8::String> kkk = arr->Get(i)->ToString();
-            char* kkkk = new char[kkk->Utf8Length() + 1];
+            char* kkkk = new char[kkk->Utf8Length() * sizeof(*kkk) + 1];
             kkk->WriteUtf8(kkkk,kkk->Utf8Length());
             kkkk[kkk->Utf8Length()] = '\0';
             $1[i] = kkkk;

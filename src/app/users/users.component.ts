@@ -149,7 +149,7 @@ export class UsersComponent implements OnChanges {
             radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)',
               'rgb(255,255,50)', 'rgb(50,255,255)']),
             radarChartOptions = {
-              w: width, h: height, margin: margin, maxValue: 0.1,
+              w: width, h: height, margin: margin, maxValue: 0,
               levels: 3, roundStrokes: !joinLinear, colour: radarBlobColour
             };
           this.RadarChart('app-users', displayData, radarChartOptions);
@@ -171,7 +171,7 @@ export class UsersComponent implements OnChanges {
             radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)',
               'rgb(255,255,50)', 'rgb(50,255,255)']),
             radarChartOptions = {
-              w: width, h: height, margin: margin, maxValue: 0.1,
+              w: width, h: height, margin: margin, maxValue: 0,
               levels: 4, roundStrokes: !joinLinear, colour: radarBlobColour
             };
 
