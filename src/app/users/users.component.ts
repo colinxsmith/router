@@ -366,37 +366,31 @@ export class UsersComponent implements OnChanges {
       radarLineExtendedShort.curve(d3.curveCardinalClosed);
     }
     const extendRadarLineForShort = (radar: { value: number }[]) => {
-      const zeroPointsFactor = 100;
+      const zeroPointsFactor = 10;
       const back: { r: number, th: number }[] = [];
-      let firstZero = -1, minAbs = 1e9, minI= -1;
+      let firstZero = -1, minAbs = 1e9, minI = -1;
       radar.forEach((dd, i) => {
         if (dd.value === 0) {
           firstZero = i;
         }
-        if(Math.abs(dd.value) < minAbs){
+        if (Math.abs(dd.value) < minAbs) {
           minAbs = Math.abs(dd.value);
           minI = i;
         }
       });
-      if(minAbs > 0){
+      if (minAbs > 0) {
         firstZero = minI;
       }
-      for (let i = 0; i < radar.length; ++i) {
+      for (let i = 0; i <= radar.length; ++i) {
         back.push({
-          r: rScale(radar[(i + firstZero + radar.length) % radar.length].value),
-          th: angleScale((i + firstZero + radar.length) % radar.length)
+          r: rScale(radar[(i + firstZero) % radar.length].value),
+          th: angleScale((i + firstZero) % radar.length)
         });
       }
-      back.push({
-        r: rScale(radar[(firstZero + radar.length) % radar.length].value),
-        th: angleScale((firstZero + radar.length) % radar.length)
-      });
-      back.push({
-        r: rScale(0),
-        th: angleScale((firstZero + radar.length) % radar.length)
-      });
-      for (let i = radar.length * zeroPointsFactor - zeroPointsFactor; i >= 0; --i) {
-        back.push({ r: rScale(0), th: angleScale((i / zeroPointsFactor + firstZero + radar.length) % radar.length) });
+      for (let i = radar.length * zeroPointsFactor; i >= 0; --i) {
+        back.push({
+          r: rScale(0),
+          th: angleScale((i / zeroPointsFactor + firstZero) % radar.length) });
       }
       return back;
     };
@@ -432,7 +426,7 @@ export class UsersComponent implements OnChanges {
       .transition()
       .ease(d3.easeBounce)
       .duration(2000)
-      .attr('d', (d) => radarLine(d))
+      .attr('d', (d) => pMin < 0 ? radarLineExtendedShort(extendRadarLineForShort(d)) : radarLine(d))
       .style('stroke', (d, i) => cfg.colour(i))
       .style('fill', 'none')
       .style('filter', 'url(#glow)');
