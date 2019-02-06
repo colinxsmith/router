@@ -43,6 +43,7 @@ export class UsersComponent implements OnChanges {
     const displayData: { alpha: number, axis: string, value: number, id: number }[][] = [];
     const maxFac: number[] = Array(data[0].length);
     const minFac: number[] = Array(data[0].length);
+    let base = 1e-2;
     for (let i = 0; i < data[0].length; ++i) {
       maxFac[i] = -1e9;
       minFac[i] = 1e9;
@@ -55,8 +56,20 @@ export class UsersComponent implements OnChanges {
     });
     data.forEach((dad) => {
       const newDat: { alpha: number, axis: string, value: number, id: number }[] = [];
+      let numberOk = 0;
+      while (numberOk < 12 && base > 1e-5) {
+        numberOk = 0;
+        dad.forEach((vals, i) => {
+          if (!(minFac[i] > -base && maxFac[i] < base)) {
+            numberOk++;
+          }
+        });
+        if (numberOk < 12 && base > 1e-5) {
+          base /= 2;
+        }
+      }
       dad.forEach((vals, i) => {
-        if (!(minFac[i] > -1e-5 && maxFac[i] < 1e-5)) {
+        if (!(minFac[i] > -base && maxFac[i] < base)) {
           newDat.push(vals);
         }
       });
@@ -250,7 +263,7 @@ export class UsersComponent implements OnChanges {
         const keys = Object.keys(dd);
         let tspan = k.text(null).append('tspan').attr('x', xPos(0)).text(dd[keys[0]]);
         for (let kk = 1; kk < keys.length; ++kk) {
-          tspan = k.append('tspan').attr('x', xPos(kk)).text(dd[keys[kk]]);
+          tspan = k.append('tspan').attr('x', xPos(kk)).text(keys[kk] === 'axis' ? dd[keys[kk]] : d3.format('g')(dd[keys[kk]]));
         }
       }))
       .attr('class', 'users');
@@ -295,10 +308,9 @@ export class UsersComponent implements OnChanges {
       percentFormat = maxValue < 1 ? d3.format('.1%') : d3.format('0.1f');
     let pMin = Math.min(-maxValue, minValue);
     const pMax = Math.max(-minValue, maxValue);
-    if (minValue >= 0) {
+    if (minValue >= -1e-15) {
       pMin = 0;
     }
-
     const rScale = d3.scaleLinear<number, number>()
       .range([0, radius])
       .domain([pMin, pMax]);
@@ -328,7 +340,7 @@ export class UsersComponent implements OnChanges {
       .range([pMin, pMax]);
     const angleScale = d3.scaleLinear<number, number>().domain([0, data[0].length]).range([0, Math.PI * 2]);
     axisGrid.selectAll('.levels')
-      .data(d3.range(-(cfg.levels), (cfg.levels + 1)).reverse())
+      .data(d3.range(pMin < 0 ? -cfg.levels : 0, (cfg.levels + 1)).reverse())
       .enter()
       .append('circle')
       .attr('class', 'gridCircle')
@@ -387,11 +399,17 @@ export class UsersComponent implements OnChanges {
           th: angleScale((i + firstZero) % radar.length)
         });
       }
+      if (radar[(radar.length + firstZero) % radar.length].value *
+        radar[(radar.length - 1 + firstZero) % radar.length].value < 0) {
+
+      }
       for (let i = radar.length * zeroPointsFactor; i >= 0; --i) {
         back.push({
           r: rScale(0),
-          th: angleScale((i / zeroPointsFactor + firstZero) % radar.length) });
+          th: angleScale((i / zeroPointsFactor + firstZero) % radar.length)
+        });
       }
+
       return back;
     };
     const blobWrapper = g.selectAll('.radarWrapper')
