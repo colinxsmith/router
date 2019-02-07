@@ -374,8 +374,8 @@ export class UsersComponent implements OnChanges {
       .radius((d) => d.r)
       .angle((d) => d.th);
     if (cfg.roundStrokes) {
-      radarLine.curve(d3.curveCardinalClosed);
-      radarLineExtendedShort.curve(d3.curveCardinalClosed);
+      radarLine.curve(d3.curveCatmullRomClosed);
+      radarLineExtendedShort.curve(d3.curveCatmullRomClosed); // this does a better job for long short data
     }
     const extendRadarLineForShort = (radar: { value: number }[]) => {
       const zeroPointsFactor = 10;
@@ -444,7 +444,7 @@ export class UsersComponent implements OnChanges {
       .transition()
       .ease(d3.easeBounce)
       .duration(2000)
-      .attr('d', (d) => pMin < 0 ? radarLineExtendedShort(extendRadarLineForShort(d)) : radarLine(d))
+      .attr('d', (d) => radarLine(d))
       .style('stroke', (d, i) => cfg.colour(i))
       .style('fill', 'none')
       .style('filter', 'url(#glow)');
