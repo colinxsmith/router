@@ -80,7 +80,7 @@
         $1 = new $*1_ltype[arr->Length()];
         for(size_t i = 0;i < arr->Length();++i) {
             int chars_written, back;
-            v8::Handle<v8::String> kkk = arr->Get(i)->ToString();
+            v8::Handle<v8::String> kkk = v8::Handle<v8::String>::Cast(arr->Get(i)->ToString());
             /*
             V8EXPORT int WriteUtf8(char* buffer,int length = -1,int* nchars_ref = NULL,int options = NO_OPTIONS) const;
             */
