@@ -172,6 +172,24 @@ const opt = (n, optype) => {
     output.push({ gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), 'return': test.ddotvec(n, alpha, w), 'portfolio': portfolio(stocks, w, alpha) });
     exports.output = output;
     exports.radar = radar;
+    factorchart = [];
+    radar.forEach(dd => {
+        k={};
+        dd.forEach(d => {
+            k[d.axis] = d.value;
+        });
+        factorchart.push(k);
+    });
+    stockchart = [];
+    output.forEach(dd => {
+        k={};
+        dd.portfolio.forEach(d => {
+            k[d.axis] = d.value;
+        });
+        stockchart.push(k);
+    });
+    exports.stockchart = stockchart;
+    exports.factorchart = factorchart;
 }
 
 exports.opt = opt;
