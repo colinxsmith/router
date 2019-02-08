@@ -377,39 +377,15 @@ export class UsersComponent implements OnChanges {
       radarLine.curve(d3.curveCatmullRomClosed);
       radarLineExtendedShort.curve(d3.curveCatmullRomClosed); // this does a better job for long short data
     }
-    const extendRadarLineForShort = (radar: { value: number }[]) => {
+    const radarLineZeroForLongShort = (radar: { value: number }[]) => {
       const zeroPointsFactor = 10;
       const back: { r: number, th: number }[] = [];
-      let firstZero = -1, minAbs = 1e9, minI = -1;
-      radar.forEach((dd, i) => {
-        if (dd.value === 0) {
-          firstZero = i;
-        }
-        if (Math.abs(dd.value) < minAbs) {
-          minAbs = Math.abs(dd.value);
-          minI = i;
-        }
-      });
-      if (minAbs > 0) {
-        firstZero = minI;
-      }
-      for (let i = 0; i <= radar.length; ++i) {
-        back.push({
-          r: rScale(radar[(i + firstZero) % radar.length].value),
-          th: angleScale((i + firstZero) % radar.length)
-        });
-      }
-      if (radar[(radar.length + firstZero) % radar.length].value *
-        radar[(radar.length - 1 + firstZero) % radar.length].value < 0) {
-
-      }
       for (let i = radar.length * zeroPointsFactor; i >= 0; --i) {
         back.push({
           r: rScale(0),
-          th: angleScale((i / zeroPointsFactor + firstZero) % radar.length)
+          th: angleScale((i / zeroPointsFactor) % radar.length)
         });
       }
-
       return back;
     };
     const blobWrapper = g.selectAll('.radarWrapper')
@@ -420,7 +396,8 @@ export class UsersComponent implements OnChanges {
     blobWrapper
       .append('path')
       .attr('class', 'radarArea')
-      .attr('d', (d) => pMin < 0 ? radarLineExtendedShort(extendRadarLineForShort(d)) : radarLine(d))
+      .attr('d', (d) => pMin < 0 ? radarLine(d) +
+      radarLineExtendedShort(radarLineZeroForLongShort(d)) : radarLine(d))
       .style('fill', (d, i) => cfg.colour(i))
       .style('fill-opacity', cfg.opacityArea)
       .on('mouseover', (d, i, jj) => {
