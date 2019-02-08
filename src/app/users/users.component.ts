@@ -369,25 +369,14 @@ export class UsersComponent implements OnChanges {
       .curve(d3.curveLinearClosed)
       .radius((d) => rScale(d.value))
       .angle((d, i) => angleScale(i));
-    const radarLineExtendedShort = d3.lineRadial<{ r: number, th: number }>()
+      const radarLineZ = d3.lineRadial<{ axis: string, value: number }>()
       .curve(d3.curveLinearClosed)
-      .radius((d) => d.r)
-      .angle((d) => d.th);
+      .radius((d) => rScale(0))
+      .angle((d, i) => angleScale(-i)); // Minus is important to get the shading correct!
     if (cfg.roundStrokes) {
       radarLine.curve(d3.curveCatmullRomClosed);
-      radarLineExtendedShort.curve(d3.curveCatmullRomClosed); // this does a better job for long short data
+      radarLineZ.curve(d3.curveCatmullRomClosed);
     }
-    const radarLineZeroForLongShort = (radar: { value: number }[]) => {
-      const zeroPointsFactor = 10;
-      const back: { r: number, th: number }[] = [];
-      for (let i = radar.length * zeroPointsFactor; i >= 0; --i) {
-        back.push({
-          r: rScale(0),
-          th: angleScale((i / zeroPointsFactor) % radar.length)
-        });
-      }
-      return back;
-    };
     const blobWrapper = g.selectAll('.radarWrapper')
       .data(data)
       .enter().append('g')
@@ -396,8 +385,7 @@ export class UsersComponent implements OnChanges {
     blobWrapper
       .append('path')
       .attr('class', 'radarArea')
-      .attr('d', (d) => pMin < 0 ? radarLine(d) +
-      radarLineExtendedShort(radarLineZeroForLongShort(d)) : radarLine(d))
+      .attr('d', (d) => pMin < 0 ? radarLine(d) + radarLineZ(d) : radarLine(d))
       .style('fill', (d, i) => cfg.colour(i))
       .style('fill-opacity', cfg.opacityArea)
       .on('mouseover', (d, i, jj) => {
