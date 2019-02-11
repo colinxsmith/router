@@ -16,8 +16,8 @@
         "express": "node server.js",
         "node": "node -v",
         "testOpt": "node runme.js",
-        "startOpt": "node-gyp configure build && node runme.js",
-        "installOpt": "node-gyp rebuild && npm run testOpt"
+        "startOpt": "\\cygwin\\bin\\bash mkWrapCxx.sh && node-gyp configure build && node runme.js",
+        "installOpt": "\\cygwin\\bin\\bash mkWrapCxx.sh && node-gyp rebuild && npm run testOpt"
     },
     "private": true,
     "dependencies": {
@@ -34,8 +34,8 @@
         "axios": "^0.18.0",
         "body-parser": "^1.18.3",
         "classlist.js": "^1.1.20150312",
-        "core-js": "^2.6.1",
-        "d3": "^5.7.0",
+        "core-js": "^2.6.4",
+        "d3": "^5.9.1",
         "express": "^4.16.4",
         "font-awesome": "^4.7.0",
         "node": "^11.6.0",
