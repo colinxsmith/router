@@ -378,7 +378,8 @@ export class UsersComponent implements OnChanges {
       radarLine.curve(d3.curveCatmullRomClosed);
       radarLineZ.curve(d3.curveCatmullRomClosed);
     }
-    const blobChooser = (k: number) => `M450,${-450 + k * 50}l50,0,l0,50,l-50,0z`;
+    const blobChooser = (k: number) =>
+      `M${radius * 1.2},${-radius * 1.2 + k * radius / 10}l${radius / 10},0,l0,${radius / 10},l-${radius / 10},0z`;
     const blobWrapper = g.selectAll('.radarWrapper')
       .data(data)
       .enter().append('g')
@@ -393,15 +394,15 @@ export class UsersComponent implements OnChanges {
       .on('mouseover', (d, i, jj) => {
         // Dim all blobs
         d3.selectAll('.radarArea')
-          .transition().duration(200)
+          .transition().duration(2)
           .style('fill-opacity', 0.1);
         // Bring back the hovered over blob
         d3.select(jj[i])
-          .transition().duration(200)
+          .transition().duration(2)
           .style('fill-opacity', 0.7);
       })
       .on('mouseout', () => d3.selectAll('.radarArea')
-        .transition().duration(200)
+        .transition().duration(10)
         .style('fill-opacity', cfg.opacityArea)
       );
     blobWrapper.append('path')
