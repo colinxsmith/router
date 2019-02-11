@@ -55,9 +55,11 @@
     if($input->IsArray())
     {
         v8::Handle<v8::Array> arr= v8::Handle<v8::Array>::Cast($input);
-        $1 = new $*1_ltype[arr->Length()];
-        for(size_t i = 0;i < arr->Length();++i) {
-            $1[i] = ($*1_ltype) arr->Get(i)->NumberValue();
+        if(arr->Length()) {
+            $1 = new $*1_ltype[arr->Length()];
+            for(size_t i = 0;i < arr->Length();++i) {
+                $1[i] = ($*1_ltype) arr->Get(i)->NumberValue();
+            }
         }
     }
 }
@@ -77,18 +79,20 @@
     if($input->IsArray())
     {
         v8::Handle<v8::Array> arr= v8::Handle<v8::Array>::Cast($input);
-        $1 = new $*1_ltype[arr->Length()];
-        for(size_t i = 0;i < arr->Length();++i) {
-            int chars_written, back;
-            v8::Handle<v8::String> kkk = v8::Handle<v8::String>::Cast(arr->Get(i)->ToString());
-            /*
-            V8EXPORT int WriteUtf8(char* buffer,int length = -1,int* nchars_ref = NULL,int options = NO_OPTIONS) const;
-            */
-            char* kkkk = new char[kkk->Utf8Length() * sizeof(*kkk) + 1]; //needed the sizeoff(*kkk) when the strings were long!
-            back = kkk->WriteUtf8(kkkk,kkk->Utf8Length(), &chars_written); 
-            kkkk[kkk->Utf8Length()] = '\0';
-            $1[i] = kkkk;
-//            printf("%s %d written, back %d **",kkkk,chars_written,back);
+        if(arr->Length()){
+            $1 = new $*1_ltype[arr->Length()];
+            for(size_t i = 0;i < arr->Length();++i) {
+                int chars_written, back;
+                v8::Handle<v8::String> kkk = v8::Handle<v8::String>::Cast(arr->Get(i)->ToString());
+                /*
+                V8EXPORT int WriteUtf8(char* buffer,int length = -1,int* nchars_ref = NULL,int options = NO_OPTIONS) const;
+                */
+                char* kkkk = new char[kkk->Utf8Length() * sizeof(*kkk) + 1]; //needed the sizeoff(*kkk) when the strings were long!
+                back = kkk->WriteUtf8(kkkk,kkk->Utf8Length(), &chars_written); 
+                kkkk[kkk->Utf8Length()] = '\0';
+                $1[i] = kkkk;
+    //            printf("%s %d written, back %d **",kkkk,chars_written,back);
+            }
         }
     }
 }
@@ -98,9 +102,11 @@
     if($input->IsArray())
     {
         v8::Handle<v8::Array> arr= v8::Handle<v8::Array>::Cast($input);
-        $1 = new double[arr->Length()];
-        for(size_t i = 0;i < arr->Length();++i) {
-            $1[i] = (double) arr->Get(i)->NumberValue();
+        if(arr->Length()){
+            $1 = new double[arr->Length()];
+            for(size_t i = 0;i < arr->Length();++i) {
+                $1[i] = (double) arr->Get(i)->NumberValue();
+            }
         }
     }
 }
@@ -220,6 +226,9 @@
     }
 %}
 //The following are programmed in the optimiser
+typedef unsigned long dimen;
+typedef double real;
+typedef double* vector;
 char* Return_Message(int);
 char* version(char*asetup);
 double ddotvec(unsigned long n,vector a,vector b);

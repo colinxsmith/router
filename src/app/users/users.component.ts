@@ -305,7 +305,7 @@ export class UsersComponent implements OnChanges {
     const minValue = Math.min(cfg.maxValue, +d3.min(data, (i) => d3.min(i.map((o) => o.value))));
     const allAxis = (data[0].map((i) => i.axis)),	// Names of each axis
       total = allAxis.length,					// The number of different axes
-      radius = Math.min(cfg.w / 2, cfg.h / 2), 	// Radius of the outermost circle
+      radius = Math.min(cfg.w, cfg.h) / 2, 	// Radius of the outermost circle
       percentFormat = maxValue < 1 ? d3.format('.1%') : d3.format('0.1f');
     let pMin = Math.min(-maxValue, minValue);
     const pMax = Math.max(-minValue, maxValue);

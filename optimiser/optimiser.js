@@ -3,6 +3,37 @@ const test = require('../build/Release/OPT');
 Object.keys(test).forEach(function (key) {
     exports[key] = test[key];
 });
+const simpleopt = (n, nfac, ls, full, SV, FL, FC,
+    w, m, L, U, A, alpha, gamma, ogamma, minRisk, maxRisk,
+    five, ten, forty, stocks) => {
+    const log = 2;
+    const logfile = 'Clog';
+    const shake = Array(n);
+    if (gamma === 1.0) {
+        gamma = 1 - 1e-15;
+    }
+    const back = test.Optimise_internalCVPAFblSaMSoftQ(n, nfac, stocks, w, m,
+        A, L, U, alpha,
+        [], [], gamma, [],
+        -1.0, [], [], -1.0, n,
+        -1, 0, 0, -1.0,
+        -1.0,
+        ls, full, -1.0, -1.0,
+        0, [], [], shake,
+        0, [], 1.0,
+        0, [], [],
+        0, [], 0, [], [],
+        FC, FL, SV, minRisk, maxRisk,
+        ogamma, [], log, logfile,
+        0, 1,
+        -1, -1,
+        -1, -1, 1, 1,
+        1.0, 0.0, [], [],
+        1, [], 0, [], [],
+        [], [], [], [], [], five, ten, forty, []);
+    shake.forEach(d => { if (d != -1) { console.log(d); } });
+    return back;
+}
 const diagRisk = (n, w, R) => {
     let back = 0;
     R.forEach((d, i) => {
@@ -56,7 +87,7 @@ const opt = (n, optype) => {
     var ls = 0, full = 1, w = [], m = 1, L = [], U = [], A = [], alpha = [], gamma = 0.5, ogamma = [], minRisk = -1, maxRisk = -1,
         five = 0.05, ten = 0.1, forty = 0.4;
 
-   // const model = '/home/colin/safeqp/USE30305_30MAY03.csv';
+    // const model = '/home/colin/safeqp/USE30305_30MAY03.csv';
     const model = '/home/colin/safeqp/newmodel.csv';
     const nnn = test.get_nstocks(model);
     const nfac = test.get_nfac(model);
@@ -105,7 +136,7 @@ const opt = (n, optype) => {
     });
 
     gamma = 0;
-    let back = test.SimpleOpt(n, nfac, ls, full, SV, FL, FC,
+    let back = simpleopt(n, nfac, ls, full, SV, FL, FC,
         w, m, L, U, A, alpha, gamma, ogamma, minRisk, maxRisk,
         five, ten, forty, stocks)
 
@@ -114,28 +145,28 @@ const opt = (n, optype) => {
     const FX = Array(nfac);
     test.FX_get(n, nfac, w, FL, SV, FC, FX);
 
-    radar.push(factorval(factors,FX));
+    radar.push(factorval(factors, FX));
     output.push({ gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), 'return': test.ddotvec(n, alpha, w), 'portfolio': portfolio(stocks, w, alpha) });
 
     gamma = 1;
-    back = test.SimpleOpt(n, nfac, ls, full, SV, FL, FC,
+    back = simpleopt(n, nfac, ls, full, SV, FL, FC,
         w, m, L, U, A, alpha, gamma, ogamma, minRisk, maxRisk,
         five, ten, forty, stocks)
 
     const maxV = getRisk(n, w, nfac, SV, FL, FC);
     test.FX_get(n, nfac, w, FL, SV, FC, FX);
-    radar.push(factorval(factors,FX));
+    radar.push(factorval(factors, FX));
 
     output.push({ gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), 'return': test.ddotvec(n, alpha, w), 'portfolio': portfolio(stocks, w, alpha) });
     minRisk = (3 * minV + maxV) / 4;
     maxRisk = minRisk;
 
     gamma = 0;
-    back = test.SimpleOpt(n, nfac, ls, full, SV, FL, FC,
+    back = simpleopt(n, nfac, ls, full, SV, FL, FC,
         w, m, L, U, A, alpha, gamma, ogamma, minRisk, maxRisk,
         five, ten, forty, stocks);
     test.FX_get(n, nfac, w, FL, SV, FC, FX);
-    radar.push(factorval(factors,FX));
+    radar.push(factorval(factors, FX));
 
     output.push({ gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), 'return': test.ddotvec(n, alpha, w), 'portfolio': portfolio(stocks, w, alpha) });
 
@@ -143,18 +174,18 @@ const opt = (n, optype) => {
     maxRisk = minRisk;
 
     gamma = 0;
-    back = test.SimpleOpt(n, nfac, ls, full, SV, FL, FC,
+    back = simpleopt(n, nfac, ls, full, SV, FL, FC,
         w, m, L, U, A, alpha, gamma, ogamma, minRisk, maxRisk,
         five, ten, forty, stocks);
     test.FX_get(n, nfac, w, FL, SV, FC, FX);
-    radar.push(factorval(factors,FX));
+    radar.push(factorval(factors, FX));
 
     output.push({ gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), 'return': test.ddotvec(n, alpha, w), 'portfolio': portfolio(stocks, w, alpha) });
     exports.output = output;
     exports.radar = radar;
     factorchart = [];
     radar.forEach(dd => {
-        k={};
+        k = {};
         dd.forEach(d => {
             k[d.axis] = d.value;
         });
@@ -162,7 +193,7 @@ const opt = (n, optype) => {
     });
     stockchart = [];
     output.forEach(dd => {
-        k={};
+        k = {};
         dd.portfolio.forEach(d => {
             k[d.axis] = d.value;
         });
