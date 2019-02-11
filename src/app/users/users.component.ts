@@ -3,6 +3,7 @@ import { AppComponent } from '../app.component';
 import { UserService } from './user.service';
 import * as d3 from 'd3';
 import { map } from 'rxjs/operators';
+import { scaleQuantile } from 'd3';
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
@@ -377,6 +378,7 @@ export class UsersComponent implements OnChanges {
       radarLine.curve(d3.curveCatmullRomClosed);
       radarLineZ.curve(d3.curveCatmullRomClosed);
     }
+    const blobChooser = (k: number) => `M450,${-450 + k * 50}l50,0,l0,50,l-50,0z`;
     const blobWrapper = g.selectAll('.radarWrapper')
       .data(data)
       .enter().append('g')
@@ -385,7 +387,7 @@ export class UsersComponent implements OnChanges {
     blobWrapper
       .append('path')
       .attr('class', 'radarArea')
-      .attr('d', (d) => pMin < 0 ? radarLine(d) + radarLineZ(d) : radarLine(d))
+      .attr('d', (d, i) => (pMin < 0 ? radarLine(d) + radarLineZ(d) : radarLine(d)) + blobChooser(i))
       .style('fill', (d, i) => cfg.colour(i))
       .style('fill-opacity', cfg.opacityArea)
       .on('mouseover', (d, i, jj) => {

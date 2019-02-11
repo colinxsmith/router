@@ -49,7 +49,7 @@
 
 %};
 
-%typemap(in) double*,int*,unsigned long*
+%typemap(in) double*,int*,unsigned long*,size_t*,dimen*
 {
     $1 = 0;
     if($input->IsArray())
@@ -113,16 +113,16 @@
         }
     }
 }
-%typemap(argout) int*,unsigned long*
+%typemap(argout) int*,unsigned long*,size_t*,dimen*
 {
     if($1 && $input->IsArray()) {
         v8::Handle<v8::Array> arr= v8::Handle<v8::Array>::Cast($input);
         for(size_t i = 0;i < arr->Length();++i) {
-            arr->Set(i,SWIG_From_int($1[i]));
+            arr->Set(i,SWIG_From_long($1[i]));
         }
     }
 }
-%typemap(freearg) double*,char*,int*,unsigned long*,vector
+%typemap(freearg) double*,char*,int*,unsigned long*,vector,size_t*,dimen*
 {
    if($1 && $input->IsArray()) {delete[] $1;}
 }
@@ -233,3 +233,22 @@ size_t get_nfac(char* name=(char*)"modelgen.txt");
 void get_stocknames(char** sname,char*name=(char*)"modelgen.txt");
 size_t get_nstocks(char*name=(char*)"modelgen.txt");
 void get_factornames(char** fname,char*name=(char*)"modelgen.txt");
+short  Optimise_internalCVPAFblSaMSoftQ(dimen n,long nfac,char** names,vector w,dimen m,
+            vector A,vector L,vector U,vector alpha,
+            vector benchmark,vector Q,real gamma,vector initial,
+            real delta,vector buy,vector sell,real kappa,long basket,
+            long trades,int revise,int costs,real min_holding,
+            real min_trade,
+            int m_LS,int Fully_Invested,real Rmin,real Rmax,
+            int m_Round,vector min_lot,vector size_lot,int* shake,
+            dimen ncomp,vector Composite,real LSValue,
+            dimen npiece,vector hpiece,vector pgrad,
+            dimen nabs,vector Abs_A,dimen mabs,dimen* I_A,vector Abs_U,
+            vector FC,vector FL,vector SV,double minRisk,double maxRisk,
+            double* ogamma,vector mask,int log,char* logfile,
+            int downrisk,double downfactor,
+            long longbasket,long shortbasket,
+            long tradebuy,long tradesell,double zetaS,double zetaF,
+            double ShortCostScale,double LSValuel,vector Abs_L,vector shortalphacost,
+            int never_slow,size_t*mem_kbytes,dimen soft_m,vector soft_l,vector soft_b,
+            vector soft_L,vector soft_U,vector soft_A,vector qbuy,vector qsell,double five,double ten,double forty,int* issues);
