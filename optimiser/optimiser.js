@@ -99,7 +99,7 @@ const opt = (n, optype) => {
 
     //    const model = 'c:/Users/colin/safeqp/USE30305_30MAY03.csv';
     // const model = 's:\ARTORIUS_GBP_BITA Europe.csv';
-    const model = 'newmodel.csv'
+    const model = 'c:\\Users\\colin\\safeqp\\newmodel.csv'
     const nnn = test.get_nstocks(model) + 1;
     const nfac = test.get_nfac(model);
     const factors = Array(nfac);
