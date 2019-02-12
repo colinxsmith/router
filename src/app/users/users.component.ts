@@ -167,8 +167,8 @@ export class UsersComponent implements OnChanges {
               levels: 3, roundStrokes: !joinLinear, colour: radarBlobColour
             };
           this.RadarChart('app-users', displayData, radarChartOptions);
-          displayData.forEach((ddd) => {
-            this.stockbars(ddd, ww * 0.5, hh * 0.5, 2000, 'Factor Exposure', 'Factor');
+          displayData.forEach((ddd, id) => {
+            this.stockbars(ddd, id, ww * 0.5, hh * 0.5, 2000, 'Factor Exposure', 'Factor');
             this.simpleDisplay(ddd);
           });
         } else if (this.getKey === 'OPT') {
@@ -211,7 +211,7 @@ export class UsersComponent implements OnChanges {
               .attr('transform', 'translate(0,30)').attr('class', 'users')
               .text(() => `Risk: ${this.displayData[i].risk}, Return: ${this.displayData[i].return},
                   gamma: ${this.displayData[i].gamma}`);
-            this.stockbars(ddd, ww * 0.5, hh * 0.5, 2000, 'Weights', 'Assets');
+            this.stockbars(ddd, i, ww * 0.5, hh * 0.5, 2000, 'Weights', 'Assets');
             this.simpleDisplay(ddd);
           });
         } else if (this.getKey === 'newData') {
@@ -370,7 +370,7 @@ export class UsersComponent implements OnChanges {
       .curve(d3.curveLinearClosed)
       .radius((d) => rScale(d.value))
       .angle((d, i) => angleScale(i));
-      const radarLineZ = d3.lineRadial<{ axis: string, value: number }>()
+    const radarLineZ = d3.lineRadial<{ axis: string, value: number }>()
       .curve(d3.curveLinearClosed)
       .radius((d) => rScale(0))
       .angle((d, i) => angleScale(-i)); // Minus is important to get the shading correct!
@@ -396,14 +396,42 @@ export class UsersComponent implements OnChanges {
         d3.selectAll('.radarArea')
           .transition().duration(2)
           .style('fill-opacity', 0.1);
+        d3.selectAll('.weightSinglePlus')
+          .transition().duration(2)
+          .style('fill-opacity', 0.1);
+        d3.selectAll('.weightSingleMinus')
+          .transition().duration(2)
+          .style('fill-opacity', 0.1);
         // Bring back the hovered over blob
         d3.select(jj[i])
           .transition().duration(2)
           .style('fill-opacity', 0.7);
+        d3.selectAll(`.weightSinglePlus`).nodes().forEach(hh => {
+          const h = d3.select(hh);
+          if (+h.attr('picId') === i) {
+            h.transition().duration(2)
+              .style('fill-opacity', 0.7);
+          }
+        });
+        d3.selectAll(`.weightSingleMinus`).nodes().forEach(hh => {
+          const h = d3.select(hh);
+          if (+h.attr('picId') === i) {
+            h.transition().duration(2)
+              .style('fill-opacity', 0.7);
+          }
+        });
       })
-      .on('mouseout', () => d3.selectAll('.radarArea')
-        .transition().duration(10)
-        .style('fill-opacity', cfg.opacityArea)
+      .on('mouseout', () => {
+        d3.selectAll('.radarArea')
+          .transition().duration(10)
+          .style('fill-opacity', cfg.opacityArea);
+        d3.selectAll('.weightSinglePlus')
+          .transition().duration(2)
+          .style('fill-opacity', cfg.opacityArea);
+        d3.selectAll('.weightSingleMinus')
+          .transition().duration(2)
+          .style('fill-opacity', cfg.opacityArea);
+      }
       );
     blobWrapper.append('path')
       .attr('class', 'radarStroke')
@@ -508,7 +536,7 @@ export class UsersComponent implements OnChanges {
         }
       }
     })
-  stockbars = (DATA: { axis: string, value: number, alpha: number }[], ww: number, hh: number,
+  stockbars = (DATA: { axis: string, value: number, alpha: number }[], dataIndex: number, ww: number, hh: number,
     durationtime: number, xText = 'Weight', yText = 'Class') => {
     const svg = d3.select('app-users').append('svg')
       .attr('width', ww)
@@ -584,6 +612,8 @@ export class UsersComponent implements OnChanges {
         return deviation <= 0 ? y(0) : y(deviation);
       })
       .attr('class', (d) => d.value > 0 ? 'weightSinglePlus' : 'weightSingleMinus')
+      .attr('picId', dataIndex)
+      .style('fill-opacity', 0.35)
       .on('mousemove', (d) => tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px').style('display', 'inline-block')
         .html(`<i class="fa fa-gears leafy"></i>${d.axis}<br>weight:${d3.format('0.5f')(d.value)}<br>
