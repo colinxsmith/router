@@ -387,13 +387,13 @@ export class UsersComponent implements OnChanges {
       .attr('class', 'radarWrapper');
     blobWrapper
       .append('path')
-      .attr('class', 'radarArea')
+      .attr('class', 'portfolioFlower')
       .attr('d', (d, i) => (pMin < 0 ? radarLine(d) + radarLineZ(d) : radarLine(d)) + blobChooser(i))
       .style('fill', (d, i) => cfg.colour(i))
       .style('fill-opacity', cfg.opacityArea)
       .on('mouseover', (d, i, jj) => {
         // Dim all blobs
-        d3.selectAll('.radarArea')
+        d3.selectAll('.portfolioFlower')
           .transition().duration(2)
           .style('fill-opacity', 0.1);
         d3.selectAll('.weightSinglePlus')
@@ -422,7 +422,7 @@ export class UsersComponent implements OnChanges {
         });
       })
       .on('mouseout', () => {
-        d3.selectAll('.radarArea')
+        d3.selectAll('.portfolioFlower')
           .transition().duration(10)
           .style('fill-opacity', cfg.opacityArea);
         d3.selectAll('.weightSinglePlus')
