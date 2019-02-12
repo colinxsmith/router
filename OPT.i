@@ -97,15 +97,15 @@
     }
 }
 %typemap(in) vector
-{//This cannot figure out that $*1type is double so we must say double explicitly
+{
     $1 = 0;
     if($input->IsArray())
     {
         v8::Handle<v8::Array> arr= v8::Handle<v8::Array>::Cast($input);
         if(arr->Length()){
-            $1 = new double[arr->Length()];
+            $1 = new $*1_ltype[arr->Length()];
             for(size_t i = 0;i < arr->Length();++i) {
-                $1[i] = (double) arr->Get(i)->NumberValue();
+                $1[i] = ($*1_ltype) arr->Get(i)->NumberValue();
             }
         }
     }
