@@ -1,6 +1,6 @@
 const test = require('../build/Release/OPT');
 
-Object.keys(test).forEach(function (key) {
+Object.keys(test).forEach(function(key) {
     exports[key] = test[key];
 });
 const simpleopt = (n, nfac, ls, full, SV, FL, FC,
@@ -13,11 +13,7 @@ const simpleopt = (n, nfac, ls, full, SV, FL, FC,
         gamma = 1 - 1e-15;
     }
     const back = test.Optimise_internalCVPAFblSaMSoftQ(n, nfac, stocks, w, m,
-        A, L, U, alpha,
-        [], [], gamma, [],
-        -1.0, [], [], -1.0, n,
-        -1, 0, 0, -1.0,
-        -1.0,
+        A, L, U, alpha, [], [], gamma, [], -1.0, [], [], -1.0, n, -1, 0, 0, -1.0, -1.0,
         ls, full, -1.0, -1.0,
         0, [], [], shake,
         0, [], 1.0,
@@ -25,12 +21,9 @@ const simpleopt = (n, nfac, ls, full, SV, FL, FC,
         0, [], 0, [], [],
         FC, FL, SV, minRisk, maxRisk,
         ogamma, [], log, logfile,
-        0, 1,
-        -1, -1,
-        -1, -1, 1, 1,
+        0, 1, -1, -1, -1, -1, 1, 1,
         1.0, 0.0, [], [],
-        1, [], 0, [], [],
-        [], [], [], [], [], five, ten, forty, []);
+        1, [], 0, [], [], [], [], [], [], [], five, ten, forty, []);
     shake.forEach(d => { if (d != -1) { console.log(d); } });
     return back;
 }
@@ -47,7 +40,11 @@ const getRisk = (n, w, nfac, SV, FL, FC) => {
         Q.push(0);
     }
     test.factor_model_process(n, nfac, FL, FC, SV, Q);
-    const arisk = [0], risk = [0], Rrisk = [0], brisk = [0], pbeta = [0];
+    const arisk = [0],
+        risk = [0],
+        Rrisk = [0],
+        brisk = [0],
+        pbeta = [0];
     test.Get_RisksC(n, nfac, Q, w, 0, arisk, risk, Rrisk, brisk,
         pbeta, 0, 0);
     return risk[0];
@@ -84,12 +81,26 @@ const opt = (n, optype) => {
     size_t get_nstocks(char*name=(char*)"modelgen.txt");
     void get_factornames(char** fname,char*name=(char*)"modelgen.txt");*/
 
-    var ls = 0, full = 1, w = [], m = 1, L = [], U = [], A = [], alpha = [], gamma = 0.5, ogamma = [], minRisk = -1, maxRisk = -1,
-        five = 0.05, ten = 0.1, forty = 0.4;
+    var ls = 0,
+        full = 1,
+        w = [],
+        m = 1,
+        L = [],
+        U = [],
+        A = [],
+        alpha = [],
+        gamma = 0.5,
+        ogamma = [],
+        minRisk = -1,
+        maxRisk = -1,
+        five = 0.05,
+        ten = 0.1,
+        forty = 0.4;
 
-    // const model = '/home/colin/safeqp/USE30305_30MAY03.csv';
-    const model = '/home/colin/safeqp/newmodel.csv';
-    const nnn = test.get_nstocks(model);
+    //    const model = 'c:/Users/colin/safeqp/USE30305_30MAY03.csv';
+    // const model = 's:\ARTORIUS_GBP_BITA Europe.csv';
+    const model = 'newmodel.csv'
+    const nnn = test.get_nstocks(model) + 1;
     const nfac = test.get_nfac(model);
     const factors = Array(nfac);
     test.get_factornames(factors, model);
@@ -122,7 +133,9 @@ const opt = (n, optype) => {
     L.push(optype === 'short' ? 0 : 1);
     U.push(optype === 'short' ? 0 : 1);
     if (optype !== 'KAG') {
-        five = -1; ten = -1; forty = -1;
+        five = -1;
+        ten = -1;
+        forty = -1;
     }
     if (optype === 'short') {
         ls = 1;
