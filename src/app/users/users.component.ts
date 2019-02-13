@@ -18,7 +18,7 @@ export class UsersComponent implements OnChanges {
   plotLab: string[] = [];
   plotLabels = { 'Low Risk': 1, 'High Risk': 2, 'Low Medium Risk': 3, 'High Medium Risk': 4 };
   choose2 = [0, 0];
-  dbKeyData = ['radarData', 'OPT'].reverse();
+  dbKeyData = ['radarData', 'OPT', 'factorX'].reverse();
   optType: string[];
   @Input() getType = '';
   @Input() nStocks: number;
@@ -220,11 +220,32 @@ export class UsersComponent implements OnChanges {
           } else {
             this.simpleDisplay([this.displayData]);
           }
+        } else if (this.getKey === 'factorX') {
+this.factorX();
         }
       }, res => {
         console.log(res);
       });
 
+  }
+  factorX(exposures = [0.1, 0.2, 0.3, 0.4, -0.1, -0.3]) {
+    const ww = 500, hh = 500, mx = 10, my = 10, svg = d3.select('app-users').append('svg');
+    svg.attr('x', 0)
+      .attr('y', 0)
+      .attr('width', ww + mx)
+      .attr('height', hh + my)
+      .attr('class', 'factorgauge');
+    const gaugeplate = svg.append('g');
+    gaugeplate.append('path')
+    .style('fill', 'none')
+      .style('stroke', 'green')
+      .attr('transform', `translate(${mx + ww / 2},${my + hh / 2})`)
+      .attr('d', d3.arc()({
+        innerRadius: ww / 2 - 20,
+        outerRadius: ww / 2,
+        startAngle: -2 * Math.PI / 5,
+        endAngle: 2 * Math.PI / 5
+      }) + `M0,0,l10,0l0,${-ww / 2},l-20,0l0,${ww / 2}z` + `M${-ww/2},0l0,-20l${ww},0l0,20z`);
   }
   simpleDisplay(displayData: any) {
     const www = Object.keys(displayData[0]).length;
