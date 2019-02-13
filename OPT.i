@@ -49,7 +49,7 @@
 
 %};
 
-%typemap(in) double*,int*,unsigned long*,size_t*,dimen*
+%typemap(in) double*,int*,unsigned long*,size_t*,dimen*,vector
 {
     $1 = 0;
     if($input->IsArray())
@@ -92,20 +92,6 @@
                 kkkk[kkk->Utf8Length()] = '\0';
                 $1[i] = kkkk;
     //            printf("%s %d written, back %d **",kkkk,chars_written,back);
-            }
-        }
-    }
-}
-%typemap(in) vector
-{//This cannot figure out that $*1type is double so we must say double explicitly
-    $1 = 0;
-    if($input->IsArray())
-    {
-        v8::Handle<v8::Array> arr= v8::Handle<v8::Array>::Cast($input);
-        if(arr->Length()){
-            $1 = new double[arr->Length()];
-            for(size_t i = 0;i < arr->Length();++i) {
-                $1[i] = (double) arr->Get(i)->NumberValue();
             }
         }
     }
