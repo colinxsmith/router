@@ -3,7 +3,7 @@ import { AppComponent } from '../app.component';
 import { UserService } from './user.service';
 import * as d3 from 'd3';
 import { map } from 'rxjs/operators';
-import { scaleQuantile } from 'd3';
+import { scaleQuantile, ContainerElement } from 'd3';
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
@@ -98,7 +98,7 @@ export class UsersComponent implements OnChanges {
     // this.getType = type;
     console.log('Data changed is ' + this.dataChangedDueToAnotherSessionOptimising);
     d3.select('app-users').selectAll('svg').remove();
-    if (this.dataChangedDueToAnotherSessionOptimising) {
+    if (this.dataChangedDueToAnotherSessionOptimising || this.getKey === 'factorX') {
       this.chooseData(this.getKey, pointed);
     } else {
       // Only optimise to get new OPT and radarData if changes were made to getType and nStocks here.
@@ -221,31 +221,90 @@ export class UsersComponent implements OnChanges {
             this.simpleDisplay([this.displayData]);
           }
         } else if (this.getKey === 'factorX') {
-this.factorX();
+          this.factorX();
         }
       }, res => {
         console.log(res);
       });
 
   }
-  factorX(exposures = [0.1, 0.2, 0.3, 0.4, -0.1, -0.3]) {
-    const ww = 500, hh = 500, mx = 10, my = 10, svg = d3.select('app-users').append('svg');
+  factorX(exposures = [0, 0.2, 0.3, 0.4, -0.1, -0.3]) {
+    const newVals = Array(exposures.length);
+    const angScale = d3.scaleLinear<number, number>()
+      .domain([-0.5, 0.5]).range([-2 * Math.PI / 5 + Math.PI / 2, 2 * Math.PI / 5 + Math.PI / 2]);
+    const width = 1000, height = 1000, mx = 10, my = 10, svg = d3.select('app-users').append('svg')
+      , th = 7, rad = Math.min(width, height) / 10;
     svg.attr('x', 0)
       .attr('y', 0)
-      .attr('width', ww + mx)
-      .attr('height', hh + my)
+      .attr('width', width + mx)
+      .attr('height', height + my)
       .attr('class', 'factorgauge');
     const gaugeplate = svg.append('g');
-    gaugeplate.append('path')
-    .style('fill', 'none')
+    gaugeplate.selectAll('.meters').select('g').data(exposures).enter()
+      .append('path')
+      .attr('class', 'meters')
+      .style('fill', 'none')
       .style('stroke', 'green')
-      .attr('transform', `translate(${mx + ww / 2},${my + hh / 2})`)
-      .attr('d', d3.arc()({
-        innerRadius: ww / 2 - 20,
-        outerRadius: ww / 2,
-        startAngle: -2 * Math.PI / 5,
-        endAngle: 2 * Math.PI / 5
-      }) + `M0,0,l10,0l0,${-ww / 2},l-20,0l0,${ww / 2}z` + `M${-ww/2},0l0,-20l${ww},0l0,20z`);
+      .attr('transform', (d, i) => `translate(${mx + rad / 2},${my + rad / 2 + i * rad})`)
+      .attr('d', (d) => {
+        const cc = (rad - th * 2) * Math.cos(angScale(-d)), ss = (rad - th * 2) * Math.sin(angScale(-d));
+        return `M0,0,l${th / 2},0l${cc / 2},${-ss / 2},l-${th},0l${-cc / 2},${ss / 2}z` + `M${-rad / 2},0l0,-${th}l${rad},0l0,${th}z`;
+      }
+      );
+      gaugeplate.selectAll('.meters').select('g').data(exposures).enter()
+      .append('text')
+      .attr('class', 'attr.legendRadar')
+      .attr('x', -rad / 2)
+      .attr('y', -rad / 2 + th)
+      .attr('transform', (d, i) => `translate(${mx + rad / 2},${my + rad / 2 + i * rad})`)
+      .text(d => d);
+      gaugeplate.selectAll('.newvals').select('g').data(newVals).enter()
+      .append('text')
+      .attr('class', 'attr.legendRadar')
+      .attr('x', rad / 2)
+      .attr('y', -rad / 2 + th)
+      .attr('transform', (d, i) => `translate(${mx + rad / 2},${my + rad / 2 + i * rad})`)
+      .text(d => d);
+    const dialParts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    for (let i = 0; i < exposures.length; ++i) {
+      gaugeplate.append('g').selectAll('.dials').data(dialParts).enter()
+        .append('path')
+        .attr('class', () => `dials${i}`)
+        .style('fill', 'none')
+        .style('stroke', 'red')
+        .attr('transform', () => `translate(${mx + rad / 2},${my + rad / 2 + i * rad})`)
+        .attr('d', (d, ii) => {
+          const st = ii / (dialParts.length) * (angScale.range()[1] - angScale.range()[0]) + angScale.range()[0];
+          const en = (ii + 1) / (dialParts.length) * (angScale.range()[1] - angScale.range()[0]) + angScale.range()[0];
+          return d3.arc()({
+            innerRadius: rad / 2 - th, outerRadius: rad / 2, startAngle: st - Math.PI / 2,
+            endAngle: en - Math.PI / 2
+          });
+        });
+      gaugeplate.selectAll(`.dials${i}`)
+        .on('mouseover', (d, ii, jj) => {
+          const here = d3.select(jj[ii]);
+          here
+            .transition().duration(2)
+            .style('fill', 'red');
+        })
+        .on('click', (d, ii, jj) => {
+          const here = d3.select(jj[ii]);
+          here
+            .transition().duration(2)
+            .style('fill', 'rgb(0 , 128, 0)');
+            const newVal = (ii + 0.5) / (dialParts.length) * (angScale.range()[1] - angScale.range()[0]) + angScale.range()[0];
+            console.log(angScale.invert(newVal));
+            newVal[ii] = angScale.invert(newVal);
+        })
+        .on('mouseout', (d, ii, jj) => {
+          const here = d3.select(jj[ii]);
+          const colour = here.style('fill');
+          here.transition().duration(2)
+            .style('fill', 'none');
+        })
+        ;
+    }
   }
   simpleDisplay(displayData: any) {
     const www = Object.keys(displayData[0]).length;
