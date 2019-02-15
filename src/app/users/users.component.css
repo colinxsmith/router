@@ -121,6 +121,13 @@ text.meters{
     text-anchor: middle;
     text-align: left;
 }
+text.factorlabels{
+    font-size: 15px;
+    font-family: Calibri, sans-serif;
+    fill: rgb(51, 51, 51);
+    text-anchor: middle;
+    text-align: center;
+}
 text.newvals{
     font-size: 12px;
     font-family: Calibri, sans-serif;

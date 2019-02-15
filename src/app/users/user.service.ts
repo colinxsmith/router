@@ -26,14 +26,15 @@ export class UserService {
         return ddd;
       }));
   }
-  postType(n: number = 20, type: string = 'short') {
+  postType(n: number = 20, type: string = 'short', factorWant: number[] = []) {
     const options = { headers: new HttpHeaders().set('Content-Type', 'application/json') };
     return this
       .http
       .post<{
         n: number,
-        type: string
-      }>(`${this.url}/optype`, { n: n, type: type }, options)
+        type: string,
+        factorWant: number[]
+      }>(`${this.url}/optype`, { n: n, type: type, factorWant: factorWant}, options)
       .pipe(map(ddd => {
         console.log(ddd);
         return ddd;

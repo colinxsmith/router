@@ -59,9 +59,10 @@ const portfolio = (axis, value, alpha) => {
     });
     return portfolio;
 };
-const factorval = (axis, value) => {
+const factorval = (axis, value, filter = '') => {
     const factorval = [];
     value.forEach((d, i) => {
+        if(filter !== '' && axis[i].indexOf(filter) !== 0)
         factorval.push({ 'axis': axis[i], 'id': i + 1, 'value': d });
     });
     return factorval;
@@ -202,5 +203,92 @@ const opt = (n, optype) => {
     exports.stockchart = stockchart;
     exports.factorchart = factorchart;
 }
+const factor = (n, optype, factorwant) => {
+    let wants = 0;
+    factorwant.forEach(d => d !== null ? wants++ : console.log(d));
+    const output = [];
+    const factorData = [];
+    var ls = 0, full = 1, w = [], m = 1, L = [], U = [], A = [], alpha = [], gamma = 0.5, ogamma = [], minRisk = -1, maxRisk = -1,
+        five = 0.05, ten = 0.1, forty = 0.4;
+    const model = '/home/colin/safeqp/newmodel.csv';
+    const nnn = test.get_nstocks(model);
+    const nfac = test.get_nfac(model);
+    const factors = Array(nfac);
+    test.get_factornames(factors, model);
+    const stocks = Array(nnn);
+    if (n > nnn) {
+        n = nnn;
+        console.log('Max n is ' + n);
+    }
+    test.get_stocknames(stocks, model);
+    const FL = Array(n * nfac);
+    const SV = Array(n);
+    const FC = Array(nfac * (nfac + 1) / 2);
+    // Use first n names to define portfolio
+    test.getdata(n, nfac, stocks, FL, SV, FC, model);
+    const annus = 252;
+    FC.forEach((d, ii) => {
+        FC[ii] /= annus;
+    });
+    SV.forEach((d, ii) => {
+        SV[ii] /= annus;
+    });
+
+    for (let i = 0; i < n; ++i) {
+        w.push(1.0 / n);
+        L.push(optype === 'short' ? -1 : 0);
+        U.push(1);
+        A.push(1);
+        alpha.push((i + 1));
+    }
+    L.push(optype === 'short' ? 0 : 1);
+    U.push(optype === 'short' ? 0 : 1);
+    if (optype !== 'KAG') {
+        five = -1; ten = -1; forty = -1;
+    }
+    if (optype === 'short') {
+        ls = 1;
+    }
+    if (wants) {
+        m += wants;
+        for (let j = 0; j < nfac; j++) {
+            if (factorwant[j] !== null) {
+                for (let i = 0; i < n; ++i) {
+                    A.push(FL[j * n + i]);
+                }
+                L.push(factorwant[j]);
+                U.push(factorwant[j]);
+            }
+        }
+    }
+    if(wants){
+        const Atr = Array(n * (wants + 1));
+        test.dmx_transpose(n, wants + 1, A, Atr);
+        A = Atr;
+    }
+    const MC = Array(n);
+
+    test.MCAR(n, nfac, w, alpha, FL, SV, FC, MC)
+    alpha.forEach((d, ii) => {
+        alpha[ii] *= w[ii] * MC[ii];
+    });
+
+    gamma = 0;
+    ogamma.push(gamma);
+    let back = simpleopt(n, nfac, ls, full, SV, FL, FC,
+        w, m, L, U, A, alpha, gamma, ogamma, minRisk, maxRisk,
+        five, ten, forty, stocks)
+
+
+    const minV = getRisk(n, w, nfac, SV, FL, FC);
+    const FX = Array(nfac);
+    test.FX_get(n, nfac, w, FL, SV, FC, FX);
+
+    factorData.push({back: test.Return_Message(back), risk: getRisk(n, w, nfac, SV, FL, FC), 'return': test.ddotvec(n, alpha, w), factors: factorval(factors, FX, 'pc')});
+    output.push({ back: test.Return_Message(back), gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), 'return': test.ddotvec(n, alpha, w), 'portfolio': portfolio(stocks, w, alpha) });
+    exports.factorData = factorData;
+    exports.output = output;
+}
 
 exports.opt = opt;
+exports.factor = factor;

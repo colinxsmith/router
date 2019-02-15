@@ -6,6 +6,7 @@
         typedef unsigned long dimen;
         char* Return_Message(int);
         char* version(char*);
+        void dmx_transpose(dimen n, dimen m, vector a, vector transposed);
         double ddotvec(unsigned long n,vector a,vector b);
         void getdata(size_t nstocks,size_t nfac,char** namelist,double* FLOUT,double* SVOUT,double* FCOUT,char* name=(char*)"modelgen.txt");
         void get_w(size_t n,vector s,vector x,vector w);
@@ -228,6 +229,7 @@ size_t get_nfac(char* name=(char*)"modelgen.txt");
 void get_stocknames(char** sname,char*name=(char*)"modelgen.txt");
 size_t get_nstocks(char*name=(char*)"modelgen.txt");
 void get_factornames(char** fname,char*name=(char*)"modelgen.txt");
+void dmx_transpose(dimen n, dimen m, vector a, vector transposed);
 short  Optimise_internalCVPAFblSaMSoftQ(dimen n,long nfac,char** names,vector w,dimen m,
             vector A,vector L,vector U,vector alpha,
             vector benchmark,vector Q,real gamma,vector initial,

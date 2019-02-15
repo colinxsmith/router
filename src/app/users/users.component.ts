@@ -22,6 +22,7 @@ export class UsersComponent implements OnChanges {
   optType: string[];
   @Input() getType = '';
   @Input() nStocks: number;
+  @Input() factorConstraintChange: number[] = [];
   constructor(private userService: UserService, private appComponent: AppComponent) {
     this.optType = this.appComponent.optType;
   }
@@ -102,14 +103,14 @@ export class UsersComponent implements OnChanges {
       this.chooseData(this.getKey, pointed);
     } else {
       // Only optimise to get new OPT and radarData if changes were made to getType and nStocks here.
-      this.userService.postType(this.nStocks, this.getType).subscribe(res => {
+      this.userService.postType(this.nStocks, this.getType, this.factorConstraintChange).subscribe(res => {
         console.log(res);
         this.chooseData(this.getKey, pointed);
       });
     }
   }
   chooseData(dd: string, joinLinear = false) {
-    d3.select('app-root').selectAll('button').remove();
+    d3.select('app-root').selectAll('.send').remove();
     d3.select('app-users').selectAll('svg').remove();
 
     this.getKey = dd;
@@ -131,9 +132,11 @@ export class UsersComponent implements OnChanges {
       .pipe(map(da2 => {
         this.dataChangedDueToAnotherSessionOptimising = !(this.nStocks === +da2.nstocks && this.getType === da2.type);
         this.appComponent.changeStocks(+da2.nstocks);
-        this.nStocks = +da2.nstocks;
+//        this.nStocks = +da2.nstocks;
         this.appComponent.changeType(da2.type);
-        this.getType = da2.type;
+//        this.getType = da2.type;
+        this.appComponent.changeWants(da2.factorWants);
+//        this.factorConstraintChange = da2.factorWants;
         this.displayData = da2[this.getKey];
         return da2;
       }))
@@ -223,22 +226,73 @@ export class UsersComponent implements OnChanges {
           }
         } else if (this.getKey === 'factorX') {
           d3.select('app-root').select('div').append('button')
-          .style('color', 'blue')
-          .text('send');
-          this.factorX();
+          .attr('class', 'send')
+            .style('color', 'blue')
+            .text('send');
+          this.factorX(this.displayData.factors);
+          d3.select('app-users').append('svg').attr('width', 1000).attr('height', 50).append('g').append('text')
+              .attr('transform', 'translate(0,0)').attr('class', 'users').attr('dy', '0.6em').attr('dx', '-1em')
+              .text(() => `Risk: ${this.displayData.risk}, Return: ${this.displayData.return},
+                  Return status: ${this.displayData.back}`);
         }
       }, res => {
         console.log(res);
       });
 
   }
-  factorX(exposures = [0, 0.2, 0.3, 0.4, -0.1, -0.3]) {
-    d3.select('app-root').select('button').on('click', () => console.log(newVals));
-    const formatG = d3.format('0.2f');
+
+  factorX(exposures = [
+    {
+      axis: 'UK Gilt Long-Short Yield Spread',
+      value: -0.43706810000000007
+    },
+    {
+      axis: 'IG Corp-UST Yield Spread',
+      value: 0
+    },
+    {
+      axis: 'HY Corp-UST Yield Spread',
+      value: -1.5054635549691393
+    },
+    {
+      axis: 'EM-UST Sov Yield Spread',
+      value: 0.1402893
+    },
+    {
+      axis: 'Equity',
+      value: 0.5257086345508954
+    },
+    {
+      axis: 'RPI',
+      value: 0
+    },
+    {
+      axis: 'BoE Interest Rates',
+      value: 0
+    },
+    {
+      axis: 'VIX',
+      value: 0
+    },
+    {
+      axis: 'Oil',
+      value: -0.007541555
+    },
+    {
+      axis: 'USD/GBP',
+      value: -0.0603012272772637
+    }
+  ]) {
+    d3.select('app-root').select('.send').on('click', () => {
+      this.factorConstraintChange = newVals;
+      this.changeLs(this.getType, this.updateLabel !== 'MAKE POINTED');
+    });
+    const minmaxE = [d3.min(exposures, d => d.value), d3.max(exposures, d => d.value)];
+    const formatG = d3.format('0.3f');
     const newVals = Array(exposures.length);
 
     const angScale = d3.scaleLinear<number, number>()
-      .domain([-0.5, 0.5]).range([-2 * Math.PI / 5 + Math.PI / 2, 2 * Math.PI / 5 + Math.PI / 2]);
+      .domain(minmaxE).range([2 * Math.PI / 5 + Math.PI / 2, -2 * Math.PI / 5 + Math.PI / 2]);
     const width = 1000, height = 1000, mx = 10, my = 10, svg = d3.select('app-users').append('svg')
       , th = 7, rad = Math.min(width, height) / 10;
     svg.attr('x', 0)
@@ -254,7 +308,7 @@ export class UsersComponent implements OnChanges {
       .style('stroke', 'green')
       .attr('transform', (d, i) => `translate(${mx + rad / 2},${my + rad / 2 + i * rad})`)
       .attr('d', (d) => {
-        const cc = (rad - th * 2) * Math.cos(angScale(-d)), ss = (rad - th * 2) * Math.sin(angScale(-d));
+        const cc = (rad - th * 2) * Math.cos(angScale(d.value)), ss = (rad - th * 2) * Math.sin(angScale(d.value));
         return `M0,0,l${th / 2},0l${cc / 2},${-ss / 2},l-${th},0l${-cc / 2},${ss / 2}z` + `M${-rad / 2},0l0,-${th}l${rad},0l0,${th}Z`;
       }
       );
@@ -264,7 +318,14 @@ export class UsersComponent implements OnChanges {
       .attr('x', -rad / 2 + th)
       .attr('y', -rad / 2 + th)
       .attr('transform', (d, i) => `translate(${mx + rad / 2},${my + rad / 2 + i * rad})`)
-      .text(d => formatG(d));
+      .text(d => formatG(d.value));
+    gaugeplate.selectAll('.meters').select('g').data(exposures).enter()
+      .append('text')
+      .attr('class', 'factorlabels')
+      .attr('x', 0)
+      .attr('y', th * 4)
+      .attr('transform', (d, i) => `translate(${mx + rad / 2},${my + rad / 2 + i * rad})`)
+      .text(d => d.axis);
     gaugeplate.selectAll('.newvals').select('g').data(newVals).enter()
       .append('text')
       .attr('class', 'newvals')
@@ -281,8 +342,8 @@ export class UsersComponent implements OnChanges {
         .style('stroke', 'red')
         .attr('transform', () => `translate(${mx + rad / 2},${my + rad / 2 + i * rad})`)
         .attr('d', (d, ii) => {
-          const st = ii / (dialParts.length) * (angScale.range()[1] - angScale.range()[0]) + angScale.range()[0];
-          const en = (ii + 1) / (dialParts.length) * (angScale.range()[1] - angScale.range()[0]) + angScale.range()[0];
+          const st = ii / (dialParts.length) * (angScale.range()[0] - angScale.range()[1]) + angScale.range()[1];
+          const en = (ii + 1) / (dialParts.length) * (angScale.range()[0] - angScale.range()[1]) + angScale.range()[1];
           return d3.arc()({
             innerRadius: rad / 2 - th, outerRadius: rad / 2, startAngle: st - Math.PI / 2,
             endAngle: en - Math.PI / 2
@@ -316,7 +377,7 @@ export class UsersComponent implements OnChanges {
             if (iii === i) {
               here1.attr('d', () => {
                 const old = here1.attr('d').replace(/Z.*$/, 'Z'), th1 = th / 10;
-                const cc = (rad - th * 2) * Math.cos(angScale(-newVals[i])), ss = (rad - th * 2) * Math.sin(angScale(-newVals[i]));
+                const cc = (rad - th * 2) * Math.cos(angScale(newVals[i])), ss = (rad - th * 2) * Math.sin(angScale(newVals[i]));
                 return old + `M0,0,l${th1 / 2},0l${cc / 2},${-ss / 2},l-${th1},0l${-cc / 2},${ss / 2}z`;
               });
             }

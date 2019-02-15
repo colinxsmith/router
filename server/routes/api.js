@@ -10,14 +10,19 @@ let mocked = {
         { 'id': 5, 'name': 'Chris Evans', 'movies': 20 }
     ]
 };
-const setMocked = (n, type, res) => {
+const setMocked = (n, type, want, res) => {
     const opt = require('../../optimiser/optimiser');
-    opt.opt(n, type)
+    if (type === 'factor') {
+        opt.factor(n, type, want);
+    } else {
+        opt.opt(n, type);
+    }
     mocked.version = opt.version().split('\r\n');
     mocked.type = type;
     mocked.nstocks = n;
     mocked.OPT = opt.output;
     mocked.radarData = opt.radar;
+    mocked.factorX = opt.factorData[0];
     mocked.stockchart = opt.stockchart;
     mocked.factorchart = opt.factorchart;
     res.status(200).json(mocked);
@@ -41,7 +46,7 @@ router.post('/db', (req, res) => {
 });
 router.post('/optype', (req, res) => {
     console.log(req.body);
-    setMocked(req.body.n, req.body.type, res);
+    setMocked(req.body.n, req.body.type, req.body.factorWant, res);
     console.log('optType', req.body.type);
     console.log('n', req.body.n);
 });
