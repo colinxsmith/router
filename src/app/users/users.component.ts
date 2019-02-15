@@ -98,7 +98,7 @@ export class UsersComponent implements OnChanges {
     // this.getType = type;
     console.log('Data changed is ' + this.dataChangedDueToAnotherSessionOptimising);
     d3.select('app-users').selectAll('svg').remove();
-    if (this.dataChangedDueToAnotherSessionOptimising || this.getKey === 'factorX') {
+    if (this.dataChangedDueToAnotherSessionOptimising /*|| this.getKey === 'factorX' */) {
       this.chooseData(this.getKey, pointed);
     } else {
       // Only optimise to get new OPT and radarData if changes were made to getType and nStocks here.
@@ -109,6 +109,7 @@ export class UsersComponent implements OnChanges {
     }
   }
   chooseData(dd: string, joinLinear = false) {
+    d3.select('app-root').selectAll('button').remove();
     d3.select('app-users').selectAll('svg').remove();
 
     this.getKey = dd;
@@ -221,6 +222,9 @@ export class UsersComponent implements OnChanges {
             this.simpleDisplay([this.displayData]);
           }
         } else if (this.getKey === 'factorX') {
+          d3.select('app-root').select('div').append('button')
+          .style('color', 'blue')
+          .text('send');
           this.factorX();
         }
       }, res => {
@@ -229,7 +233,10 @@ export class UsersComponent implements OnChanges {
 
   }
   factorX(exposures = [0, 0.2, 0.3, 0.4, -0.1, -0.3]) {
+    d3.select('app-root').select('button').on('click', () => console.log(newVals));
+    const formatG = d3.format('0.2f');
     const newVals = Array(exposures.length);
+
     const angScale = d3.scaleLinear<number, number>()
       .domain([-0.5, 0.5]).range([-2 * Math.PI / 5 + Math.PI / 2, 2 * Math.PI / 5 + Math.PI / 2]);
     const width = 1000, height = 1000, mx = 10, my = 10, svg = d3.select('app-users').append('svg')
@@ -248,24 +255,24 @@ export class UsersComponent implements OnChanges {
       .attr('transform', (d, i) => `translate(${mx + rad / 2},${my + rad / 2 + i * rad})`)
       .attr('d', (d) => {
         const cc = (rad - th * 2) * Math.cos(angScale(-d)), ss = (rad - th * 2) * Math.sin(angScale(-d));
-        return `M0,0,l${th / 2},0l${cc / 2},${-ss / 2},l-${th},0l${-cc / 2},${ss / 2}z` + `M${-rad / 2},0l0,-${th}l${rad},0l0,${th}z`;
+        return `M0,0,l${th / 2},0l${cc / 2},${-ss / 2},l-${th},0l${-cc / 2},${ss / 2}z` + `M${-rad / 2},0l0,-${th}l${rad},0l0,${th}Z`;
       }
       );
-      gaugeplate.selectAll('.meters').select('g').data(exposures).enter()
+    gaugeplate.selectAll('.meters').select('g').data(exposures).enter()
       .append('text')
-      .attr('class', 'attr.legendRadar')
-      .attr('x', -rad / 2)
+      .attr('class', 'meters')
+      .attr('x', -rad / 2 + th)
+      .attr('y', -rad / 2 + th)
+      .attr('transform', (d, i) => `translate(${mx + rad / 2},${my + rad / 2 + i * rad})`)
+      .text(d => formatG(d));
+    gaugeplate.selectAll('.newvals').select('g').data(newVals).enter()
+      .append('text')
+      .attr('class', 'newvals')
+      .attr('x', rad / 2 + th)
       .attr('y', -rad / 2 + th)
       .attr('transform', (d, i) => `translate(${mx + rad / 2},${my + rad / 2 + i * rad})`)
       .text(d => d);
-      gaugeplate.selectAll('.newvals').select('g').data(newVals).enter()
-      .append('text')
-      .attr('class', 'attr.legendRadar')
-      .attr('x', rad / 2)
-      .attr('y', -rad / 2 + th)
-      .attr('transform', (d, i) => `translate(${mx + rad / 2},${my + rad / 2 + i * rad})`)
-      .text(d => d);
-    const dialParts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const dialParts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
     for (let i = 0; i < exposures.length; ++i) {
       gaugeplate.append('g').selectAll('.dials').data(dialParts).enter()
         .append('path')
@@ -293,9 +300,27 @@ export class UsersComponent implements OnChanges {
           here
             .transition().duration(2)
             .style('fill', 'rgb(0 , 128, 0)');
-            const newVal = (ii + 0.5) / (dialParts.length) * (angScale.range()[1] - angScale.range()[0]) + angScale.range()[0];
-            console.log(angScale.invert(newVal));
-            newVal[ii] = angScale.invert(newVal);
+          const newVal = (ii + 0.5) / (dialParts.length) * (angScale.range()[1] - angScale.range()[0]) + angScale.range()[0];
+          console.log(angScale.invert(newVal));
+          newVals[i] = angScale.invert(newVal);
+          gaugeplate.selectAll('.newvals').nodes().forEach((ddd, iii) => {
+            const here1 = d3.select(ddd);
+            if (iii === i) {
+              console.log(`${here1.attr('x')} ${here1.attr('y')}  ${here1.text()} `);
+              here1.text(formatG(newVals[i]));
+              console.log(`${here1.attr('x')} ${here1.attr('y')}  ${here1.text()} `);
+            }
+          });
+          gaugeplate.selectAll('.meters').nodes().forEach((ddd, iii) => {
+            const here1 = d3.select(ddd);
+            if (iii === i) {
+              here1.attr('d', () => {
+                const old = here1.attr('d').replace(/Z.*$/, 'Z'), th1 = th / 10;
+                const cc = (rad - th * 2) * Math.cos(angScale(-newVals[i])), ss = (rad - th * 2) * Math.sin(angScale(-newVals[i]));
+                return old + `M0,0,l${th1 / 2},0l${cc / 2},${-ss / 2},l-${th1},0l${-cc / 2},${ss / 2}z`;
+              });
+            }
+          });
         })
         .on('mouseout', (d, ii, jj) => {
           const here = d3.select(jj[ii]);
