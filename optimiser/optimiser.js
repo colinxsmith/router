@@ -59,7 +59,7 @@ const portfolio = (axis, value, alpha) => {
     });
     return portfolio;
 };
-const factorval = (axis, value, filter = '') => {
+const factorval = (axis, value, filter = '000000sss0') => {
     const factorval = [];
     value.forEach((d, i) => {
         if(filter !== '' && axis[i].indexOf(filter) !== 0)
