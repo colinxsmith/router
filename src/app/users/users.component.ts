@@ -4,6 +4,7 @@ import { UserService } from './user.service';
 import * as d3 from 'd3';
 import { map } from 'rxjs/operators';
 import { scaleQuantile, ContainerElement } from 'd3';
+import { fcall } from 'q';
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
@@ -12,6 +13,8 @@ import { scaleQuantile, ContainerElement } from 'd3';
 })
 export class UsersComponent implements OnChanges {
   displayData: any;
+  sendOptLabel = 'SEND';
+  resetOptLabel = 'RESET';
   updateLabel = 'MAKE POINTED';
   dataChangedDueToAnotherSessionOptimising = false;
   getKey = '';
@@ -25,6 +28,13 @@ export class UsersComponent implements OnChanges {
   @Input() factorConstraintChange: number[] = [];
   constructor(private userService: UserService, private appComponent: AppComponent) {
     this.optType = this.appComponent.optType;
+  }
+  sendOpt() {
+    this.changeLs(this.getType, this.updateLabel !== 'MAKE POINTED');
+  }
+  resetOpt() {
+    this.factorConstraintChange = [];
+    this.changeLs(this.getType, this.updateLabel !== 'MAKE POINTED');
   }
   ngOnChanges(changed: SimpleChanges) {
     console.log('ngOnChanges '); console.log(changed);
@@ -99,7 +109,7 @@ export class UsersComponent implements OnChanges {
     // this.getType = type;
     console.log('Data changed is ' + this.dataChangedDueToAnotherSessionOptimising);
     d3.select('app-users').selectAll('svg').remove();
-    if (this.dataChangedDueToAnotherSessionOptimising /*|| this.getKey === 'factorX' */) {
+    if (this.dataChangedDueToAnotherSessionOptimising) {
       this.chooseData(this.getKey, pointed);
     } else {
       // Only optimise to get new OPT and radarData if changes were made to getType and nStocks here.
@@ -132,11 +142,11 @@ export class UsersComponent implements OnChanges {
       .pipe(map(da2 => {
         this.dataChangedDueToAnotherSessionOptimising = !(this.nStocks === +da2.nstocks && this.getType === da2.type);
         this.appComponent.changeStocks(+da2.nstocks);
-//        this.nStocks = +da2.nstocks;
+        //        this.nStocks = +da2.nstocks;
         this.appComponent.changeType(da2.type);
-//        this.getType = da2.type;
+        //        this.getType = da2.type;
         this.appComponent.changeWants(da2.factorWants);
-//        this.factorConstraintChange = da2.factorWants;
+        //        this.factorConstraintChange = da2.factorWants;
         this.displayData = da2[this.getKey];
         return da2;
       }))
@@ -225,15 +235,10 @@ export class UsersComponent implements OnChanges {
             this.simpleDisplay([this.displayData]);
           }
         } else if (this.getKey === 'factorX') {
-          d3.select('app-root').select('div').append('button')
-          .attr('class', 'send')
-            .style('color', 'blue')
-            .text('send');
+          d3.select('app-users').append('svg').attr('width', 960).attr('height', 50).append('g').append('text')
+            .attr('transform', 'translate(0,20)').attr('class', 'newvals').attr('x', 0).attr('y', 0).style('text-anchor', 'start')
+            .text(`Risk: ${this.displayData.risk} Return: ${this.displayData.return} Return status: ${this.displayData.back}`);
           this.factorX(this.displayData.factors);
-          d3.select('app-users').append('svg').attr('width', 1000).attr('height', 50).append('g').append('text')
-              .attr('transform', 'translate(0,0)').attr('class', 'users').attr('dy', '0.6em').attr('dx', '-1em')
-              .text(() => `Risk: ${this.displayData.risk}, Return: ${this.displayData.return},
-                  Return status: ${this.displayData.back}`);
         }
       }, res => {
         console.log(res);
@@ -283,18 +288,23 @@ export class UsersComponent implements OnChanges {
       value: -0.0603012272772637
     }
   ]) {
-    d3.select('app-root').select('.send').on('click', () => {
-      this.factorConstraintChange = newVals;
-      this.changeLs(this.getType, this.updateLabel !== 'MAKE POINTED');
-    });
+
     const minmaxE = [d3.min(exposures, d => d.value), d3.max(exposures, d => d.value)];
     const formatG = d3.format('0.3f');
     const newVals = Array(exposures.length);
-
+    if (this.factorConstraintChange) {
+      this.factorConstraintChange.forEach((d, i) => {
+        if (d !== null) {
+          newVals[i] = d;
+        }
+      });
+    }
+    this.factorConstraintChange = newVals;
     const angScale = d3.scaleLinear<number, number>()
       .domain(minmaxE).range([2 * Math.PI / 5 + Math.PI / 2, -2 * Math.PI / 5 + Math.PI / 2]);
-    const width = 1000, height = 1000, mx = 10, my = 10, svg = d3.select('app-users').append('svg')
-      , th = 7, rad = Math.min(width, height) / 10;
+    const width = 200, height = 10000, mx = 10, my = 10,
+      svg = d3.select('app-users').append('svg')
+      , th = 2, rad = Math.min(width, height);
     svg.attr('x', 0)
       .attr('y', 0)
       .attr('width', width + mx)
@@ -315,7 +325,7 @@ export class UsersComponent implements OnChanges {
     gaugeplate.selectAll('.meters').select('g').data(exposures).enter()
       .append('text')
       .attr('class', 'meters')
-      .attr('x', -rad / 2 + th)
+      .attr('x', -rad / 2 + th * 4)
       .attr('y', -rad / 2 + th)
       .attr('transform', (d, i) => `translate(${mx + rad / 2},${my + rad / 2 + i * rad})`)
       .text(d => formatG(d.value));
@@ -329,11 +339,14 @@ export class UsersComponent implements OnChanges {
     gaugeplate.selectAll('.newvals').select('g').data(newVals).enter()
       .append('text')
       .attr('class', 'newvals')
-      .attr('x', rad / 2 + th)
+      .attr('x', rad / 2 - th * 10)
       .attr('y', -rad / 2 + th)
       .attr('transform', (d, i) => `translate(${mx + rad / 2},${my + rad / 2 + i * rad})`)
       .text(d => d);
-    const dialParts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+    const dialParts = [], npoints = 50;
+    for (let i = 0; i < npoints; ++i) {
+      dialParts.push(i);
+    }
     for (let i = 0; i < exposures.length; ++i) {
       gaugeplate.append('g').selectAll('.dials').data(dialParts).enter()
         .append('path')

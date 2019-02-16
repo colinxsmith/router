@@ -1,3 +1,8 @@
+div {
+    width: 70%;
+}
+
+
 text.users {
     font-family: Calibri, sans-serif;
     font-size: 21px;
@@ -132,6 +137,6 @@ text.newvals{
     font-size: 12px;
     font-family: Calibri, sans-serif;
     fill: rgb(47, 128, 117);
-    text-anchor: middle;
+    text-anchor: end;
     text-align: left;
 }
