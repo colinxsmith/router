@@ -22,7 +22,7 @@ const setMocked = (n, type, want, res) => {
     mocked.nstocks = n;
     mocked.OPT = opt.output;
     mocked.radarData = opt.radar;
-    mocked.factorX = opt.factorData[0];
+    mocked.factorX = opt.factorData;
     mocked.stockchart = opt.stockchart;
     mocked.factorchart = opt.factorchart;
     res.status(200).json(mocked);

@@ -62,8 +62,8 @@ const portfolio = (axis, value, alpha) => {
 const factorval = (axis, value, filter = '000000sss0') => {
     const factorval = [];
     value.forEach((d, i) => {
-        if(filter !== '' && axis[i].indexOf(filter) !== 0)
-        factorval.push({ 'axis': axis[i], 'id': i + 1, 'value': d });
+        if (filter !== '' && axis[i].indexOf(filter) !== 0)
+            factorval.push({ 'axis': axis[i], 'id': i + 1, 'value': d });
     });
     return factorval;
 };
@@ -210,7 +210,7 @@ const factor = (n, optype, factorwant) => {
     const factorData = [];
     var ls = 0, full = 1, w = [], m = 1, L = [], U = [], A = [], alpha = [], gamma = 0.5, ogamma = [], minRisk = -1, maxRisk = -1,
         five = 0.05, ten = 0.1, forty = 0.4;
-    const model = '/home/colin/safeqp/newmodel.csv';
+    const model = '/home/colin/safeqp/USE3S0407_31JUL03.csv';
     const nnn = test.get_nstocks(model);
     const nfac = test.get_nfac(model);
     const factors = Array(nfac);
@@ -249,6 +249,29 @@ const factor = (n, optype, factorwant) => {
     if (optype === 'short') {
         ls = 1;
     }
+
+    const MC = Array(n);
+
+    test.MCAR(n, nfac, w, alpha, FL, SV, FC, MC)
+    alpha.forEach((d, ii) => {
+        alpha[ii] *= w[ii] * MC[ii];
+    });
+
+    gamma = 0;
+    ogamma.push(gamma);
+
+    let back = simpleopt(n, nfac, ls, full, SV, FL, FC,
+        w, m, L, U, A, alpha, gamma, ogamma, minRisk, maxRisk,
+        five, ten, forty, stocks)
+
+
+    const minV = getRisk(n, w, nfac, SV, FL, FC);
+    const FX = Array(nfac);
+    test.FX_get(n, nfac, w, FL, SV, FC, FX);
+
+    factorData.push({ back: test.Return_Message(back), risk: getRisk(n, w, nfac, SV, FL, FC), return: test.ddotvec(n, alpha, w), factors: factorval(factors, FX, 'pc') });
+    output.push({ back: test.Return_Message(back), gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), return: test.ddotvec(n, alpha, w), portfolio: portfolio(stocks, w, alpha) });
+
     if (wants) {
         m += wants;
         for (let j = 0; j < nfac; j++) {
@@ -260,32 +283,22 @@ const factor = (n, optype, factorwant) => {
                 U.push(factorwant[j]);
             }
         }
-    }
-    if(wants){
         const Atr = Array(n * (wants + 1));
         test.dmx_transpose(n, wants + 1, A, Atr);
         A = Atr;
+
+        back = simpleopt(n, nfac, ls, full, SV, FL, FC,
+            w, m, L, U, A, alpha, gamma, ogamma, minRisk, maxRisk,
+            five, ten, forty, stocks)
+
+
+        const minV = getRisk(n, w, nfac, SV, FL, FC);
+        const FX = Array(nfac);
+        test.FX_get(n, nfac, w, FL, SV, FC, FX);
+
+        factorData.push({ back: test.Return_Message(back), risk: getRisk(n, w, nfac, SV, FL, FC), return: test.ddotvec(n, alpha, w), factors: factorval(factors, FX, 'pc') });
+        output.push({ back: test.Return_Message(back), gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), return: test.ddotvec(n, alpha, w), portfolio: portfolio(stocks, w, alpha) });
     }
-    const MC = Array(n);
-
-    test.MCAR(n, nfac, w, alpha, FL, SV, FC, MC)
-    alpha.forEach((d, ii) => {
-        alpha[ii] *= w[ii] * MC[ii];
-    });
-
-    gamma = 0;
-    ogamma.push(gamma);
-    let back = simpleopt(n, nfac, ls, full, SV, FL, FC,
-        w, m, L, U, A, alpha, gamma, ogamma, minRisk, maxRisk,
-        five, ten, forty, stocks)
-
-
-    const minV = getRisk(n, w, nfac, SV, FL, FC);
-    const FX = Array(nfac);
-    test.FX_get(n, nfac, w, FL, SV, FC, FX);
-
-    factorData.push({back: test.Return_Message(back), risk: getRisk(n, w, nfac, SV, FL, FC), 'return': test.ddotvec(n, alpha, w), factors: factorval(factors, FX, 'pc')});
-    output.push({ back: test.Return_Message(back), gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), 'return': test.ddotvec(n, alpha, w), 'portfolio': portfolio(stocks, w, alpha) });
     exports.factorData = factorData;
     exports.output = output;
 }

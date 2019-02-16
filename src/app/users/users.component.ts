@@ -235,10 +235,16 @@ export class UsersComponent implements OnChanges {
             this.simpleDisplay([this.displayData]);
           }
         } else if (this.getKey === 'factorX') {
-          d3.select('app-users').append('svg').attr('width', 960).attr('height', 50).append('g').append('text')
-            .attr('transform', 'translate(0,20)').attr('class', 'newvals').attr('x', 0).attr('y', 0).style('text-anchor', 'start')
-            .text(`Risk: ${this.displayData.risk} Return: ${this.displayData.return} Return status: ${this.displayData.back}`);
-          this.factorX(this.displayData.factors);
+          const datahere: {risk: number, return: number, back: string} [] = this.displayData;
+          const svg = d3.select('app-users').append('svg').attr('width', 960).attr('height', 100);
+          svg.selectAll('.riskret').data(datahere).enter()
+            .append('text')
+            .attr('transform', (d, i) => `translate(0,${20 * (i + 1)})`)
+            .attr('class', 'newvals').attr('x', 0).attr('y', 0)
+            .style('text-anchor', 'start')
+            .text(d => `Risk: ${d.risk} Return: ${d.return} Return status: ${d.back}`);
+          const factorsOff = this.displayData.length === 2 ? this.displayData[1].factors : this.displayData[0].factors;
+          this.factorX(factorsOff);
         }
       }, res => {
         console.log(res);
