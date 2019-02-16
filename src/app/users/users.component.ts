@@ -302,7 +302,7 @@ export class UsersComponent implements OnChanges {
     this.factorConstraintChange = newVals;
     const angScale = d3.scaleLinear<number, number>()
       .domain(minmaxE).range([2 * Math.PI / 5 + Math.PI / 2, -2 * Math.PI / 5 + Math.PI / 2]);
-    const width = 200, height = 10000, mx = 10, my = 10,
+    const width = 200, height = 20000, mx = 10, my = 10,
       svg = d3.select('app-users').append('svg')
       , th = 2, rad = Math.min(width, height);
     svg.attr('x', 0)
@@ -342,7 +342,7 @@ export class UsersComponent implements OnChanges {
       .attr('x', rad / 2 - th * 10)
       .attr('y', -rad / 2 + th)
       .attr('transform', (d, i) => `translate(${mx + rad / 2},${my + rad / 2 + i * rad})`)
-      .text(d => d);
+      .text(d => isNaN(+formatG(d)) ? '' : formatG(d));
     const dialParts = [], npoints = 50;
     for (let i = 0; i < npoints; ++i) {
       dialParts.push(i);
