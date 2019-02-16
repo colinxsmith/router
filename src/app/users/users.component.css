@@ -140,3 +140,8 @@ text.newvals{
     text-anchor: end;
     text-align: left;
 }
+text.rmessage{
+    font-size: 12px;
+    font-family: Calibri, sans-serif;
+    fill: rgb(23, 47, 128);
+}

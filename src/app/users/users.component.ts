@@ -120,7 +120,6 @@ export class UsersComponent implements OnChanges {
     }
   }
   chooseData(dd: string, joinLinear = false) {
-    d3.select('app-root').selectAll('.send').remove();
     d3.select('app-users').selectAll('svg').remove();
 
     this.getKey = dd;
@@ -235,16 +234,29 @@ export class UsersComponent implements OnChanges {
             this.simpleDisplay([this.displayData]);
           }
         } else if (this.getKey === 'factorX') {
-          const datahere: {risk: number, return: number, back: string} [] = this.displayData;
-          const svg = d3.select('app-users').append('svg').attr('width', 960).attr('height', 100);
+          const datahere: { risk: number, return: number, back: string }[] = this.displayData;
+          const svg = d3.select('app-users').append('svg').attr('width', 950).attr('height', 100);
           svg.selectAll('.riskret').data(datahere).enter()
             .append('text')
             .attr('transform', (d, i) => `translate(0,${20 * (i + 1)})`)
-            .attr('class', 'newvals').attr('x', 0).attr('y', 0)
+            .attr('class', 'rmessage').attr('x', 0).attr('y', 0)
             .style('text-anchor', 'start')
             .text(d => `Risk: ${d.risk} Return: ${d.return} Return status: ${d.back}`);
           const factorsOff = this.displayData.length === 2 ? this.displayData[1].factors : this.displayData[0].factors;
-          this.factorX(factorsOff);
+          const svgFactorX = this.factorX(factorsOff);
+          const margin = { top: 150, right: 150, bottom: 150, left: 150 }, ww = 1000, hh = 1000,
+            width = ww - margin.left - margin.right,
+            height = hh - margin.top - margin.bottom,
+            radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)',
+              'rgb(255,255,50)', 'rgb(50,255,255)']),
+            options = {
+              w: width, h: height, margin: margin, maxValue: 0,
+              levels: 4, roundStrokes: !joinLinear, colour: radarBlobColour
+            };
+          if (this.displayData.length === 2) {
+            svgFactorX.remove();
+          }
+          this.RadarChart('app-users', this.displayData.map(d => d.factors), options);
         }
       }, res => {
         console.log(res);
@@ -308,7 +320,7 @@ export class UsersComponent implements OnChanges {
     this.factorConstraintChange = newVals;
     const angScale = d3.scaleLinear<number, number>()
       .domain(minmaxE).range([2 * Math.PI / 5 + Math.PI / 2, -2 * Math.PI / 5 + Math.PI / 2]);
-    const width = 200, height = 20000, mx = 10, my = 10,
+    const width = 100, height = 20000, mx = 10, my = 10,
       svg = d3.select('app-users').append('svg')
       , th = 2, rad = Math.min(width, height);
     svg.attr('x', 0)
@@ -410,6 +422,7 @@ export class UsersComponent implements OnChanges {
         })
         ;
     }
+    return svg;
   }
   simpleDisplay(displayData: any) {
     const www = Object.keys(displayData[0]).length;
