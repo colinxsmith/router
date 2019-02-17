@@ -208,7 +208,7 @@ const factor = (n, optype, factorwant) => {
     factorwant.forEach(d => d !== null ? wants++ : console.log(d));
     const output = [];
     const factorData = [];
-    var ls = 0, full = 1, w = [], m = 1, L = [], U = [], A = [], alpha = [], gamma = 0.5, ogamma = [], minRisk = -1, maxRisk = -1,
+    var ls = 0, full = 1, w = [], m = 1, L = [], U = [], A = [], alpha = [], gamma = 1e-2, ogamma = [], minRisk = -1, maxRisk = -1,
         five = 0.05, ten = 0.1, forty = 0.4;
     const model = '/home/colin/safeqp/USE3S0407_31JUL03.csv';
     const nnn = test.get_nstocks(model);

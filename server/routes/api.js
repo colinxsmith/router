@@ -13,7 +13,7 @@ let mocked = {
 const setMocked = (n, type, want, res) => {
     const opt = require('../../optimiser/optimiser');
     if (type === 'factor') {
-        opt.factor(n, type, want);
+        opt.factor(n, 'short', want);
     } else {
         opt.opt(n, type);
     }

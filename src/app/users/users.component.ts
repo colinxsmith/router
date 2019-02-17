@@ -170,7 +170,7 @@ export class UsersComponent implements OnChanges {
               }
             });
           }
-          const margin = { top: 150, right: 150, bottom: 150, left: 150 }, ww = 1000, hh = 1000,
+          const margin = { top: 40, right: 40, bottom: 40, left: 40 }, ww = 400, hh = 400,
             width = ww - margin.left - margin.right,
             height = hh - margin.top - margin.bottom,
             radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)',
@@ -181,7 +181,7 @@ export class UsersComponent implements OnChanges {
             };
           this.RadarChart('app-users', displayData, radarChartOptions);
           displayData.forEach((ddd, id) => {
-            this.stockbars(ddd, id, ww * 0.5, hh * 0.5, 2000, 'Factor Exposure', 'Factor');
+            this.stockbars(ddd, id, ww, hh, 2000, 'Factor Exposure', 'Factor');
             this.simpleDisplay(ddd);
           });
         } else if (this.getKey === 'OPT') {
@@ -192,7 +192,7 @@ export class UsersComponent implements OnChanges {
               }
             });
           }
-          const margin = { top: 150, right: 150, bottom: 150, left: 150 }, ww = 1000, hh = 1000,
+          const margin = { top: 40, right: 40, bottom: 40, left: 40 }, ww = 400, hh = 400,
             width = ww - margin.left - margin.right,
             height = hh - margin.top - margin.bottom,
             radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)',
@@ -220,12 +220,12 @@ export class UsersComponent implements OnChanges {
           data1 = this.pickOutNonZeroValues(data1);
           this.RadarChart('app-users', data1, radarChartOptions);
           data1.forEach((ddd, i: number) => {
-            d3.select('app-users').append('svg').attr('width', 800).attr('height', 50).append('g').append('text')
+            this.stockbars(ddd, i, ww, hh, 2000, 'Weights', 'Assets');
+            this.simpleDisplay(ddd);
+            d3.select('app-users').append('svg').attr('width', 600).attr('height', 50).append('g').append('text')
               .attr('transform', 'translate(0,30)').attr('class', 'users')
               .text(() => `Risk: ${this.displayData[i].risk}, Return: ${this.displayData[i].return},
-                  gamma: ${this.displayData[i].gamma}`);
-            this.stockbars(ddd, i, ww * 0.5, hh * 0.5, 2000, 'Weights', 'Assets');
-            this.simpleDisplay(ddd);
+                gamma: ${this.displayData[i].gamma}`);
           });
         } else if (this.getKey === 'newData') {
           if (this.displayData.length !== undefined) {
@@ -243,8 +243,8 @@ export class UsersComponent implements OnChanges {
             .style('text-anchor', 'start')
             .text(d => `Risk: ${d.risk} Return: ${d.return} Return status: ${d.back}`);
           const factorsOff = this.displayData.length === 2 ? this.displayData[1].factors : this.displayData[0].factors;
-          const svgFactorX = this.factorX(factorsOff);
-          const margin = { top: 150, right: 150, bottom: 150, left: 150 }, ww = 1000, hh = 1000,
+          const svgFactorX = this.factorX(this.pickOutNonZeroValues([factorsOff])[0]);
+          const margin = { top: 40, right: 40, bottom: 40, left: 40 }, ww = 400, hh = 400,
             width = ww - margin.left - margin.right,
             height = hh - margin.top - margin.bottom,
             radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)',
@@ -256,7 +256,7 @@ export class UsersComponent implements OnChanges {
           if (this.displayData.length === 2) {
             svgFactorX.remove();
           }
-          this.RadarChart('app-users', this.displayData.map(d => d.factors), options);
+          this.RadarChart('app-users',  this.pickOutNonZeroValues(   this.displayData.map(d => d.factors)  ), options);
         }
       }, res => {
         console.log(res);
@@ -320,7 +320,7 @@ export class UsersComponent implements OnChanges {
     this.factorConstraintChange = newVals;
     const angScale = d3.scaleLinear<number, number>()
       .domain(minmaxE).range([2 * Math.PI / 5 + Math.PI / 2, -2 * Math.PI / 5 + Math.PI / 2]);
-    const width = 100, height = 20000, mx = 10, my = 10,
+    const width = 100, height = 100 * exposures.length, mx = 10, my = 10,
       svg = d3.select('app-users').append('svg')
       , th = 2, rad = Math.min(width, height);
     svg.attr('x', 0)
@@ -426,7 +426,7 @@ export class UsersComponent implements OnChanges {
   }
   simpleDisplay(displayData: any) {
     const www = Object.keys(displayData[0]).length;
-    const xPosArray: number[] = Array(www), off = 20, ww = Math.max(0, www * 250);
+    const xPosArray: number[] = Array(www), off = 20, ww = Math.max(0, www * 100);
     for (let i = 0; i < www; ++i) {
       xPosArray[i] = ((ww - off) / www * i);
     }
@@ -462,7 +462,7 @@ export class UsersComponent implements OnChanges {
         const keys = Object.keys(dd);
         let tspan = k.text(null).append('tspan').attr('x', xPos(0)).text(dd[keys[0]]);
         for (let kk = 1; kk < keys.length; ++kk) {
-          tspan = k.append('tspan').attr('x', xPos(kk)).text(keys[kk] === 'axis' ? dd[keys[kk]] : d3.format('g')(dd[keys[kk]]));
+          tspan = k.append('tspan').attr('x', xPos(kk)).text(keys[kk] === 'axis' ? dd[keys[kk]] : d3.format('0.2g')(dd[keys[kk]]));
         }
       }))
       .attr('class', 'users');
@@ -577,7 +577,8 @@ export class UsersComponent implements OnChanges {
       radarLineZ.curve(d3.curveCatmullRomClosed);
     }
     const blobChooser = (k: number) =>
-      `M${radius * 1.2},${-radius * 1.2 + k * radius / 10}l${radius / 10},0,l0,${radius / 10},l-${radius / 10},0z`;
+      // tslint:disable-next-line:max-line-length
+      `M${cfg.margin.right / 2  + radius},${-cfg.margin.right / 2 - radius + k * radius / 10}l${radius / 10},0,l0,${radius / 10},l-${radius / 10},0z`;
     const blobWrapper = g.selectAll('.radarWrapper')
       .data(data)
       .enter().append('g')
