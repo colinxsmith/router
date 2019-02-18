@@ -243,7 +243,7 @@ export class UsersComponent implements OnChanges {
             .style('text-anchor', 'start')
             .text(d => `Risk: ${d.risk} Return: ${d.return} Return status: ${d.back}`);
           const factorsOff = this.displayData.length === 2 ? this.displayData[1].factors : this.displayData[0].factors;
-          const svgFactorX = this.factorX(this.pickOutNonZeroValues([factorsOff])[0]);
+          const svgFactorX = this.factorX(factorsOff);
           const margin = { top: 40, right: 40, bottom: 40, left: 40 }, ww = 400, hh = 400,
             width = ww - margin.left - margin.right,
             height = hh - margin.top - margin.bottom,
@@ -320,10 +320,14 @@ export class UsersComponent implements OnChanges {
     this.factorConstraintChange = newVals;
     const angScale = d3.scaleLinear<number, number>()
       .domain(minmaxE).range([2 * Math.PI / 5 + Math.PI / 2, -2 * Math.PI / 5 + Math.PI / 2]);
-    const width = 100, height = 100 * exposures.length, mx = 10, my = 10,
-      svg = d3.select('app-users').append('svg')
-      , th = 2, rad = Math.min(width, height);
-    svg.attr('x', 0)
+    const labPad = 40, padRow = 10, numCol = 4,
+      width = 100 * numCol, height = (100 + labPad * 1.5) * exposures.length / numCol, mx = 10, my = 10,
+      svg = d3.select('app-users').append('svg'),
+      th = 4, rad = Math.min((width - padRow * (numCol - 1)) / numCol, height),
+      dialParts = [], npoints = 50;
+    for (let i = 0; i < npoints; ++i) {
+      dialParts.push(i);
+    } svg.attr('x', 0)
       .attr('y', 0)
       .attr('width', width + mx)
       .attr('height', height + my)
@@ -334,10 +338,11 @@ export class UsersComponent implements OnChanges {
       .attr('class', 'meters')
       .style('fill', 'none')
       .style('stroke', 'green')
-      .attr('transform', (d, i) => `translate(${mx + rad / 2},${my + rad / 2 + i * rad})`)
+      .attr('transform', (d, i) => `translate(${mx + rad / 2 + (i % numCol) * (rad + padRow)},
+      ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)})`)
       .attr('d', (d) => {
         const cc = (rad - th * 2) * Math.cos(angScale(d.value)), ss = (rad - th * 2) * Math.sin(angScale(d.value));
-        return `M0,0,l${th / 2},0l${cc / 2},${-ss / 2},l-${th},0l${-cc / 2},${ss / 2}z` + `M${-rad / 2},0l0,-${th}l${rad},0l0,${th}Z`;
+        return `M${-rad / 2} 0l0 -${th}l${rad} 0l0 ${th}Z` + `M0 0l${th / 2} 0l${cc / 2} ${-ss / 2}l-${th} 0l${-cc / 2} ${ss / 2}Z`;
       }
       );
     gaugeplate.selectAll('.meters').select('g').data(exposures).enter()
@@ -345,33 +350,35 @@ export class UsersComponent implements OnChanges {
       .attr('class', 'meters')
       .attr('x', -rad / 2 + th * 4)
       .attr('y', -rad / 2 + th)
-      .attr('transform', (d, i) => `translate(${mx + rad / 2},${my + rad / 2 + i * rad})`)
+      .attr('transform', (d, i) => `translate(${mx + rad / 2 + (i % numCol) * (rad + padRow)},
+      ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)})`)
       .text(d => formatG(d.value));
     gaugeplate.selectAll('.meters').select('g').data(exposures).enter()
       .append('text')
       .attr('class', 'factorlabels')
       .attr('x', 0)
       .attr('y', th * 4)
-      .attr('transform', (d, i) => `translate(${mx + rad / 2},${my + rad / 2 + i * rad})`)
-      .text(d => d.axis);
+      .attr('dy', '1em')
+      .attr('transform', (d, i) => `translate(${mx + rad / 2 + (i % numCol) * (rad + padRow)},
+      ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)})`)
+      .text(d => d.axis)
+      .call(this.wrapFunction, 60, 1);
     gaugeplate.selectAll('.newvals').select('g').data(newVals).enter()
       .append('text')
       .attr('class', 'newvals')
-      .attr('x', rad / 2 - th * 10)
+      .attr('x', rad / 2 - th * 4)
       .attr('y', -rad / 2 + th)
-      .attr('transform', (d, i) => `translate(${mx + rad / 2},${my + rad / 2 + i * rad})`)
+      .attr('transform', (d, i) => `translate(${mx + rad / 2 + (i % numCol) * (rad + padRow)},
+      ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)})`)
       .text(d => isNaN(+formatG(d)) ? '' : formatG(d));
-    const dialParts = [], npoints = 50;
-    for (let i = 0; i < npoints; ++i) {
-      dialParts.push(i);
-    }
     for (let i = 0; i < exposures.length; ++i) {
       gaugeplate.append('g').selectAll('.dials').data(dialParts).enter()
         .append('path')
         .attr('class', () => `dials${i}`)
         .style('fill', 'none')
         .style('stroke', 'red')
-        .attr('transform', () => `translate(${mx + rad / 2},${my + rad / 2 + i * rad})`)
+        .attr('transform', () => `translate(${mx + rad / 2 + (i % numCol) * (rad + padRow)},
+        ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)})`)
         .attr('d', (d, ii) => {
           const st = ii / (dialParts.length) * (angScale.range()[0] - angScale.range()[1]) + angScale.range()[1];
           const en = (ii + 1) / (dialParts.length) * (angScale.range()[0] - angScale.range()[1]) + angScale.range()[1];
@@ -407,9 +414,11 @@ export class UsersComponent implements OnChanges {
             const here1 = d3.select(ddd);
             if (iii === i) {
               here1.attr('d', () => {
-                const old = here1.attr('d').replace(/Z.*$/, 'Z'), th1 = th / 10;
+                const old = here1.attr('d').replace(/Z m.*/, 'Z').replace(/Zm.*/, 'Z'), th1 = th / 10;
+                console.log(here1.attr('d'));
+                console.log(old);
                 const cc = (rad - th * 2) * Math.cos(angScale(newVals[i])), ss = (rad - th * 2) * Math.sin(angScale(newVals[i]));
-                return old + `M0,0,l${th1 / 2},0l${cc / 2},${-ss / 2},l-${th1},0l${-cc / 2},${ss / 2}z`;
+                return old + `m0 0M0 0l${th1 / 2} 0l${cc / 2} ${-ss / 2}l ${th1} 0l${-cc / 2} ${ss / 2}Z`;
               });
             }
           });
@@ -425,8 +434,10 @@ export class UsersComponent implements OnChanges {
     return svg;
   }
   simpleDisplay(displayData: any) {
-    const www = Object.keys(displayData[0]).length;
-    const xPosArray: number[] = Array(www), off = 20, ww = Math.max(0, www * 100);
+    const keys = Object.keys(displayData[0]), www = keys.length;
+    const facNames: string [] = displayData.map(d => d[keys[0]]);
+    const longNameLength = d3.max(facNames, d => d.length);
+    const xPosArray: number[] = Array(www), off = 20, ww = Math.max(0, off * 8 + www * longNameLength * 8);
     for (let i = 0; i < www; ++i) {
       xPosArray[i] = ((ww - off) / www * i);
     }
@@ -440,7 +451,6 @@ export class UsersComponent implements OnChanges {
       .attr('transform', `translate(${off},${0})`)
       .call((d) => d.each((dd, i, j) => {// We have to it like this with call() rather than html() to get the tspan on IE on Windows 7
         const k = d3.select(j[i]);
-        const keys = Object.keys(displayData[0]);
         let tspan = k.text(null).append('tspan').attr('x', xPos(0)).text(keys[0]);
         for (let kk = 1; kk < keys.length; ++kk) {
           tspan = k.append('tspan').attr('x', xPos(kk)).text(keys[kk]);
@@ -459,7 +469,6 @@ export class UsersComponent implements OnChanges {
       .attr('transform', (d, i) => `translate(${off},${i * 21})`)
       .call((d) => d.each((dd, i, j) => {// We have to it like this with call() rather than html() to get the tspan on IE on Windows 7
         const k = d3.select(j[i]);
-        const keys = Object.keys(dd);
         let tspan = k.text(null).append('tspan').attr('x', xPos(0)).text(dd[keys[0]]);
         for (let kk = 1; kk < keys.length; ++kk) {
           tspan = k.append('tspan').attr('x', xPos(kk)).text(keys[kk] === 'axis' ? dd[keys[kk]] : d3.format('0.2g')(dd[keys[kk]]));
@@ -578,7 +587,7 @@ export class UsersComponent implements OnChanges {
     }
     const blobChooser = (k: number) =>
       // tslint:disable-next-line:max-line-length
-      `M${cfg.margin.right / 2  + radius},${-cfg.margin.right / 2 - radius + k * radius / 10}l${radius / 10},0,l0,${radius / 10},l-${radius / 10},0z`;
+      `M${cfg.margin.right / 2  + radius} ${-cfg.margin.right / 2 - radius + k * radius / 10}l${radius / 10} 0l0 ${radius / 10}l-${radius / 10} 0z`;
     const blobWrapper = g.selectAll('.radarWrapper')
       .data(data)
       .enter().append('g')

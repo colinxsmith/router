@@ -1,8 +1,3 @@
-div {
-    width: 70%;
-}
-
-
 text.users {
     font-family: Calibri, sans-serif;
     font-size: 15px;
@@ -120,28 +115,28 @@ rect.weightSingleMinus {
 }
 
 text.meters{
-    font-size: 12px;
+    font-size: 10px;
     font-family: Calibri, sans-serif;
     fill: rgb(51, 51, 51);
     text-anchor: middle;
     text-align: left;
 }
 text.factorlabels{
-    font-size: 15px;
+    font-size: 11px;
     font-family: Calibri, sans-serif;
     fill: rgb(51, 51, 51);
     text-anchor: middle;
     text-align: center;
 }
 text.newvals{
-    font-size: 12px;
+    font-size: 10px;
     font-family: Calibri, sans-serif;
     fill: rgb(47, 128, 117);
-    text-anchor: end;
+    text-anchor: middle;
     text-align: left;
 }
 text.rmessage{
-    font-size: 10px;
+    font-size: 13px;
     font-family: Calibri, sans-serif;
     fill: rgb(23, 47, 128);
 }

@@ -210,7 +210,7 @@ const factor = (n, optype, factorwant) => {
     const factorData = [];
     var ls = 0, full = 1, w = [], m = 1, L = [], U = [], A = [], alpha = [], gamma = 1e-2, ogamma = [], minRisk = -1, maxRisk = -1,
         five = 0.05, ten = 0.1, forty = 0.4;
-    const model = '/home/colin/safeqp/USE3S0407_31JUL03.csv';
+    const model = '/home/colin/safeqp/newmodel.csv';
     const nnn = test.get_nstocks(model);
     const nfac = test.get_nfac(model);
     const factors = Array(nfac);
