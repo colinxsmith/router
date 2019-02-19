@@ -3,7 +3,7 @@ import { AppComponent } from '../app.component';
 import { UserService } from './user.service';
 import * as d3 from 'd3';
 import { map } from 'rxjs/operators';
-import { scaleQuantile, ContainerElement } from 'd3';
+import { scaleQuantile, ContainerElement, scaleIdentity } from 'd3';
 import { fcall } from 'q';
 @Component({
   selector: 'app-users',
@@ -242,6 +242,7 @@ export class UsersComponent implements OnChanges {
             .attr('class', 'rmessage').attr('x', 0).attr('y', 0)
             .style('text-anchor', 'start')
             .text(d => `Risk: ${d.risk} Return: ${d.return} Return status: ${d.back}`);
+          const FC: number[] = this.displayData[0].FC;
           const factorsOff = this.displayData.length === 2 ? this.displayData[1].factors : this.displayData[0].factors;
           const svgFactorX = this.factorX(factorsOff);
           const margin = { top: 40, right: 40, bottom: 40, left: 40 }, ww = 400, hh = 400,
@@ -257,13 +258,73 @@ export class UsersComponent implements OnChanges {
             svgFactorX.remove();
           }
           this.RadarChart('app-users',  this.pickOutNonZeroValues(   this.displayData.map(d => d.factors)  ), options);
+          this.correlationMatrix(FC, this.displayData[0].factors.map(d => d.axis));
         }
       }, res => {
-        console.log(res);
-      });
+          console.log(res);
+        });
 
   }
-
+  correlationMatrix(FC: number[], factorNames: string[], id = 'app-users') {
+    const numFac = (Math.sqrt(1 + 8 * FC.length) - 1) / 2;
+    const plotFC: { i: number, j: number, correlation: number }[] = [];
+    const sdI: number[] = Array(factorNames.length);
+    for (let i = 0, ij = 0; i < factorNames.length; ++i) {
+      for (let j = 0; j <= i; ++j, ij++) {
+        if (i === j) {
+          sdI[i] = Math.sqrt(FC[ij]);
+        }
+      }
+    }
+    for (let i = 0, ij = 0; i < factorNames.length; ++i) {
+      for (let j = 0; j <= i; ++j, ++ij) {
+        if (i === j) {
+          plotFC.push({ i: i, j: j, correlation: 1 });
+        } else {
+          plotFC.push({ i: i, j: j, correlation: FC[ij] / sdI[i] / sdI[j] });
+        }
+      }
+    }
+    const w = 960, h = 500,
+      margin = { top: 10, right: 10, bottom: 10, left: 10 },
+      tooltip = d3.select('body').append('g').attr('class', 'toolTip'),
+      width = w - margin.left - margin.right,
+      height = h - margin.top - margin.bottom, spacer = 10, rotateAngle = -45,
+      squareSide = Math.min(width, height) / factorNames.length - spacer, Side = squareSide + spacer,
+      svgBase = d3.select(id).append('svg')
+        .attr('width', w).attr('height', h),
+      svg = svgBase.append('g');
+    svg.selectAll('.correlations').select('g').data(plotFC).enter()
+      .append('rect')
+      .attr('class', d => `correlations ${d.correlation > 0 ? 'pos' : 'neg'}`)
+      .attr('width', squareSide)
+      .attr('height', squareSide)
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('transform', d => `translate(${d.i * Side},${d.j * Side})`)
+      .on('mousemove', (d) => tooltip.style('left', d3.event.pageX - 50 + 'px')
+        .style('top', d3.event.pageY - 70 + 'px')
+        .style('display', 'inline-block')
+        .html(`<i class="fa fa-gears leafy"></i>${factorNames[d.i]}<br>${factorNames[d.j]}
+        <br>correlation:${d3.format('0.4f')(d.correlation)}`))
+      .on('mouseout', (d) => tooltip.style('display', 'none'))
+      .transition().duration(2000).attrTween('transform', d => (t) =>
+        `translate(${(Math.sin(5 * (1 - t)) * (d.j) + t * d.i) * Side},${(Math.sin(3 * (1 - t)) * (d.i) + t * d.j) * Side})`)
+      ;
+    svg.selectAll('.correlations').select('g').data(plotFC).enter()
+      .append('text')
+      .attr('class', 'correlations')
+      .text(d => d3.format('0.3f')(d.correlation))
+      .attr('transform', d => `translate(${d.i * Side + squareSide / 2},${d.j * Side + squareSide / 2}),rotate(${rotateAngle})`)
+      .attr('y', (0 * squareSide / 2) * (Math.sin(Math.PI / 180 * rotateAngle)))
+      .attr('x', (-squareSide / 2) * (Math.cos(Math.PI / 180 * rotateAngle)))
+      .on('mousemove', (d) => tooltip.style('left', d3.event.pageX - 50 + 'px')
+        .style('top', d3.event.pageY - 70 + 'px')
+        .style('display', 'inline-block')
+        .html(`<i class="fa fa-gears leafy"></i>${factorNames[d.i]}<br>${factorNames[d.j]}
+        <br>correlation:${d3.format('0.4f')(d.correlation)}`))
+      .on('mouseout', (d) => tooltip.style('display', 'none'));
+  }
   factorX(exposures = [
     {
       axis: 'UK Gilt Long-Short Yield Spread',
@@ -305,7 +366,7 @@ export class UsersComponent implements OnChanges {
       axis: 'USD/GBP',
       value: -0.0603012272772637
     }
-  ]) {
+  ], id = 'app-users') {
 
     const minmaxE = [d3.min(exposures, d => d.value), d3.max(exposures, d => d.value)];
     const formatG = d3.format('0.3f');
@@ -322,7 +383,7 @@ export class UsersComponent implements OnChanges {
       .domain(minmaxE).range([2 * Math.PI / 5 + Math.PI / 2, -2 * Math.PI / 5 + Math.PI / 2]);
     const labPad = 40, padRow = 10, numCol = 4,
       width = 100 * numCol, height = (100 + labPad * 1.5) * exposures.length / numCol, mx = 10, my = 10,
-      svg = d3.select('app-users').append('svg'),
+      svg = d3.select(id).append('svg'),
       th = 4, rad = Math.min((width - padRow * (numCol - 1)) / numCol, height),
       dialParts = [], npoints = 50;
     for (let i = 0; i < npoints; ++i) {

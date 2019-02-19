@@ -140,3 +140,17 @@ text.rmessage{
     font-family: Calibri, sans-serif;
     fill: rgb(23, 47, 128);
 }
+text.correlations{
+    font-size: 13px;
+    font-family: Calibri, sans-serif;
+    fill: rgb(23, 47, 128);
+}
+rect.correlations {
+    fill: rgb(220, 223, 70);
+}
+rect.correlations.neg {
+    fill: rgb(223, 17, 17);
+}
+rect.correlations.pos {
+    fill: rgb(65, 223, 17);
+}

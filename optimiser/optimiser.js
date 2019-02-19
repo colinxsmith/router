@@ -203,12 +203,12 @@ const opt = (n, optype) => {
     exports.stockchart = stockchart;
     exports.factorchart = factorchart;
 }
-const factor = (n, optype, factorwant) => {
+const factor = (n, optype, gamma, factorwant) => {
     let wants = 0;
     factorwant.forEach(d => d !== null ? wants++ : console.log(d));
     const output = [];
     const factorData = [];
-    var ls = 0, full = 1, w = [], m = 1, L = [], U = [], A = [], alpha = [], gamma = 1e-2, ogamma = [], minRisk = -1, maxRisk = -1,
+    var ls = 0, full = 1, w = [], m = 1, L = [], U = [], A = [], alpha = [], ogamma = [], minRisk = -1, maxRisk = -1,
         five = 0.05, ten = 0.1, forty = 0.4;
     const model = '/home/colin/safeqp/newmodel.csv';
     const nnn = test.get_nstocks(model);
@@ -256,8 +256,6 @@ const factor = (n, optype, factorwant) => {
     alpha.forEach((d, ii) => {
         alpha[ii] *= w[ii] * MC[ii];
     });
-
-    gamma = 0;
     ogamma.push(gamma);
 
     let back = simpleopt(n, nfac, ls, full, SV, FL, FC,
@@ -269,7 +267,7 @@ const factor = (n, optype, factorwant) => {
     const FX = Array(nfac);
     test.FX_get(n, nfac, w, FL, SV, FC, FX);
 
-    factorData.push({ back: test.Return_Message(back), risk: getRisk(n, w, nfac, SV, FL, FC), return: test.ddotvec(n, alpha, w), factors: factorval(factors, FX, 'pc') });
+    factorData.push({ back: test.Return_Message(back), risk: getRisk(n, w, nfac, SV, FL, FC), return: test.ddotvec(n, alpha, w), factors: factorval(factors, FX, 'pc'), FC: FC });
     output.push({ back: test.Return_Message(back), gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), return: test.ddotvec(n, alpha, w), portfolio: portfolio(stocks, w, alpha) });
 
     if (wants) {
@@ -287,6 +285,7 @@ const factor = (n, optype, factorwant) => {
         test.dmx_transpose(n, wants + 1, A, Atr);
         A = Atr;
 
+        ogamma[0] = gamma;
         back = simpleopt(n, nfac, ls, full, SV, FL, FC,
             w, m, L, U, A, alpha, gamma, ogamma, minRisk, maxRisk,
             five, ten, forty, stocks)
