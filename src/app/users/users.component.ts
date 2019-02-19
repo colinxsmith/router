@@ -81,7 +81,7 @@ export class UsersComponent implements OnChanges {
         }
       }
       dad.forEach((vals, i) => {
-        if (!(minFac[i] > -base && maxFac[i] < base)) {
+        if (!(minFac[i] > -base && maxFac[i] < base) &&vals.axis.indexOf('pc') !== 0) {
           newDat.push(vals);
         }
       });
@@ -163,6 +163,7 @@ export class UsersComponent implements OnChanges {
           this.simpleDisplay(this.displayData);
         } else if (this.getKey === 'radarData') {
           const displayData = this.pickOutNonZeroValues(this.displayData);
+          this.plotLab = Object.keys(this.plotLabels);
           if (this.displayData.length < 4) {
             this.plotLab.forEach((d, i) => {
               if (i >= this.displayData.length) {
@@ -185,6 +186,7 @@ export class UsersComponent implements OnChanges {
             this.simpleDisplay(ddd);
           });
         } else if (this.getKey === 'OPT') {
+          this.plotLab = Object.keys(this.plotLabels);
           if (this.displayData.length < 4) {
             this.plotLab.forEach((d, i) => {
               if (i >= this.displayData.length) {
