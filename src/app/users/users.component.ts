@@ -81,7 +81,7 @@ export class UsersComponent implements OnChanges {
         }
       }
       dad.forEach((vals, i) => {
-        if (!(minFac[i] > -base && maxFac[i] < base) &&vals.axis.indexOf('pc') !== 0) {
+        if (!(minFac[i] > -base && maxFac[i] < base)) {
           newDat.push(vals);
         }
       });
@@ -245,6 +245,8 @@ export class UsersComponent implements OnChanges {
             .style('text-anchor', 'start')
             .text(d => `Risk: ${d.risk} Return: ${d.return} Return status: ${d.back}`);
           const FC: number[] = this.displayData[0].FC;
+          const usedweigtht: { w: number, name: string }[] = this.displayData.length === 2 ? this.displayData[1].w : this.displayData[0].w;
+          const factorBetas: [] = this.displayData.length === 2 ? this.displayData[1].FL : this.displayData[0].FL;
           const factorsOff = this.displayData.length === 2 ? this.displayData[1].factors : this.displayData[0].factors;
           const svgFactorX = this.factorX(factorsOff);
           const margin = { top: 40, right: 40, bottom: 40, left: 40 }, ww = 400, hh = 400,
@@ -259,13 +261,51 @@ export class UsersComponent implements OnChanges {
           if (this.displayData.length === 2) {
             svgFactorX.remove();
           }
-          this.RadarChart('app-users',  this.pickOutNonZeroValues(   this.displayData.map(d => d.factors)  ), options);
+          this.RadarChart('app-users', this.pickOutNonZeroValues(this.displayData.map(d => d.factors)), options);
           this.correlationMatrix(FC, this.displayData[0].factors.map(d => d.axis));
+          this.flMatrix(usedweigtht, factorBetas, this.displayData[0].factors.map(d => d.axis));
+          const factorExp: number[] = [];
+          factorBetas.forEach((d, i) => {
+            const iw = i % usedweigtht.length;
+            factorExp.push(d * usedweigtht[iw].w);
+          });
+          this.flMatrix(usedweigtht, factorExp, this.displayData[0].factors.map(d => d.axis));
         }
       }, res => {
           console.log(res);
         });
 
+  }
+  flMatrix(weights: { w: number, name: string }[], factorBetas: number[], fNames: string[], id = 'app-users') {
+    const w = 960, h = 500, nfac = factorBetas.length / weights.length,
+      margin = { top: 10, right: 10, bottom: 10, left: 10 },
+      tooltip = d3.select('body').append('g').attr('class', 'toolTip'),
+      width = w - margin.left - margin.right,
+      height = h - margin.top - margin.bottom, spacer = 10, rotateAngle = -45,
+      squareSide = Math.min(width / nfac, height / weights.length) - spacer, Side = squareSide + spacer,
+      svgBase = d3.select(id).append('svg')
+        .attr('width', w).attr('height', h),
+      svg = svgBase.append('g')
+        .attr('transform', `translate(${margin.left},${margin.top})`),
+      radScale = d3.scaleLinear().range([0, Side / 2]).domain([d3.min(factorBetas.map(d => Math.abs(d))),
+      d3.max(factorBetas.map(d => Math.abs(d)))]);
+    svg.selectAll('.fbetas').select('g').data(factorBetas).enter()
+      .append('circle')
+      .attr('class', 'fbetas')
+      .style('fill', d => d >= 0 ? 'blue' : 'red')
+      .style('fill-opacity', 0.5)
+      .attr('transform', (d, i) => `translate(${(Math.floor(i / weights.length)) * Side},${Math.floor(i % weights.length) * Side})`)
+      .attr('cx', Side / 2)
+      .attr('cy', Side / 2)
+      .attr('r', d => radScale(Math.abs(d)));
+    svg.selectAll('.fbetas').select('g').data(factorBetas).enter()
+      .append('text')
+      .attr('class', 'fbetas')
+      .attr('transform', (d, i) => `translate(${(Math.floor(i / weights.length)) * Side},${Math.floor(i % weights.length) * Side})`)
+      .attr('x', Side / 2)
+      .attr('y', Side / 2)
+      .text(d => d3.format('0.2f')(d))
+      ;
   }
   correlationMatrix(FC: number[], factorNames: string[], id = 'app-users') {
     const numFac = (Math.sqrt(1 + 8 * FC.length) - 1) / 2;
@@ -295,10 +335,12 @@ export class UsersComponent implements OnChanges {
       squareSide = Math.min(width, height) / factorNames.length - spacer, Side = squareSide + spacer,
       svgBase = d3.select(id).append('svg')
         .attr('width', w).attr('height', h),
-      svg = svgBase.append('g');
+      svg = svgBase.append('g')
+      .attr('transform', `translate(${margin.left},${margin.top})`);
     svg.selectAll('.correlations').select('g').data(plotFC).enter()
       .append('rect')
       .attr('class', d => `correlations ${d.correlation > 0 ? 'pos' : 'neg'}`)
+      .style('fill-opacity', 1)
       .attr('width', squareSide)
       .attr('height', squareSide)
       .attr('x', 0)
@@ -311,15 +353,17 @@ export class UsersComponent implements OnChanges {
         <br>correlation:${d3.format('0.4f')(d.correlation)}`))
       .on('mouseout', (d) => tooltip.style('display', 'none'))
       .transition().duration(2000).attrTween('transform', d => (t) =>
-        `translate(${(Math.sin(5 * (1 - t)) * (d.j) + t * d.i) * Side},${(Math.sin(3 * (1 - t)) * (d.i) + t * d.j) * Side})`)
+        `translate(${(Math.sin(5 * (1 - t)) * (d.j) + t * d.i) * Side},
+        ${(Math.sin(3 * (1 - t)) * (d.i) + t * d.j) * Side}), rotate(${(1 - t) * 45 + t * 360})`)
+      .style('fill-opacity', d => Math.sqrt(Math.abs(d.correlation)))
       ;
     svg.selectAll('.correlations').select('g').data(plotFC).enter()
       .append('text')
       .attr('class', 'correlations')
       .text(d => d3.format('0.3f')(d.correlation))
-      .attr('transform', d => `translate(${d.i * Side + squareSide / 2},${d.j * Side + squareSide / 2}),rotate(${rotateAngle})`)
-      .attr('y', (0 * squareSide / 2) * (Math.sin(Math.PI / 180 * rotateAngle)))
-      .attr('x', (-squareSide / 2) * (Math.cos(Math.PI / 180 * rotateAngle)))
+      .attr('transform', d => `translate(${d.i * Side + squareSide / 2 - 3},${d.j * Side + squareSide / 2 - 3}),rotate(${rotateAngle})`)
+      .attr('y', (-squareSide / 2 + 8) * (Math.sin(Math.PI / 180 * rotateAngle)))
+      .attr('x', (-squareSide / 2 - 3) * (Math.cos(Math.PI / 180 * rotateAngle)))
       .on('mousemove', (d) => tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px')
         .style('display', 'inline-block')

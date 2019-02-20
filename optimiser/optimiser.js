@@ -203,6 +203,51 @@ const opt = (n, optype) => {
     exports.stockchart = stockchart;
     exports.factorchart = factorchart;
 }
+const makeFCsmall = (FC, Fnames) => {
+    const nfac = Fnames.length, FCsmall = [];
+    for (let i = 0, ij = 0; i < nfac; ++i) {
+        if (Fnames[i].indexOf('pc') !== 0) {
+            for (let j = 0; j <= i; ++j, ++ij) {
+                if (Fnames[j].indexOf('pc') !== 0) {
+                    FCsmall.push(FC[ij]);
+                }
+            }
+        }
+    }
+    console.log(FCsmall.length);
+    console.log(nfac * (nfac + 1) / 2);
+    return FCsmall;
+}
+const makeWsmall = (w,names) =>{
+    const wsmall = [];
+    w.forEach((d,i)=>{
+        if(d){
+            wsmall.push({w:d,name:names[i]});
+        }
+    })
+    return wsmall;
+}
+const makeFLsmall = (w, FL, Fnames) => {
+    const nfac = Fnames.length;
+    let ns = 0;
+    w.forEach(d => {
+        if (d) {
+            console.log(d);
+            ns++;
+        }
+    });
+    const FLsmall = [];
+    for (let i = 0; i < nfac; ++i) {
+        if (Fnames[i].indexOf('pc') !== 0) {
+            w.forEach((d, j) => {
+                if (d) {
+                    FLsmall.push(FL[i * w.length + j]);
+                }
+            });
+        }
+    }
+    return FLsmall;
+}
 const factor = (n, optype, gamma, factorwant) => {
     let wants = 0;
     factorwant.forEach(d => d !== null ? wants++ : console.log(d));
@@ -267,7 +312,7 @@ const factor = (n, optype, gamma, factorwant) => {
     const FX = Array(nfac);
     test.FX_get(n, nfac, w, FL, SV, FC, FX);
 
-    factorData.push({ back: test.Return_Message(back), risk: getRisk(n, w, nfac, SV, FL, FC), return: test.ddotvec(n, alpha, w), factors: factorval(factors, FX, 'pc'), FC: FC });
+    factorData.push({ back: test.Return_Message(back), risk: getRisk(n, w, nfac, SV, FL, FC), return: test.ddotvec(n, alpha, w), factors: factorval(factors, FX, 'pc'), FC: makeFCsmall(FC, factors), FL: makeFLsmall(w, FL, factors), w: makeWsmall(w,stocks) });
     output.push({ back: test.Return_Message(back), gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), return: test.ddotvec(n, alpha, w), portfolio: portfolio(stocks, w, alpha) });
 
     if (wants) {
@@ -295,7 +340,7 @@ const factor = (n, optype, gamma, factorwant) => {
         const FX = Array(nfac);
         test.FX_get(n, nfac, w, FL, SV, FC, FX);
 
-        factorData.push({ back: test.Return_Message(back), risk: getRisk(n, w, nfac, SV, FL, FC), return: test.ddotvec(n, alpha, w), factors: factorval(factors, FX, 'pc') });
+        factorData.push({ back: test.Return_Message(back), risk: getRisk(n, w, nfac, SV, FL, FC), return: test.ddotvec(n, alpha, w), factors: factorval(factors, FX, 'pc'), FL: makeFLsmall(w, FL, factors),  w: makeWsmall(w,stocks) });
         output.push({ back: test.Return_Message(back), gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), return: test.ddotvec(n, alpha, w), portfolio: portfolio(stocks, w, alpha) });
     }
     exports.factorData = factorData;
