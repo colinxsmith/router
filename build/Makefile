@@ -143,7 +143,7 @@ cmd_alink_thin = rm -f $@ && $(AR.$(TOOLSET)) crsT $@ $(filter %.o,$^)
 # special "figure out circular dependencies" flags around the entire
 # input list during linking.
 quiet_cmd_link = LINK($(TOOLSET)) $@
-cmd_link = $(LINK.$(TOOLSET)) $(GYP_LDFLAGS) $(LDFLAGS.$(TOOLSET)) -o $@ -Wl,--start-group $(LD_INPUTS) $(LIBS) -Wl,--end-group
+cmd_link = $(LINK.$(TOOLSET)) $(GYP_LDFLAGS) $(LDFLAGS.$(TOOLSET)) -o $@ -Wl,--start-group $(LD_INPUTS) -Wl,--end-group $(LIBS)
 
 # We support two kinds of shared objects (.so):
 # 1) shared_library, which is just bundling together many dependent libraries
@@ -308,8 +308,8 @@ ifeq ($(strip $(foreach prefix,$(NO_LOAD),\
 endif
 
 quiet_cmd_regen_makefile = ACTION Regenerating $@
-cmd_regen_makefile = cd $(srcdir); /home/colin/node-v8.11.1-linux-x64/lib/node_modules/npm/node_modules/node-gyp/gyp/gyp_main.py -fmake --ignore-environment "--toplevel-dir=." -I/home/colin/router/build/config.gypi -I/home/colin/node-v8.11.1-linux-x64/lib/node_modules/npm/node_modules/node-gyp/addon.gypi -I/home/colin/.node-gyp/8.11.1/include/node/common.gypi "--depth=." "-Goutput_dir=." "--generator-output=build" "-Dlibrary=shared_library" "-Dvisibility=default" "-Dnode_root_dir=/home/colin/.node-gyp/8.11.1" "-Dnode_gyp_dir=/home/colin/node-v8.11.1-linux-x64/lib/node_modules/npm/node_modules/node-gyp" "-Dnode_lib_file=/home/colin/.node-gyp/8.11.1/<(target_arch)/node.lib" "-Dmodule_root_dir=/home/colin/router" "-Dnode_engine=v8" binding.gyp
-Makefile: $(srcdir)/../node-v8.11.1-linux-x64/lib/node_modules/npm/node_modules/node-gyp/addon.gypi $(srcdir)/build/config.gypi $(srcdir)/binding.gyp $(srcdir)/../.node-gyp/8.11.1/include/node/common.gypi
+cmd_regen_makefile = cd $(srcdir); /home/colin/node-v10.0.0-linux-x64/lib/node_modules/npm/node_modules/npm-lifecycle/node_modules/node-gyp/gyp/gyp_main.py -fmake --ignore-environment "--toplevel-dir=." -I/home/colin/router/build/config.gypi -I/home/colin/node-v10.0.0-linux-x64/lib/node_modules/npm/node_modules/npm-lifecycle/node_modules/node-gyp/addon.gypi -I/home/colin/.node-gyp/11.9.0/include/node/common.gypi "--depth=." "-Goutput_dir=." "--generator-output=build" "-Dlibrary=shared_library" "-Dvisibility=default" "-Dnode_root_dir=/home/colin/.node-gyp/11.9.0" "-Dnode_gyp_dir=/home/colin/node-v10.0.0-linux-x64/lib/node_modules/npm/node_modules/npm-lifecycle/node_modules/node-gyp" "-Dnode_lib_file=/home/colin/.node-gyp/11.9.0/<(target_arch)/node.lib" "-Dmodule_root_dir=/home/colin/router" "-Dnode_engine=v8" binding.gyp
+Makefile: $(srcdir)/../node-v10.0.0-linux-x64/lib/node_modules/npm/node_modules/npm-lifecycle/node_modules/node-gyp/addon.gypi $(srcdir)/build/config.gypi $(srcdir)/binding.gyp $(srcdir)/../.node-gyp/11.9.0/include/node/common.gypi
 	$(call do_cmd,regen_makefile)
 
 # "all" is a concatenation of the "all" targets from all the included
