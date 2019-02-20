@@ -155,8 +155,8 @@ rect.correlations.pos {
     fill: rgb(65, 223, 17);
 }
 text.fbetas{
-    font-size: 13px;
+    font-size: 20px;
     font-family: Calibri, sans-serif;
-    fill: rgb(23, 47, 128);
+    fill: rgb(28, 235, 21);
     text-anchor: middle;
 }
