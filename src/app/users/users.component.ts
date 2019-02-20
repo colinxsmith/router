@@ -287,7 +287,7 @@ export class UsersComponent implements OnChanges {
         .attr('width', w).attr('height', h),
       svg = svgBase.append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`),
-      radScale = d3.scaleLinear().range([0, Side / 2]).domain([d3.min(factorBetas.map(d => Math.abs(d))),
+      radScale = d3.scaleLinear().range([Side / 8, Side / 2]).domain([d3.min(factorBetas.map(d => Math.abs(d))),
       d3.max(factorBetas.map(d => Math.abs(d)))]);
     svg.selectAll('.fbetas').select('g').data(factorBetas).enter()
       .append('circle')
