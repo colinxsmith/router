@@ -245,8 +245,8 @@ export class UsersComponent implements OnChanges {
             .style('text-anchor', 'start')
             .text(d => `Risk: ${d.risk} Return: ${d.return} Return status: ${d.back}`);
           const FC: number[] = this.displayData[0].FC;
-          const usedweigtht: { w: number, name: string }[] = this.displayData.length === 2 ? this.displayData[1].w : this.displayData[0].w;
-          const factorBetas: [] = this.displayData.length === 2 ? this.displayData[1].FL : this.displayData[0].FL;
+//          const usedweight: { w: number, name: string }[] = this.displayData.length === 2 ? this.displayData[1].w : this.displayData[0].w;
+//          const factorBetas: number[] = this.displayData.length === 2 ? this.displayData[1].FL : this.displayData[0].FL;
           const factorsOff = this.displayData.length === 2 ? this.displayData[1].factors : this.displayData[0].factors;
           const svgFactorX = this.factorX(factorsOff);
           const margin = { top: 40, right: 40, bottom: 40, left: 40 }, ww = 400, hh = 400,
@@ -263,49 +263,171 @@ export class UsersComponent implements OnChanges {
           }
           this.RadarChart('app-users', this.pickOutNonZeroValues(this.displayData.map(d => d.factors)), options);
           this.correlationMatrix(FC, this.displayData[0].factors.map(d => d.axis));
-          this.flMatrix(usedweigtht, factorBetas, this.displayData[0].factors.map(d => d.axis));
-          const factorExp: number[] = [];
-          factorBetas.forEach((d, i) => {
-            const iw = i % usedweigtht.length;
-            factorExp.push(d * usedweigtht[iw].w);
+          this.displayData.forEach((DATA, II) => {
+            const usedweight = DATA.w;
+            const factorBetas = DATA.FL;
+            if (II === 0) {
+              this.flMatrix(usedweight, factorBetas, this.displayData[0].factors.map(d => d.axis));
+            }
+            const factorExp: number[] = [];
+            factorBetas.forEach((d, i) => {
+              const iw = i % usedweight.length;
+              factorExp.push(d * usedweight[iw].w);
+            });
+            this.flMatrix(usedweight, factorExp, this.displayData[0].factors.map(d => d.axis), 1);
           });
-          this.flMatrix(usedweigtht, factorExp, this.displayData[0].factors.map(d => d.axis));
         }
       }, res => {
-          console.log(res);
-        });
+        console.log(res);
+      });
 
   }
-  flMatrix(weights: { w: number, name: string }[], factorBetas: number[], fNames: string[], id = 'app-users') {
-    const w = 960, h = 500, nfac = factorBetas.length / weights.length,
+  flMatrix(weights: { w: number, name: string }[], factorBetas: number[], fNames: string[], totals = 0, id = 'app-users') {
+    let w = 960, h = 960;
+    const nRow = weights.length + totals, nfac = factorBetas.length / weights.length, nCol = nfac + totals,
       margin = { top: 10, right: 10, bottom: 10, left: 10 },
-      tooltip = d3.select('body').append('g').attr('class', 'toolTip'),
-      width = w - margin.left - margin.right,
-      height = h - margin.top - margin.bottom, spacer = 10, rotateAngle = -45,
-      squareSide = Math.min(width / nfac, height / weights.length) - spacer, Side = squareSide + spacer,
-      svgBase = d3.select(id).append('svg')
-        .attr('width', w).attr('height', h),
+      tooltip = d3.select('body').append('g').attr('class', 'toolTip');
+    let width = w - margin.left - margin.right,
+      height = h - margin.top - margin.bottom;
+    const spacer = 10, rotateAngle = -45,
+      squareSide = Math.min(width / nCol, height / nRow) - spacer, Side = squareSide + spacer;
+    height = (squareSide + spacer) * nRow;
+    h = height + margin.top + margin.bottom;
+    width = (squareSide + spacer) * nCol;
+    w = width + margin.left + margin.right;
+    const totalsCol: number[] = Array(nfac);
+    for (let i = 0; i < totalsCol.length; ++i) {
+      totalsCol[i] = 0;
+    }
+    let sumEx = 0;
+    factorBetas.forEach((d, i) => {
+      totalsCol[Math.floor(i / weights.length)] += d;
+      sumEx += d;
+    });
+    const svgBase = d3.select(id).append('svg')
+      .attr('width', w).attr('height', h),
       svg = svgBase.append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`),
-      radScale = d3.scaleLinear().range([Side / 8, Side / 2]).domain([d3.min(factorBetas.map(d => Math.abs(d))),
+      radScale = d3.scaleLinear().range([Side / 4, Side / 2]).domain([d3.min(factorBetas.map(d => Math.abs(d))),
       d3.max(factorBetas.map(d => Math.abs(d)))]);
+    svg.append('rect')
+      .attr('class', 'rim')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('width', width)
+      .attr('height', height);
     svg.selectAll('.fbetas').select('g').data(factorBetas).enter()
       .append('circle')
-      .attr('class', 'fbetas')
-      .style('fill', d => d >= 0 ? 'blue' : 'red')
-      .style('fill-opacity', 0.5)
+      .attr('class', d => d >= 0 ? 'fbetas pos' : 'fbetas neg')
       .attr('transform', (d, i) => `translate(${(Math.floor(i / weights.length)) * Side},${Math.floor(i % weights.length) * Side})`)
       .attr('cx', Side / 2)
       .attr('cy', Side / 2)
-      .attr('r', d => radScale(Math.abs(d)));
+      .attr('r', d => radScale(Math.abs(d)))
+      .on('mousemove', (d, i) => {
+        tooltip.style('left', d3.event.pageX - 50 + 'px')
+          .style('top', d3.event.pageY - 70 + 'px')
+          .style('display', 'inline-block')
+          .html(`<i class="fa fa-gears leafy"></i>${totals === 1 ? 'Exposure' : 'BETA'} of
+          ${weights[Math.floor(i % weights.length)].name}<br> to
+          ${fNames[Math.floor(i / weights.length)]}:<br>${d3.format('0.4f')(d)}`);
+      })
+      .on('mouseout', () => tooltip.style('display', 'none'))
+      ;
+    if (totals) {
+      svg.selectAll('.totals').select('g').data(totalsCol).enter()
+        .append('rect')
+        .attr('class', d => d >= 0 ? 'totals pos' : 'totals neg')
+        .attr('transform', (d, i) => `translate(${i * Side},${Math.floor(weights.length) * Side})`)
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr('height', Side)
+        .attr('width', Side)
+        .on('mousemove', (d, i) => {
+          tooltip.style('left', d3.event.pageX - 50 + 'px')
+            .style('top', d3.event.pageY - 70 + 'px')
+            .style('display', 'inline-block')
+            .html(`<i class="fa fa-gears leafy"></i>Total: ${fNames[i]}<br>${d3.format('0.4f')(d)}`);
+        })
+        .on('mouseout', () => tooltip.style('display', 'none'))
+        ;
+      svg.append('rect')
+        .attr('class', 'fbetas')
+        .attr('class', sumEx >= 0 ? 'total pos' : 'total neg')
+        .attr('transform', `translate(${nfac * Side},${Math.floor(weights.length) * Side})`)
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr('height', Side)
+        .attr('width', Side)
+        .on('mousemove', (d, i) => {
+          tooltip.style('left', d3.event.pageX - 50 + 'px')
+            .style('top', d3.event.pageY - 70 + 'px')
+            .style('display', 'inline-block')
+            .html(`<i class="fa fa-gears leafy"></i>Total: ${d3.format('0.4f')(sumEx)}`);
+        })
+        .on('mouseout', () => tooltip.style('display', 'none'))
+        ;
+    }
     svg.selectAll('.fbetas').select('g').data(factorBetas).enter()
       .append('text')
       .attr('class', 'fbetas')
       .attr('transform', (d, i) => `translate(${(Math.floor(i / weights.length)) * Side},${Math.floor(i % weights.length) * Side})`)
       .attr('x', Side / 2)
-      .attr('y', Side / 2)
+      .attr('y', (d, i, j) => {
+        const here = d3.select(j[i]);
+        const font = +here.style('font-size').replace('px', '');
+        return Side / 2 + font / 4;
+      })
       .text(d => d3.format('0.2f')(d))
+      .on('mousemove', (d, i) => {
+        tooltip.style('left', d3.event.pageX - 50 + 'px')
+          .style('top', d3.event.pageY - 70 + 'px')
+          .style('display', 'inline-block')
+          .html(`<i class="fa fa-gears leafy"></i>${totals === 1 ? 'Exposure' : 'BETA'} of
+          ${weights[Math.floor(i % weights.length)].name}<br> to
+          ${fNames[Math.floor(i / weights.length)]}:<br>${d3.format('0.4f')(d)}`);
+      })
+      .on('mouseout', () => tooltip.style('display', 'none'))
       ;
+    if (totals) {
+      svg.selectAll('.fbetas').select('g').data(totalsCol).enter()
+        .append('text')
+        .attr('class', 'fbetas')
+        .attr('transform', (d, i) => `translate(${i * Side},${Math.floor(weights.length) * Side})`)
+        .attr('x', Side / 2)
+        .attr('y', (d, i, j) => {
+          const here = d3.select(j[i]);
+          const font = +here.style('font-size').replace('px', '');
+          return Side / 2 + font / 4;
+        })
+        .text(d => d3.format('0.2f')(d))
+        .on('mousemove', (d, i) => {
+          tooltip.style('left', d3.event.pageX - 50 + 'px')
+            .style('top', d3.event.pageY - 70 + 'px')
+            .style('display', 'inline-block')
+            .html(`<i class="fa fa-gears leafy"></i>Total: ${fNames[i]}<br>${d3.format('0.4f')(d)}`);
+        })
+        .on('mouseout', () => tooltip.style('display', 'none'))
+        ;
+      svg.append('text')
+        .attr('class', 'fbetas')
+        .attr('transform', `translate(${nfac * Side},${Math.floor(weights.length) * Side})`)
+        .attr('x', Side / 2)
+        .attr('y', (d, i, j) => {
+          const here = d3.select(j[i]);
+          const font = +here.style('font-size').replace('px', '');
+          return Side / 2 + font / 4;
+        })
+        .text(d3.format('0.2f')(sumEx))
+        .on('mousemove', (d, i) => {
+          tooltip.style('left', d3.event.pageX - 50 + 'px')
+            .style('top', d3.event.pageY - 70 + 'px')
+            .style('display', 'inline-block')
+            .html(`<i class="fa fa-gears leafy"></i>Total: ${d3.format('0.4f')(sumEx)}`);
+        })
+        .on('mouseout', () => tooltip.style('display', 'none'))
+        ;
+
+    }
   }
   correlationMatrix(FC: number[], factorNames: string[], id = 'app-users') {
     const numFac = (Math.sqrt(1 + 8 * FC.length) - 1) / 2;
@@ -336,11 +458,10 @@ export class UsersComponent implements OnChanges {
       svgBase = d3.select(id).append('svg')
         .attr('width', w).attr('height', h),
       svg = svgBase.append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`);
+        .attr('transform', `translate(${margin.left},${margin.top})`);
     svg.selectAll('.correlations').select('g').data(plotFC).enter()
       .append('rect')
       .attr('class', d => `correlations ${d.correlation > 0 ? 'pos' : 'neg'}`)
-      .style('fill-opacity', 1)
       .attr('width', squareSide)
       .attr('height', squareSide)
       .attr('x', 0)
@@ -542,7 +663,7 @@ export class UsersComponent implements OnChanges {
   }
   simpleDisplay(displayData: any) {
     const keys = Object.keys(displayData[0]), www = keys.length;
-    const facNames: string [] = displayData.map(d => d[keys[0]]);
+    const facNames: string[] = displayData.map(d => d[keys[0]]);
     const longNameLength = d3.max(facNames, d => d.length);
     const xPosArray: number[] = Array(www), off = 20, ww = Math.max(0, off * 8 + www * longNameLength * 8);
     for (let i = 0; i < www; ++i) {
@@ -694,7 +815,7 @@ export class UsersComponent implements OnChanges {
     }
     const blobChooser = (k: number) =>
       // tslint:disable-next-line:max-line-length
-      `M${cfg.margin.right / 2  + radius} ${-cfg.margin.right / 2 - radius + k * radius / 10}l${radius / 10} 0l0 ${radius / 10}l-${radius / 10} 0z`;
+      `M${cfg.margin.right / 2 + radius} ${-cfg.margin.right / 2 - radius + k * radius / 10}l${radius / 10} 0l0 ${radius / 10}l-${radius / 10} 0z`;
     const blobWrapper = g.selectAll('.radarWrapper')
       .data(data)
       .enter().append('g')
