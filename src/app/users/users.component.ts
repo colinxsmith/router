@@ -264,13 +264,13 @@ export class UsersComponent implements OnChanges {
           this.displayData.forEach((DATA) => {
             const usedweight = DATA.w;
             const factorBetas = DATA.FL;
-            this.flMatrix(usedweight, factorBetas, this.displayData[0].factors.map(d => d.axis));
+            this.matrixFLorFX(usedweight, factorBetas, this.displayData[0].factors.map(d => d.axis));
             const factorExp: number[] = [];
             factorBetas.forEach((d, i) => {
               const iw = i % usedweight.length;
               factorExp.push(d * usedweight[iw].w);
             });
-            this.flMatrix(usedweight, factorExp, this.displayData[0].factors.map(d => d.axis), 1);
+            this.matrixFLorFX(usedweight, factorExp, this.displayData[0].factors.map(d => d.axis), 1);
           });
         }
       }, res => {
@@ -278,7 +278,7 @@ export class UsersComponent implements OnChanges {
       });
 
   }
-  flMatrix(weights: { w: number, name: string }[], factorBetas: number[], fNames: string[], totals = 0, id = 'app-users') {
+  matrixFLorFX(weights: { w: number, name: string }[], factorBetas: number[], fNames: string[], totals = 0, id = 'app-users') {
     let w = 960, h = 960;
     const nRow = weights.length + totals, nfac = factorBetas.length / weights.length, nCol = nfac + totals,
       margin = { top: 10, right: 10, bottom: 10, left: 10 },
