@@ -370,7 +370,8 @@ export class UsersComponent implements OnChanges {
       .attr('x', Side / 2)
       .attr('y', (d, i, j) => {
         const here = d3.select(j[i]);
-        const font = +here.style('font-size').replace('px', '');
+        const font = +here.style('font-size').replace('px', '') * w / h;
+        here.style('font-size', font + 'px');
         return Side / 2 + font / 4;
       })
       .text(d => d3.format('0.2f')(d))
@@ -392,7 +393,8 @@ export class UsersComponent implements OnChanges {
         .attr('x', Side / 2)
         .attr('y', (d, i, j) => {
           const here = d3.select(j[i]);
-          const font = +here.style('font-size').replace('px', '');
+          const font = +here.style('font-size').replace('px', '') * w / h;
+          here.style('font-size', font + 'px');
           return Side / 2 + font / 4;
         })
         .text(d => d3.format('0.2f')(d))
@@ -410,7 +412,8 @@ export class UsersComponent implements OnChanges {
         .attr('x', Side / 2)
         .attr('y', (d, i, j) => {
           const here = d3.select(j[i]);
-          const font = +here.style('font-size').replace('px', '');
+          const font = +here.style('font-size').replace('px', '') * w / h;
+          here.style('font-size', font + 'px');
           return Side / 2 + font / 4;
         })
         .text(d3.format('0.2f')(sumEx))
