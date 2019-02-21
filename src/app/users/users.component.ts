@@ -245,8 +245,6 @@ export class UsersComponent implements OnChanges {
             .style('text-anchor', 'start')
             .text(d => `Risk: ${d.risk} Return: ${d.return} Return status: ${d.back}`);
           const FC: number[] = this.displayData[0].FC;
-//          const usedweight: { w: number, name: string }[] = this.displayData.length === 2 ? this.displayData[1].w : this.displayData[0].w;
-//          const factorBetas: number[] = this.displayData.length === 2 ? this.displayData[1].FL : this.displayData[0].FL;
           const factorsOff = this.displayData.length === 2 ? this.displayData[1].factors : this.displayData[0].factors;
           const svgFactorX = this.factorX(factorsOff);
           const margin = { top: 40, right: 40, bottom: 40, left: 40 }, ww = 400, hh = 400,
@@ -263,12 +261,10 @@ export class UsersComponent implements OnChanges {
           }
           this.RadarChart('app-users', this.pickOutNonZeroValues(this.displayData.map(d => d.factors)), options);
           this.correlationMatrix(FC, this.displayData[0].factors.map(d => d.axis));
-          this.displayData.forEach((DATA, II) => {
+          this.displayData.forEach((DATA) => {
             const usedweight = DATA.w;
             const factorBetas = DATA.FL;
-            if (II === 0) {
-              this.flMatrix(usedweight, factorBetas, this.displayData[0].factors.map(d => d.axis));
-            }
+            this.flMatrix(usedweight, factorBetas, this.displayData[0].factors.map(d => d.axis));
             const factorExp: number[] = [];
             factorBetas.forEach((d, i) => {
               const iw = i % usedweight.length;
