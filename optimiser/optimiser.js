@@ -218,11 +218,11 @@ const makeFCsmall = (FC, Fnames) => {
     console.log(nfac * (nfac + 1) / 2);
     return FCsmall;
 }
-const makeWsmall = (w,names) =>{
+const makeWsmall = (w, names) => {
     const wsmall = [];
-    w.forEach((d,i)=>{
-        if(d){
-            wsmall.push({w:d,name:names[i]});
+    w.forEach((d, i) => {
+        if (d) {
+            wsmall.push({ w: d, name: names[i] });
         }
     })
     return wsmall;
@@ -253,6 +253,7 @@ const factor = (n, optype, gamma, factorwant) => {
     factorwant.forEach(d => d !== null ? wants++ : console.log(d));
     const output = [];
     const factorData = [];
+    const radar = [];
     var ls = 0, full = 1, w = [], m = 1, L = [], U = [], A = [], alpha = [], ogamma = [], minRisk = -1, maxRisk = -1,
         five = 0.05, ten = 0.1, forty = 0.4;
     const model = '/home/colin/safeqp/newmodel.csv';
@@ -312,8 +313,9 @@ const factor = (n, optype, gamma, factorwant) => {
     const FX = Array(nfac);
     test.FX_get(n, nfac, w, FL, SV, FC, FX);
 
-    factorData.push({ back: test.Return_Message(back), risk: getRisk(n, w, nfac, SV, FL, FC), return: test.ddotvec(n, alpha, w), factors: factorval(factors, FX, 'pc'), FC: makeFCsmall(FC, factors), FL: makeFLsmall(w, FL, factors), w: makeWsmall(w,stocks) });
+    factorData.push({ back: test.Return_Message(back), risk: getRisk(n, w, nfac, SV, FL, FC), return: test.ddotvec(n, alpha, w), factors: factorval(factors, FX, 'pc'), FC: makeFCsmall(FC, factors), FL: makeFLsmall(w, FL, factors), w: makeWsmall(w, stocks) });
     output.push({ back: test.Return_Message(back), gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), return: test.ddotvec(n, alpha, w), portfolio: portfolio(stocks, w, alpha) });
+    radar.push(factorval(factors, FX, 'pc'));
 
     if (wants) {
         m += wants;
@@ -340,11 +342,13 @@ const factor = (n, optype, gamma, factorwant) => {
         const FX = Array(nfac);
         test.FX_get(n, nfac, w, FL, SV, FC, FX);
 
-        factorData.push({ back: test.Return_Message(back), risk: getRisk(n, w, nfac, SV, FL, FC), return: test.ddotvec(n, alpha, w), factors: factorval(factors, FX, 'pc'), FL: makeFLsmall(w, FL, factors),  w: makeWsmall(w,stocks) });
+        factorData.push({ back: test.Return_Message(back), risk: getRisk(n, w, nfac, SV, FL, FC), return: test.ddotvec(n, alpha, w), factors: factorval(factors, FX, 'pc'), FL: makeFLsmall(w, FL, factors), w: makeWsmall(w, stocks) });
         output.push({ back: test.Return_Message(back), gamma: ogamma[0], risk: getRisk(n, w, nfac, SV, FL, FC), return: test.ddotvec(n, alpha, w), portfolio: portfolio(stocks, w, alpha) });
+        radar.push(factorval(factors, FX, 'pc'));
     }
     exports.factorData = factorData;
     exports.output = output;
+    exports.radar = radar;
 }
 
 exports.opt = opt;

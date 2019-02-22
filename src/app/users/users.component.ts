@@ -246,7 +246,7 @@ export class UsersComponent implements OnChanges {
             .text(d => `Risk: ${d.risk} Return: ${d.return} Return status: ${d.back}`);
           const FC: number[] = this.displayData[0].FC;
           const factorsOff = this.displayData.length === 2 ? this.displayData[1].factors : this.displayData[0].factors;
-          const svgFactorX = this.factorX(factorsOff);
+          const svgFactorX = this.factorX(factorsOff, 200);
           const margin = { top: 40, right: 40, bottom: 40, left: 40 }, ww = 400, hh = 400,
             width = ww - margin.left - margin.right,
             height = hh - margin.top - margin.bottom,
@@ -260,17 +260,17 @@ export class UsersComponent implements OnChanges {
             svgFactorX.remove();
           }
           this.RadarChart('app-users', this.pickOutNonZeroValues(this.displayData.map(d => d.factors)), options);
-          this.correlationMatrix(FC, this.displayData[0].factors.map(d => d.axis));
-          this.displayData.forEach((DATA) => {
+          this.correlationMatrix(FC, this.displayData[0].factors.map(d => d.axis), 700);
+          this.displayData.forEach((DATA, ii) => {
             const usedweight = DATA.w;
             const factorBetas = DATA.FL;
-            this.matrixFLorFX(usedweight, factorBetas, this.displayData[0].factors.map(d => d.axis));
+            this.matrixFLorFX(ii, usedweight, factorBetas, this.displayData[0].factors.map(d => d.axis), 0, 700);
             const factorExp: number[] = [];
             factorBetas.forEach((d, i) => {
               const iw = i % usedweight.length;
               factorExp.push(d * usedweight[iw].w);
             });
-            this.matrixFLorFX(usedweight, factorExp, this.displayData[0].factors.map(d => d.axis), 1);
+            this.matrixFLorFX(ii, usedweight, factorExp, this.displayData[0].factors.map(d => d.axis), 1);
           });
         }
       }, res => {
@@ -278,10 +278,10 @@ export class UsersComponent implements OnChanges {
       });
 
   }
-  matrixFLorFX(weights: { w: number, name: string }[], factorBetas: number[], fNames: string[], totals = 0, id = 'app-users') {
-    let w = 960, h = 960;
+  matrixFLorFX(dataIndex: number, weights: { w: number, name: string }[],
+    factorBetas: number[], fNames: string[], totals = 0, w = 960, h = 960, id = 'app-users') {
     const nRow = weights.length + totals, nfac = factorBetas.length / weights.length, nCol = nfac + totals,
-      margin = { top: 10, right: 10, bottom: 10, left: 10 },
+      margin = { top: 250, right: 10, bottom: 10, left: 100 },
       tooltip = d3.select('body').append('g').attr('class', 'toolTip');
     let width = w - margin.left - margin.right,
       height = h - margin.top - margin.bottom;
@@ -312,6 +312,25 @@ export class UsersComponent implements OnChanges {
       .attr('y', 0)
       .attr('width', width)
       .attr('height', height);
+    svg.selectAll('.factorLabels').select('g').data(fNames).enter()
+      .append('text')
+      .attr('transform', (d, i) => `translate(${i * Side + Side / 2}, ${-spacer}),rotate(-75)`)
+      .attr('class', 'factorLabels')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('dy', '0.35em')
+      .text(d => d)
+      .call(this.wrapFunction, margin.top, 1.01)
+      ;
+    svg.selectAll('.stockLabels').select('g').data(weights.map(d => d.name)).enter()
+      .append('text')
+      .attr('class', 'stockLabels').attr('x', 0)
+      .attr('transform', (d, i) => `translate(${-spacer},${i * Side + Side / 4})`)
+      .attr('y', 0)
+      .attr('dy', '0.35em')
+      .text(d => d)
+      .call(this.wrapFunction, margin.left, 1.01)
+      ;
     svg.selectAll('.fbetas').select('g').data(factorBetas).enter()
       .append('circle')
       .attr('class', d => d >= 0 ? 'fbetas pos' : 'fbetas neg')
@@ -323,17 +342,32 @@ export class UsersComponent implements OnChanges {
         tooltip.style('left', d3.event.pageX - 50 + 'px')
           .style('top', d3.event.pageY - 70 + 'px')
           .style('display', 'inline-block')
-          .html(`<i class="fa fa-gears leafy"></i>${totals === 1 ? 'Exposure' : 'BETA'} of
+          .html(`<i class="fa fa-gears leafy"></i>${totals === 1 ? 'Exposure' : '&beta;'} of
           ${weights[Math.floor(i % weights.length)].name}<br> to
           ${fNames[Math.floor(i / weights.length)]}:<br>${d3.format('0.4f')(d)}`);
       })
       .on('mouseout', () => tooltip.style('display', 'none'))
+      .transition().duration(2000).attrTween('transform', (d, i) => (t) => {
+        const x = Math.floor(i / weights.length) * Side;
+        const y = Math.floor(i % weights.length) * Side;
+        return `translate(${(Math.sin(5 * (1 - t)) * y + t * x)},
+      ${(Math.sin(3 * (1 - t)) * x + t * y)}), rotate(${(1 - t) * 45 + t * 360})`;
+      })
       ;
     if (totals) {
+      svg.append('text')
+      .attr('class', 'stockLabels').attr('x', 0)
+      .attr('transform', (d, i) => `translate(${-spacer},${Side * weights.length + Side / 2})`)
+      .attr('y', 0)
+      .attr('dy', '0.35em')
+      .text(d => 'Totals')
+      .call(this.wrapFunction, margin.left, 1.01)
+      ;
       svg.selectAll('.totals').select('g').data(totalsCol).enter()
         .append('rect')
         .attr('class', d => d >= 0 ? 'totals pos' : 'totals neg')
         .attr('transform', (d, i) => `translate(${i * Side},${Math.floor(weights.length) * Side})`)
+        .attr('picId', dataIndex)
         .attr('x', 0)
         .attr('y', 0)
         .attr('height', Side)
@@ -345,11 +379,14 @@ export class UsersComponent implements OnChanges {
             .html(`<i class="fa fa-gears leafy"></i>Total: ${fNames[i]}<br>${d3.format('0.4f')(d)}`);
         })
         .on('mouseout', () => tooltip.style('display', 'none'))
+        .transition().duration(2000).attrTween('transform', (d, i) => (t) =>
+          `translate(${i * Side},${t * Math.floor(weights.length) * Side})`)
         ;
       svg.append('rect')
         .attr('class', 'fbetas')
         .attr('class', sumEx >= 0 ? 'total pos' : 'total neg')
         .attr('transform', `translate(${nfac * Side},${Math.floor(weights.length) * Side})`)
+        .attr('picId', dataIndex)
         .attr('x', 0)
         .attr('y', 0)
         .attr('height', Side)
@@ -361,6 +398,8 @@ export class UsersComponent implements OnChanges {
             .html(`<i class="fa fa-gears leafy"></i>Total: ${d3.format('0.4f')(sumEx)}`);
         })
         .on('mouseout', () => tooltip.style('display', 'none'))
+        .transition().duration(2000).attrTween('transform', () => (t) =>
+          `translate(${t * nfac * Side},${t * Math.floor(weights.length) * Side})`)
         ;
     }
     svg.selectAll('.fbetas').select('g').data(factorBetas).enter()
@@ -379,7 +418,7 @@ export class UsersComponent implements OnChanges {
         tooltip.style('left', d3.event.pageX - 50 + 'px')
           .style('top', d3.event.pageY - 70 + 'px')
           .style('display', 'inline-block')
-          .html(`<i class="fa fa-gears leafy"></i>${totals === 1 ? 'Exposure' : 'BETA'} of
+          .html(`<i class="fa fa-gears leafy"></i>${totals === 1 ? 'Exposure' : '&beta;'} of
           ${weights[Math.floor(i % weights.length)].name}<br> to
           ${fNames[Math.floor(i / weights.length)]}:<br>${d3.format('0.4f')(d)}`);
       })
@@ -428,7 +467,7 @@ export class UsersComponent implements OnChanges {
 
     }
   }
-  correlationMatrix(FC: number[], factorNames: string[], id = 'app-users') {
+  correlationMatrix(FC: number[], factorNames: string[], w = 960, h = 960, id = 'app-users') {
     const numFac = (Math.sqrt(1 + 8 * FC.length) - 1) / 2;
     const plotFC: { i: number, j: number, correlation: number }[] = [];
     const sdI: number[] = Array(factorNames.length);
@@ -448,23 +487,33 @@ export class UsersComponent implements OnChanges {
         }
       }
     }
-    const w = 960, h = 500,
-      margin = { top: 10, right: 10, bottom: 10, left: 10 },
-      tooltip = d3.select('body').append('g').attr('class', 'toolTip'),
-      width = w - margin.left - margin.right,
-      height = h - margin.top - margin.bottom, spacer = 10, rotateAngle = -45,
-      squareSide = Math.min(width, height) / factorNames.length - spacer, Side = squareSide + spacer,
-      svgBase = d3.select(id).append('svg')
-        .attr('width', w).attr('height', h),
+    const margin = { top: 10, right: 10, bottom: 10, left: 10 },
+      tooltip = d3.select('body').append('g').attr('class', 'toolTip');
+    let width = w - margin.left - margin.right,
+      height = h - margin.top - margin.bottom;
+    const spacer = 10, rotateAngle = -45,
+      squareSide = Math.min(width, height) / factorNames.length - spacer, Side = squareSide + spacer;
+    width = (squareSide + spacer) * factorNames.length;
+    height = (squareSide + spacer) * factorNames.length;
+    w = width + margin.right + margin.left;
+    h = height + margin.bottom + margin.top;
+    const svgBase = d3.select(id).append('svg')
+      .attr('width', w).attr('height', h),
       svg = svgBase.append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
+    svg.append('rect')
+      .attr('class', 'rim')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('width', width)
+      .attr('height', height);
     svg.selectAll('.correlations').select('g').data(plotFC).enter()
       .append('rect')
       .attr('class', d => `correlations ${d.correlation > 0 ? 'pos' : 'neg'}`)
       .attr('width', squareSide)
       .attr('height', squareSide)
-      .attr('x', 0)
-      .attr('y', 0)
+      .attr('x', spacer / 2)
+      .attr('y', spacer / 2)
       .attr('transform', d => `translate(${d.i * Side},${d.j * Side})`)
       .on('mousemove', (d) => tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px')
@@ -481,9 +530,9 @@ export class UsersComponent implements OnChanges {
       .append('text')
       .attr('class', 'correlations')
       .text(d => d3.format('0.3f')(d.correlation))
-      .attr('transform', d => `translate(${d.i * Side + squareSide / 2 - 3},${d.j * Side + squareSide / 2 - 3}),rotate(${rotateAngle})`)
-      .attr('y', (-squareSide / 2 + 8) * (Math.sin(Math.PI / 180 * rotateAngle)))
-      .attr('x', (-squareSide / 2 - 3) * (Math.cos(Math.PI / 180 * rotateAngle)))
+      .attr('transform', d => `translate(${d.i * Side + squareSide / 2},${d.j * Side + squareSide / 2}),rotate(${rotateAngle})`)
+      .attr('x', spacer / 2 + (-squareSide / 2) * (Math.cos(Math.PI / 180 * rotateAngle)))
+      .attr('y', spacer / 2 + (-squareSide / 2 + width / factorNames.length / 4) * (Math.sin(Math.PI / 180 * rotateAngle)))
       .on('mousemove', (d) => tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px')
         .style('display', 'inline-block')
@@ -532,7 +581,7 @@ export class UsersComponent implements OnChanges {
       axis: 'USD/GBP',
       value: -0.0603012272772637
     }
-  ], id = 'app-users') {
+  ], wh = 100, id = 'app-users') {
 
     const minmaxE = [d3.min(exposures, d => d.value), d3.max(exposures, d => d.value)];
     const formatG = d3.format('0.3f');
@@ -547,17 +596,24 @@ export class UsersComponent implements OnChanges {
     this.factorConstraintChange = newVals;
     const angScale = d3.scaleLinear<number, number>()
       .domain(minmaxE).range([2 * Math.PI / 5 + Math.PI / 2, -2 * Math.PI / 5 + Math.PI / 2]);
-    const labPad = 40, padRow = 10, numCol = 4,
-      width = 100 * numCol, height = (100 + labPad * 1.5) * exposures.length / numCol, mx = 10, my = 10,
+    const labPad = 40, padRow = 20, numCol = 4,
+      width = wh * numCol, height = (wh + labPad * 1.5) * exposures.length / numCol, mx = 10, my = 20,
       svg = d3.select(id).append('svg'),
       th = 4, rad = Math.min((width - padRow * (numCol - 1)) / numCol, height),
       dialParts = [], npoints = 50;
     for (let i = 0; i < npoints; ++i) {
       dialParts.push(i);
-    } svg.attr('x', 0)
+    }
+    svg.append('rect')
+    .attr('class', 'meterbackground')
+    .attr('x', 0)
+    .attr('y', 0)
+    .attr('width', width + mx * 2)
+    .attr('height', height + my * 2);
+    svg.attr('x', 0)
       .attr('y', 0)
-      .attr('width', width + mx)
-      .attr('height', height + my)
+      .attr('width', width + mx * 2)
+      .attr('height', height + my * 2)
       .attr('class', 'factorgauge');
     const gaugeplate = svg.append('g');
     gaugeplate.selectAll('.meters').select('g').data(exposures).enter()
@@ -593,7 +649,7 @@ export class UsersComponent implements OnChanges {
     gaugeplate.selectAll('.newvals').select('g').data(newVals).enter()
       .append('text')
       .attr('class', 'newvals')
-      .attr('x', rad / 2 - th * 4)
+      .attr('x', rad / 2 - th * 7)
       .attr('y', -rad / 2 + th)
       .attr('transform', (d, i) => `translate(${mx + rad / 2 + (i % numCol) * (rad + padRow)},
       ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)})`)
@@ -855,6 +911,13 @@ export class UsersComponent implements OnChanges {
               .style('fill-opacity', 0.7);
           }
         });
+        d3.selectAll(`.totals`).nodes().forEach(hh => {
+          const h = d3.select(hh);
+          if (+h.attr('picId') === i) {
+            h.transition().duration(2)
+              .style('fill-opacity', 0.7);
+          }
+        });
       })
       .on('mouseout', () => {
         d3.selectAll('.portfolioFlower')
@@ -865,6 +928,9 @@ export class UsersComponent implements OnChanges {
           .style('fill-opacity', cfg.opacityArea);
         d3.selectAll('.weightSingleMinus')
           .transition().duration(2)
+          .style('fill-opacity', cfg.opacityArea);
+        d3.selectAll('.totals')
+          .transition().duration(10)
           .style('fill-opacity', cfg.opacityArea);
       }
       );

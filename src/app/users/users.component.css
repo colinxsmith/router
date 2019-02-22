@@ -82,7 +82,7 @@ line.line {
 
 .rim {
     fill: none;
-    stroke: none;
+    stroke: orange;
 }
 
 text.axisLabel {
@@ -115,21 +115,21 @@ rect.weightSingleMinus {
 }
 
 text.meters{
-    font-size: 10px;
+    font-size: 20px;
     font-family: Calibri, sans-serif;
     fill: rgb(51, 51, 51);
     text-anchor: middle;
     text-align: left;
 }
 text.factorlabels{
-    font-size: 11px;
+    font-size: 20px;
     font-family: Calibri, sans-serif;
     fill: rgb(51, 51, 51);
     text-anchor: middle;
     text-align: center;
 }
 text.newvals{
-    font-size: 10px;
+    font-size: 20px;
     font-family: Calibri, sans-serif;
     fill: rgb(47, 128, 117);
     text-anchor: middle;
@@ -160,6 +160,18 @@ text.fbetas{
     fill: black;
     text-anchor: middle;
 }
+text.factorLabels{
+    font-size: 15px;
+    font-family: Calibri, sans-serif;
+    fill: black;
+    text-anchor:start;
+}
+text.stockLabels{
+    font-size: 12px;
+    font-family: Calibri, sans-serif;
+    fill: black;
+    text-anchor:end;
+}
 .fbetas.neg {
     fill: rgb(223, 17, 17);
     fill-opacity: 0.3;
@@ -178,9 +190,14 @@ text.fbetas{
 }
 .total.neg {
     fill: rgb(223, 17, 17);
-    fill-opacity: 0.6;
+    fill-opacity: 0.7;
 }
 .total.pos {
     fill: rgb(32, 10, 233);
-    fill-opacity: 0.6;
+    fill-opacity: 0.7;
+}
+rect.meterbackground{
+    stroke:rgb(216, 195, 4);
+    fill:rgb(160, 216, 194);
+    fill-opacity: 0.53;
 }
