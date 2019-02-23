@@ -5,6 +5,7 @@ import * as d3 from 'd3';
 import { map } from 'rxjs/operators';
 import { scaleQuantile, ContainerElement, scaleIdentity } from 'd3';
 import { fcall } from 'q';
+import { s } from '@angular/core/src/render3';
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
@@ -539,6 +540,66 @@ export class UsersComponent implements OnChanges {
         .html(`<i class="fa fa-gears leafy"></i>${factorNames[d.i]}<br>${factorNames[d.j]}
         <br>correlation:${d3.format('0.4f')(d.correlation)}`))
       .on('mouseout', (d) => tooltip.style('display', 'none'));
+  }
+  fiveCircles(w = 960, h = 500, id = 'app-users') {
+    const margin = { top: 10, right: 10, bottom: 10, left: 10 };
+    let width = w - margin.left - margin.right,
+      height = h - margin.top - margin.bottom;
+    const squareSide = Math.min(width, height);
+    width = squareSide, height = squareSide;
+    w = width + margin.left + margin.right;
+    h = height + margin.bottom + margin.top;
+    const svgBase = d3.select(id).append('svg'),
+      spacer = (Math.sqrt(2) - 1) * squareSide / 6,
+      filler = d3.interpolateRgb('yellow', 'pink');
+    svgBase
+      .attr('width', w)
+      .attr('height', h);
+    svgBase.append('rect')
+      .attr('class', 'rim')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('width', w)
+      .attr('height', h);
+      let i = 0;
+    const svg = svgBase.append('g')
+      .attr('transform', `translate(${margin.left + squareSide / 2},${margin.top + squareSide / 2})`);
+      svg.append('rect')
+      .attr('class', 'five')
+      .attr('x', -squareSide / 2)
+      .attr('y', -squareSide / 2)
+      .attr('width', squareSide)
+      .attr('height', squareSide);
+    svg.append('circle')
+      .attr('class', 'five')
+      .style('fill', filler(i += 0.25))
+      .attr('cx', 0)
+      .attr('cy', 0)
+      .attr('r', squareSide / 6);
+    svg.append('circle')
+      .attr('class', 'five')
+      .style('fill', filler(i += 0.25))
+      .attr('cx', squareSide / 3 * Math.cos(Math.PI / 4) + spacer)
+      .attr('cy', squareSide / 3 * Math.sin(Math.PI / 4) + spacer)
+      .attr('r', squareSide / 6);
+    svg.append('circle')
+      .attr('class', 'five')
+      .style('fill', filler(i += 0.25))
+      .attr('cx', squareSide / 3 * Math.cos(-Math.PI / 4) + spacer)
+      .attr('cy', squareSide / 3 * Math.sin(-Math.PI / 4) - spacer)
+      .attr('r', squareSide / 6);
+    svg.append('circle')
+      .attr('class', 'five')
+      .style('fill', filler(i += 0.25))
+      .attr('cx', squareSide / 3 * Math.cos(3 * Math.PI / 4) - spacer)
+      .attr('cy', squareSide / 3 * Math.sin(3 * Math.PI / 4) + spacer)
+      .attr('r', squareSide / 6);
+    svg.append('circle')
+      .attr('class', 'five')
+      .style('fill', filler(i += 0.25))
+      .attr('cx', squareSide / 3 * Math.cos(-3 * Math.PI / 4) - spacer)
+      .attr('cy', squareSide / 3 * Math.sin(-3 * Math.PI / 4) - spacer)
+      .attr('r', squareSide / 6);
   }
   factorX(exposures = [
     {

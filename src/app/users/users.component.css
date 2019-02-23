@@ -201,3 +201,13 @@ rect.meterbackground{
     fill:rgb(160, 216, 194);
     fill-opacity: 0.53;
 }
+rect.five{
+    stroke:black;
+    fill:none;
+    stroke-width: 3px;
+}
+circle.five{
+    stroke:red;
+    fill:none;
+    stroke-width: 3px;
+}
