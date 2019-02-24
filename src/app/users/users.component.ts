@@ -237,6 +237,7 @@ export class UsersComponent implements OnChanges {
             this.simpleDisplay([this.displayData]);
           }
         } else if (this.getKey === 'factorX') {
+          this.fiveCircles();
           const datahere: { risk: number, return: number, back: string }[] = this.displayData;
           const svg = d3.select('app-users').append('svg').attr('width', 950).attr('height', 100);
           svg.selectAll('.riskret').data(datahere).enter()
@@ -546,12 +547,12 @@ export class UsersComponent implements OnChanges {
     let width = w - margin.left - margin.right,
       height = h - margin.top - margin.bottom;
     const squareSide = Math.min(width, height);
-    width = squareSide, height = squareSide;
-    w = width + margin.left + margin.right;
+    width = squareSide, height = squareSide,
+      w = width + margin.left + margin.right;
     h = height + margin.bottom + margin.top;
-    const svgBase = d3.select(id).append('svg'),
-      spacer = (Math.sqrt(2) - 1) * squareSide / 6,
-      filler = d3.interpolateRgb('yellow', 'pink');
+    const svgBase = d3.select(id).append('svg'), circleRad = squareSide / 6, root2 = Math.sqrt(2),
+      spacer = (root2 * squareSide / 2 - 3 * circleRad) / 2 * root2,
+      filler = d3.interpolateRgb('red', 'blue');
     svgBase
       .attr('width', w)
       .attr('height', h);
@@ -561,8 +562,8 @@ export class UsersComponent implements OnChanges {
       .attr('y', 0)
       .attr('width', w)
       .attr('height', h);
-      let i = 0;
-    const svg = svgBase.append('g')
+      let i = -0.25;
+      const svg = svgBase.append('g')
       .attr('transform', `translate(${margin.left + squareSide / 2},${margin.top + squareSide / 2})`);
       svg.append('rect')
       .attr('class', 'five')
@@ -575,31 +576,40 @@ export class UsersComponent implements OnChanges {
       .style('fill', filler(i += 0.25))
       .attr('cx', 0)
       .attr('cy', 0)
-      .attr('r', squareSide / 6);
+      .attr('r', circleRad);
     svg.append('circle')
       .attr('class', 'five')
       .style('fill', filler(i += 0.25))
-      .attr('cx', squareSide / 3 * Math.cos(Math.PI / 4) + spacer)
-      .attr('cy', squareSide / 3 * Math.sin(Math.PI / 4) + spacer)
-      .attr('r', squareSide / 6);
+      .attr('cx', (circleRad + spacer))
+      .attr('cy', (circleRad + spacer))
+      .attr('r', circleRad);
     svg.append('circle')
       .attr('class', 'five')
       .style('fill', filler(i += 0.25))
-      .attr('cx', squareSide / 3 * Math.cos(-Math.PI / 4) + spacer)
-      .attr('cy', squareSide / 3 * Math.sin(-Math.PI / 4) - spacer)
-      .attr('r', squareSide / 6);
+      .attr('cx', -(circleRad + spacer))
+      .attr('cy', (circleRad + spacer))
+      .attr('r', circleRad);
     svg.append('circle')
       .attr('class', 'five')
       .style('fill', filler(i += 0.25))
-      .attr('cx', squareSide / 3 * Math.cos(3 * Math.PI / 4) - spacer)
-      .attr('cy', squareSide / 3 * Math.sin(3 * Math.PI / 4) + spacer)
-      .attr('r', squareSide / 6);
+      .attr('cx', (circleRad + spacer))
+      .attr('cy', -(circleRad + spacer))
+      .attr('r', circleRad);
     svg.append('circle')
       .attr('class', 'five')
       .style('fill', filler(i += 0.25))
-      .attr('cx', squareSide / 3 * Math.cos(-3 * Math.PI / 4) - spacer)
-      .attr('cy', squareSide / 3 * Math.sin(-3 * Math.PI / 4) - spacer)
-      .attr('r', squareSide / 6);
+      .attr('cx', -(circleRad + spacer))
+      .attr('cy', -(circleRad + spacer))
+      .attr('r', circleRad);
+    svg.selectAll('.five')
+      .on('mouseover', (d, ii, jj) => {
+        const here = d3.select(jj[ii]);
+        here.attr('r', circleRad * 1.1);
+      })
+      .on('mouseout', (d, ii, jj) => {
+        const here = d3.select(jj[ii]);
+        here.attr('r', circleRad);
+      });
   }
   factorX(exposures = [
     {
