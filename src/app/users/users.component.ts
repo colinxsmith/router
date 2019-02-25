@@ -358,13 +358,13 @@ export class UsersComponent implements OnChanges {
       ;
     if (totals) {
       svg.append('text')
-      .attr('class', 'stockLabels').attr('x', 0)
-      .attr('transform', (d, i) => `translate(${-spacer},${Side * weights.length + Side / 2})`)
-      .attr('y', 0)
-      .attr('dy', '0.35em')
-      .text(d => 'Totals')
-      .call(this.wrapFunction, margin.left, 1.01)
-      ;
+        .attr('class', 'stockLabels').attr('x', 0)
+        .attr('transform', (d, i) => `translate(${-spacer},${Side * weights.length + Side / 2})`)
+        .attr('y', 0)
+        .attr('dy', '0.35em')
+        .text(d => 'Totals')
+        .call(this.wrapFunction, margin.left, 1.01)
+        ;
       svg.selectAll('.totals').select('g').data(totalsCol).enter()
         .append('rect')
         .attr('class', d => d >= 0 ? 'totals pos' : 'totals neg')
@@ -562,10 +562,10 @@ export class UsersComponent implements OnChanges {
       .attr('y', 0)
       .attr('width', w)
       .attr('height', h);
-      let i = -0.25;
-      const svg = svgBase.append('g')
+    let i = -0.25;
+    const svg = svgBase.append('g')
       .attr('transform', `translate(${margin.left + squareSide / 2},${margin.top + squareSide / 2})`);
-      svg.append('rect')
+    svg.append('rect')
       .attr('class', 'five')
       .attr('x', -squareSide / 2)
       .attr('y', -squareSide / 2)
@@ -676,11 +676,11 @@ export class UsersComponent implements OnChanges {
       dialParts.push(i);
     }
     svg.append('rect')
-    .attr('class', 'meterbackground')
-    .attr('x', 0)
-    .attr('y', 0)
-    .attr('width', width + mx * 2)
-    .attr('height', height + my * 2);
+      .attr('class', 'meterbackground')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('width', width + mx * 2)
+      .attr('height', height + my * 2);
     svg.attr('x', 0)
       .attr('y', 0)
       .attr('width', width + mx * 2)
@@ -746,7 +746,7 @@ export class UsersComponent implements OnChanges {
           const here = d3.select(jj[iDialPart]);
           const st = iDialPart / (dialParts.length) * (angScale.range()[0] - angScale.range()[1]) + angScale.range()[1];
           const mousePos = d3.mouse(<ContainerElement>(jj[iDialPart]));
-          console.log(mousePos[0] , mousePos[1]);
+          console.log(mousePos[0], mousePos[1]);
           here
             .transition().duration(2)
             .style('fill', 'red');
