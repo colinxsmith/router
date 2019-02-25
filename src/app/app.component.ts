@@ -8,7 +8,7 @@ export class AppComponent {
   title = 'app';
   display = 'Radar Plot and its data shown in bar charts and tables';
   type = 'short';
-  factorWants = [];
+  factorWants: number[] = [];
   stocks = 21;
   optType = ['long', 'short', 'KAG', 'factor'].reverse();
   changeType(dd: string) {

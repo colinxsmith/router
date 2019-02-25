@@ -26,7 +26,7 @@ export class UsersComponent implements OnChanges {
   optType: string[];
   @Input() getType = '';
   @Input() nStocks: number;
-  @Input() factorConstraintChange: number[] = [];
+  @Input() factorConstraintChange: number[];
   constructor(private userService: UserService, private appComponent: AppComponent) {
     this.optType = this.appComponent.optType;
   }
@@ -35,6 +35,7 @@ export class UsersComponent implements OnChanges {
   }
   resetOpt() {
     this.factorConstraintChange = [];
+    console.log(this.factorConstraintChange);
     this.changeLs(this.getType, this.updateLabel !== 'MAKE POINTED');
   }
   ngOnChanges(changed: SimpleChanges) {
@@ -141,12 +142,11 @@ export class UsersComponent implements OnChanges {
       .getData('')
       .pipe(map(da2 => {
         this.dataChangedDueToAnotherSessionOptimising = !(this.nStocks === +da2.nstocks && this.getType === da2.type);
-        this.appComponent.changeStocks(+da2.nstocks);
-        //        this.nStocks = +da2.nstocks;
-        this.appComponent.changeType(da2.type);
-        //        this.getType = da2.type;
-        this.appComponent.changeWants(da2.factorWants);
-        //        this.factorConstraintChange = da2.factorWants;
+        if (this.dataChangedDueToAnotherSessionOptimising) {
+          this.appComponent.changeStocks(+da2.nstocks);
+          this.appComponent.changeType(da2.type);
+          this.appComponent.changeWants(this.factorConstraintChange);
+        }
         this.displayData = da2[this.getKey];
         return da2;
       }))
@@ -569,7 +569,7 @@ export class UsersComponent implements OnChanges {
     h = height + margin.bottom + margin.top;
     const svgBase = d3.select(id).append('svg'), circleRad = squareSide / 6, root2 = Math.sqrt(2),
       spacer = (root2 * squareSide / 2 - 3 * circleRad) / 2 * root2,
-      filler = d3.interpolateRgb('red', 'blue');
+      filler = d3.interpolateRgb('magenta', 'cyan');
     svgBase
       .attr('width', w)
       .attr('height', h);
@@ -675,8 +675,8 @@ export class UsersComponent implements OnChanges {
 
     const minmaxE = [d3.min(exposures, d => d.value), d3.max(exposures, d => d.value)];
     const formatG = d3.format('0.3f');
-    const newVals = Array(exposures.length);
-    if (this.factorConstraintChange) {
+    const newVals: number[] = Array(exposures.length);
+    if (this.factorConstraintChange.length) {
       this.factorConstraintChange.forEach((d, i) => {
         if (d !== null) {
           newVals[i] = d;
