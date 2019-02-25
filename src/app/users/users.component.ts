@@ -237,7 +237,7 @@ export class UsersComponent implements OnChanges {
             this.simpleDisplay([this.displayData]);
           }
         } else if (this.getKey === 'factorX') {
-          this.fiveCircles();
+          this.fiveCircles(300);
           const datahere: { risk: number, return: number, back: string }[] = this.displayData;
           const svg = d3.select('app-users').append('svg').attr('width', 950).attr('height', 100);
           svg.selectAll('.riskret').data(datahere).enter()
@@ -510,13 +510,10 @@ export class UsersComponent implements OnChanges {
       .attr('width', width)
       .attr('height', height);
     svg.selectAll('.correlations').select('g').data(plotFC).enter()
-      .append('rect')
+      .append('path')
       .attr('class', d => `correlations ${d.correlation > 0 ? 'pos' : 'neg'}`)
-      .attr('width', squareSide)
-      .attr('height', squareSide)
-      .attr('x', spacer / 2)
-      .attr('y', spacer / 2)
       .attr('transform', d => `translate(${d.i * Side},${d.j * Side})`)
+      .attr('d', d => d.i === d.j ? `M0 0l${Side} 0l0 ${Side}Z` : `M0 0l${Side} 0l0 ${Side}l${-Side} 0Z`)
       .on('mousemove', (d) => tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px')
         .style('display', 'inline-block')
@@ -531,7 +528,7 @@ export class UsersComponent implements OnChanges {
     svg.selectAll('.correlations').select('g').data(plotFC).enter()
       .append('text')
       .attr('class', 'correlations')
-      .text(d => d3.format('0.3f')(d.correlation))
+      .text(d => d.i !== d.j ? d3.format('0.3f')(d.correlation) : '')
       .attr('transform', d => `translate(${d.i * Side + squareSide / 2},${d.j * Side + squareSide / 2}),rotate(${rotateAngle})`)
       .attr('x', spacer / 2 + (-squareSide / 2) * (Math.cos(Math.PI / 180 * rotateAngle)))
       .attr('y', spacer / 2 + (-squareSide / 2 + width / factorNames.length / 4) * (Math.sin(Math.PI / 180 * rotateAngle)))
@@ -719,7 +716,7 @@ export class UsersComponent implements OnChanges {
       ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)})`)
       .text(d => d.axis)
       .call(this.wrapFunction, 60, 1);
-    gaugeplate.selectAll('.newvals').select('g').data(newVals).enter()
+    gaugeplate.selectAll('.newvals').data(newVals).enter()
       .append('text')
       .attr('class', 'newvals')
       .attr('x', rad / 2 - th * 7)

@@ -154,6 +154,12 @@ rect.correlations.neg {
 rect.correlations.pos {
     fill: rgb(65, 223, 17);
 }
+path.correlations.neg {
+    fill: rgb(223, 17, 17);
+}
+path.correlations.pos {
+    fill: rgb(65, 223, 17);
+}
 text.fbetas{
     font-size: 15px;
     font-family: Calibri, sans-serif;
