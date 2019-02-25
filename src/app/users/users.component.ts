@@ -725,53 +725,53 @@ export class UsersComponent implements OnChanges {
       .attr('transform', (d, i) => `translate(${mx + rad / 2 + (i % numCol) * (rad + padRow)},
       ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)})`)
       .text(d => isNaN(+formatG(d)) ? '' : formatG(d));
-    for (let i = 0; i < exposures.length; ++i) {
+    for (let iExp = 0; iExp < exposures.length; ++iExp) {
       gaugeplate.append('g').selectAll('.dials').data(dialParts).enter()
         .append('path')
-        .attr('class', () => `dials${i}`)
+        .attr('class', () => `dials${iExp}`)
         .style('fill', 'none')
         .style('stroke', 'red')
-        .attr('transform', () => `translate(${mx + rad / 2 + (i % numCol) * (rad + padRow)},
-        ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)})`)
-        .attr('d', (d, ii) => {
-          const st = ii / (dialParts.length) * (angScale.range()[0] - angScale.range()[1]) + angScale.range()[1];
-          const en = (ii + 1) / (dialParts.length) * (angScale.range()[0] - angScale.range()[1]) + angScale.range()[1];
+        .attr('transform', () => `translate(${mx + rad / 2 + (iExp % numCol) * (rad + padRow)},
+        ${my + rad / 2 + Math.floor(iExp / numCol) * (rad + labPad)})`)
+        .attr('d', (d, iDialPart) => {
+          const st = iDialPart / (dialParts.length) * (angScale.range()[0] - angScale.range()[1]) + angScale.range()[1];
+          const en = (iDialPart + 1) / (dialParts.length) * (angScale.range()[0] - angScale.range()[1]) + angScale.range()[1];
           return d3.arc()({
             innerRadius: rad / 2 - th, outerRadius: rad / 2, startAngle: st - Math.PI / 2,
             endAngle: en - Math.PI / 2
           });
         });
-      gaugeplate.selectAll(`.dials${i}`)
-        .on('mouseover', (d, ii, jj) => {
-          const here = d3.select(jj[ii]);
-          const st = ii / (dialParts.length) * (angScale.range()[0] - angScale.range()[1]) + angScale.range()[1];
-          const mousePos = d3.mouse(<ContainerElement>(jj[ii]));
+      gaugeplate.selectAll(`.dials${iExp}`)
+        .on('mouseover', (d, iDialPart, jj) => {
+          const here = d3.select(jj[iDialPart]);
+          const st = iDialPart / (dialParts.length) * (angScale.range()[0] - angScale.range()[1]) + angScale.range()[1];
+          const mousePos = d3.mouse(<ContainerElement>(jj[iDialPart]));
           console.log(mousePos[0] , mousePos[1]);
           here
             .transition().duration(2)
             .style('fill', 'red');
         })
-        .on('click', (d, ii, jj) => {
-          const here = d3.select(jj[ii]);
+        .on('click', (d, iDialPart, jj) => {
+          const here = d3.select(jj[iDialPart]);
           here
             .transition().duration(2)
             .style('fill', 'rgb(0 , 128, 0)');
-          const newVal = (ii + 0.5) / (dialParts.length) * (angScale.range()[1] - angScale.range()[0]) + angScale.range()[0];
+          const newVal = (iDialPart + 0.5) / (dialParts.length) * (angScale.range()[1] - angScale.range()[0]) + angScale.range()[0];
           console.log(angScale.invert(newVal));
-          newVals[i] = angScale.invert(newVal);
+          newVals[iExp] = angScale.invert(newVal);
           gaugeplate.selectAll('.newvals')
             .text((df, iii) => {
-              return iii === i ? formatG(newVals[i]) : isNaN(+formatG(newVals[iii])) ? '' : formatG(newVals[iii]);
+              return iii === iExp ? formatG(newVals[iExp]) : isNaN(+formatG(newVals[iii])) ? '' : formatG(newVals[iii]);
             });
           gaugeplate.selectAll('.meters')
             .attr('d', (df, iii, jjj) => {
               const here1 = d3.select(jjj[iii]);
               const old = here1.attr('d'), th1 = th / 10;
-              if (iii === i) {
+              if (iii === iExp) {
                 const oldc = old.replace(/Z m.*/, 'Z').replace(/Zm.*/, 'Z');
                 console.log(old);
                 console.log(oldc);
-                const cc = (rad - th * 2) * Math.cos(angScale(newVals[i])), ss = (rad - th * 2) * Math.sin(angScale(newVals[i]));
+                const cc = (rad - th * 2) * Math.cos(angScale(newVals[iExp])), ss = (rad - th * 2) * Math.sin(angScale(newVals[iExp]));
                 return oldc + `m0 0M0 0l${th1 / 2} 0l${cc / 2} ${-ss / 2}l ${th1} 0l${-cc / 2} ${ss / 2}Z`;
               } else {
                 return old;
@@ -779,8 +779,8 @@ export class UsersComponent implements OnChanges {
             });
 
         })
-        .on('mouseout', (d, ii, jj) => {
-          const here = d3.select(jj[ii]);
+        .on('mouseout', (d, iDialPart, jj) => {
+          const here = d3.select(jj[iDialPart]);
           const colour = here.style('fill');
           here.transition().duration(2)
             .style('fill', 'none');
