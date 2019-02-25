@@ -744,6 +744,9 @@ export class UsersComponent implements OnChanges {
       gaugeplate.selectAll(`.dials${i}`)
         .on('mouseover', (d, ii, jj) => {
           const here = d3.select(jj[ii]);
+          const st = ii / (dialParts.length) * (angScale.range()[0] - angScale.range()[1]) + angScale.range()[1];
+          const mousePos = d3.mouse(<ContainerElement>(jj[ii]));
+          console.log(mousePos[0] , mousePos[1]);
           here
             .transition().duration(2)
             .style('fill', 'red');
@@ -756,26 +759,25 @@ export class UsersComponent implements OnChanges {
           const newVal = (ii + 0.5) / (dialParts.length) * (angScale.range()[1] - angScale.range()[0]) + angScale.range()[0];
           console.log(angScale.invert(newVal));
           newVals[i] = angScale.invert(newVal);
-          gaugeplate.selectAll('.newvals').nodes().forEach((ddd, iii) => {
-            const here1 = d3.select(ddd);
-            if (iii === i) {
-              console.log(`${here1.attr('x')} ${here1.attr('y')}  ${here1.text()} `);
-              here1.text(formatG(newVals[i]));
-              console.log(`${here1.attr('x')} ${here1.attr('y')}  ${here1.text()} `);
-            }
-          });
-          gaugeplate.selectAll('.meters').nodes().forEach((ddd, iii) => {
-            const here1 = d3.select(ddd);
-            if (iii === i) {
-              here1.attr('d', () => {
-                const old = here1.attr('d').replace(/Z m.*/, 'Z').replace(/Zm.*/, 'Z'), th1 = th / 10;
-                console.log(here1.attr('d'));
+          gaugeplate.selectAll('.newvals')
+            .text((df, iii) => {
+              return iii === i ? formatG(newVals[i]) : isNaN(+formatG(newVals[iii])) ? '' : formatG(newVals[iii]);
+            });
+          gaugeplate.selectAll('.meters')
+            .attr('d', (df, iii, jjj) => {
+              const here1 = d3.select(jjj[iii]);
+              const old = here1.attr('d'), th1 = th / 10;
+              if (iii === i) {
+                const oldc = old.replace(/Z m.*/, 'Z').replace(/Zm.*/, 'Z');
                 console.log(old);
+                console.log(oldc);
                 const cc = (rad - th * 2) * Math.cos(angScale(newVals[i])), ss = (rad - th * 2) * Math.sin(angScale(newVals[i]));
-                return old + `m0 0M0 0l${th1 / 2} 0l${cc / 2} ${-ss / 2}l ${th1} 0l${-cc / 2} ${ss / 2}Z`;
-              });
-            }
-          });
+                return oldc + `m0 0M0 0l${th1 / 2} 0l${cc / 2} ${-ss / 2}l ${th1} 0l${-cc / 2} ${ss / 2}Z`;
+              } else {
+                return old;
+              }
+            });
+
         })
         .on('mouseout', (d, ii, jj) => {
           const here = d3.select(jj[ii]);
