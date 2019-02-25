@@ -469,7 +469,7 @@ export class UsersComponent implements OnChanges {
 
     }
   }
-  correlationMatrix(FC: number[], factorNames: string[], w = 960, h = 960, id = 'app-users') {
+  correlationMatrix(FC: number[], factorNames: string[], w = 1000, h = 1000, id = 'app-users') {
     const numFac = (Math.sqrt(1 + 8 * FC.length) - 1) / 2;
     const plotFC: { i: number, j: number, correlation: number }[] = [];
     const sdI: number[] = Array(factorNames.length);
@@ -489,7 +489,7 @@ export class UsersComponent implements OnChanges {
         }
       }
     }
-    const margin = { top: 10, right: 10, bottom: 10, left: 10 },
+    const margin = { top: 90, right: 140, bottom: 10, left: 10 },
       tooltip = d3.select('body').append('g').attr('class', 'toolTip');
     let width = w - margin.left - margin.right,
       height = h - margin.top - margin.bottom;
@@ -538,6 +538,26 @@ export class UsersComponent implements OnChanges {
         .html(`<i class="fa fa-gears leafy"></i>${factorNames[d.i]}<br>${factorNames[d.j]}
         <br>correlation:${d3.format('0.4f')(d.correlation)}`))
       .on('mouseout', (d) => tooltip.style('display', 'none'));
+    svg.selectAll('.factorLabels').select('g').data(factorNames).enter()
+      .append('text')
+      .attr('transform', (d, i) => `translate(${i * Side + Side / 2}, ${-spacer}),rotate(-75)`)
+      .attr('class', 'factorLabels')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('dy', '0.35em')
+      .text(d => d)
+      .call(this.wrapFunction, margin.top, 1.01)
+      ;
+    svg.selectAll('.stockLabels').select('g').data(factorNames).enter()
+      .append('text')
+      .attr('class', 'stockLabels').attr('x', 0)
+      .attr('transform', (d, i) => `translate(${width + spacer},${i * Side})`)
+      .attr('y', -5)
+      .attr('dy', '0.3em')
+      .style('text-anchor', 'start')
+      .text(d => d)
+      .call(this.wrapFunction, margin.left, 1.01)
+      ;
   }
   fiveCircles(w = 960, h = 500, displayData = ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR'], id = 'app-users') {
     const margin = { top: 10, right: 10, bottom: 10, left: 10 };
