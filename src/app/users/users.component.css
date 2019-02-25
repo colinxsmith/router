@@ -211,3 +211,9 @@ circle.five{
     fill:none;
     stroke-width: 3px;
 }
+text.five{
+    font-size: 30px;
+    font-family: Calibri, sans-serif;
+    fill: black;
+    text-anchor:middle;
+}

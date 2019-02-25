@@ -542,7 +542,7 @@ export class UsersComponent implements OnChanges {
         <br>correlation:${d3.format('0.4f')(d.correlation)}`))
       .on('mouseout', (d) => tooltip.style('display', 'none'));
   }
-  fiveCircles(w = 960, h = 500, id = 'app-users') {
+  fiveCircles(w = 960, h = 500, displayData = ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR'], id = 'app-users') {
     const margin = { top: 10, right: 10, bottom: 10, left: 10 };
     let width = w - margin.left - margin.right,
       height = h - margin.top - margin.bottom;
@@ -562,7 +562,6 @@ export class UsersComponent implements OnChanges {
       .attr('y', 0)
       .attr('width', w)
       .attr('height', h);
-    let i = -0.25;
     const svg = svgBase.append('g')
       .attr('transform', `translate(${margin.left + squareSide / 2},${margin.top + squareSide / 2})`);
     svg.append('rect')
@@ -573,43 +572,46 @@ export class UsersComponent implements OnChanges {
       .attr('height', squareSide);
     svg.append('circle')
       .attr('class', 'five')
-      .style('fill', filler(i += 0.25))
       .attr('cx', 0)
-      .attr('cy', 0)
-      .attr('r', circleRad);
+      .attr('cy', 0);
     svg.append('circle')
       .attr('class', 'five')
-      .style('fill', filler(i += 0.25))
-      .attr('cx', (circleRad + spacer))
-      .attr('cy', (circleRad + spacer))
-      .attr('r', circleRad);
+      .attr('cx', (circleRad + spacer) * root2 * Math.cos(Math.PI / 4))
+      .attr('cy', (circleRad + spacer) * root2 * Math.sin(Math.PI / 4));
     svg.append('circle')
       .attr('class', 'five')
-      .style('fill', filler(i += 0.25))
-      .attr('cx', -(circleRad + spacer))
-      .attr('cy', (circleRad + spacer))
-      .attr('r', circleRad);
+      .attr('cx', (circleRad + spacer) * root2 * Math.cos(3 * Math.PI / 4))
+      .attr('cy', (circleRad + spacer) * root2 * Math.sin(3 * Math.PI / 4));
     svg.append('circle')
       .attr('class', 'five')
-      .style('fill', filler(i += 0.25))
-      .attr('cx', (circleRad + spacer))
-      .attr('cy', -(circleRad + spacer))
-      .attr('r', circleRad);
+      .attr('cx', (circleRad + spacer) * root2 * Math.cos(5 * Math.PI / 4))
+      .attr('cy', (circleRad + spacer) * root2 * Math.sin(5 * Math.PI / 4));
     svg.append('circle')
       .attr('class', 'five')
-      .style('fill', filler(i += 0.25))
-      .attr('cx', -(circleRad + spacer))
-      .attr('cy', -(circleRad + spacer))
-      .attr('r', circleRad);
-    svg.selectAll('.five')
-      .on('mouseover', (d, ii, jj) => {
-        const here = d3.select(jj[ii]);
-        here.attr('r', circleRad * 1.1);
+      .attr('cx', (circleRad + spacer) * root2 * Math.cos(7 * Math.PI / 4))
+      .attr('cy', (circleRad + spacer) * root2 * Math.sin(7 * Math.PI / 4));
+    svg.selectAll('.extra').append('g').data(displayData).enter()
+      .append('text')
+      .attr('class', 'five');
+    svg.selectAll('circle.five')
+      .style('fill', (d, i) => filler(i / 4))
+      .attr('r', circleRad)
+      .on('mouseover', (d, i, j) => {
+        const here = d3.select(j[i]);
+        here.transition().duration(20).attr('r', circleRad * 1.1);
+        const hText = svg.selectAll('text.five');
+        hText.text(`${displayData[i]}`)
+          .attr('transform', `translate(${+(here.attr('cx').replace('px', ''))},${+(here.attr('cy').replace('px', ''))})`);
       })
-      .on('mouseout', (d, ii, jj) => {
-        const here = d3.select(jj[ii]);
-        here.attr('r', circleRad);
-      });
+      .on('mouseout', (d, i, j) => {
+        const here = d3.select(j[i]);
+        here.transition().duration(2000).attr('r', circleRad);
+        const hText = svg.selectAll('text.five');
+        hText
+          .text('')
+          .attr('transform', `translate(${+(here.attr('cx').replace('px', ''))},${+(here.attr('cy').replace('px', ''))})`);
+      })
+      ;
   }
   factorX(exposures = [
     {
