@@ -275,6 +275,7 @@ export class UsersComponent implements OnChanges {
             });
             this.matrixFLorFX(ii, usedweight, factorExp, this.displayData[0].factors.map(d => d.axis), 1);
           });
+          this.fiveCircles();
         }
       }, res => {
         console.log(res);
@@ -752,7 +753,7 @@ export class UsersComponent implements OnChanges {
         tooltip.style('left', d3.event.pageX - 5 + 'px')
           .style('top', d3.event.pageY + 7 + 'px')
           .style('display', 'inline-block')
-          .html(`<i class="fa fa-gears leafy"></i>${d.outlierStatusType}<br>${d.value}`);
+          .html(`<i class="fa fa-gears leafy"></i>${d.outlierStatusType}<br>${d.name}<br>${d.value}`);
       })
       .on('mouseout', () => tooltip.transition().duration(2).style('display', 'none'))
       .on('click', () => click())
