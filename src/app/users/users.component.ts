@@ -31,6 +31,7 @@ export class UsersComponent implements OnChanges {
     this.optType = this.appComponent.optType;
   }
   sendOpt() {
+    console.log(this.factorConstraintChange);
     this.changeLs(this.getType, this.updateLabel !== 'MAKE POINTED');
   }
   resetOpt() {
