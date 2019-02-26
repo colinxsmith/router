@@ -675,7 +675,7 @@ export class UsersComponent implements OnChanges {
       withKE: false
     }
     ]
-  }, id = 'app-users', click = () => console.log('Click function')) {
+  }, id = 'app-users', click = (i: number, j: d3.BaseType[] | d3.ArrayLike<d3.BaseType>) => console.log('Object', j[i])) {
     const Data: {
       id: number;
       type: string;
@@ -730,7 +730,7 @@ export class UsersComponent implements OnChanges {
       .attr('height', h);
     const svg = svgBase.append('g')
       .attr('transform', `translate(${margin.left + radiusL},${margin.top + radiusL})`);
-    svg.selectAll('.newfive').append('g').data(Data).enter()
+    svg.selectAll('path.newfive').append('g').data(Data).enter()
       .append('path')
       .attr('transform', d => {
         const circ = Math.floor((+d.id - 1) / 3);
@@ -748,28 +748,45 @@ export class UsersComponent implements OnChanges {
         const back = ARC({ outerRadius: radiusS, innerRadius: radiusS * 0.9, startAngle: st * 2 * Math.PI, endAngle: en * 2 * Math.PI });
         soFar = en;
         return back;
-      }).on('mousemove', (d, i, j) => {
-        const here = d3.select(j[i]);
-        tooltip.style('left', d3.event.pageX - 5 + 'px')
-          .style('top', d3.event.pageY + 7 + 'px')
-          .style('display', 'inline-block')
-          .html(`<i class="fa fa-gears leafy"></i>${d.outlierStatusType}<br>${d.name}<br>${d.value}`);
-      })
-      .on('mouseout', () => tooltip.transition().duration(2).style('display', 'none'))
-      .on('click', () => click())
-      ;
+      });
 
-    svg.selectAll('.newfivetext').append('g').data(Data).enter()
+    const Datas: {
+      id: number;
+      type: string;
+      name: string;
+      value: number;
+      outlierStatusType: string;
+      withKE: boolean;
+      total: number;
+    }[] = [];
+    Data.forEach((d, i) => {
+      if (i % 3 === 0) {
+        Datas.push(d);
+      }
+    });
+    svg.selectAll('text.newfive').append('g').data(Datas).enter()
       .append('text')
       .attr('class', 'newfive')
-      .attr('transform', d => {
-        const circ = Math.floor((+d.id - 1) / 3);
+      .attr('transform', (d, i) => {
+        const circ = i;
         const back = circ === 0 ?
           `translate(0,0)` : `translate(${radiusS * 2 * Math.cos(Math.PI / 2 * circ)},
       ${radiusS * 2 * Math.sin(Math.PI / 2 * circ)})`;
         return back;
       })
       .text(d => d.outlierStatusType);
+    svg.selectAll('path.newfive')
+      .on('mousemove', (dd, i, j) => {
+        const here = d3.select(j[i]);
+        const d = Data[i];
+        tooltip.style('left', d3.event.pageX - 5 + 'px')
+          .style('top', d3.event.pageY + 7 + 'px')
+          .style('display', 'inline-block')
+          .html(`<i class="fa fa-gears leafy"></i>${d.outlierStatusType}<br>${d.name}<br>${d.value}`);
+      })
+      .on('mouseout', () => tooltip.transition().duration(2).style('display', 'none'))
+      .on('click', (d, i, j) => click(i, j))
+      ;
 
   }
   fiveCircles(w = 960, h = 500, displayData = ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR'], id = 'app-users') {
