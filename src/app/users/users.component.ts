@@ -238,7 +238,7 @@ export class UsersComponent implements OnChanges {
             this.simpleDisplay([this.displayData]);
           }
         } else if (this.getKey === 'factorX') {
-          this.fiveCircles(300);
+          this.fiveArcs();
           const datahere: { risk: number, return: number, back: string }[] = this.displayData;
           const svg = d3.select('app-users').append('svg').attr('width', 950).attr('height', 100);
           svg.selectAll('.riskret').data(datahere).enter()
@@ -559,6 +559,217 @@ export class UsersComponent implements OnChanges {
       .text(d => d)
       .call(this.wrapFunction, margin.left, 1.01)
       ;
+  }
+  fiveArcs(w = 960, h = 500, kevData = {
+    id: 112,
+    type: 'alertFlag',
+    label: 'ALERTS',
+    outlierStatus: '',
+    chartType: 'MULTI',
+    tooltip: '',
+    monitorFlagCategory: [{
+      id: 1,
+      type: '0',
+      name: 'Fail',
+      value: 385,
+      outlierStatusType: 'OLD Q',
+      withKE: false
+    }, {
+      id: 2,
+      type: '1',
+      name: 'Warning',
+      value: 10,
+      outlierStatusType: 'OLD Q',
+      withKE: false
+    }, {
+      id: 3,
+      type: '2',
+      name: 'Pass',
+      value: 28954,
+      outlierStatusType: 'OLD Q',
+      withKE: false
+    }, {
+      id: 4,
+      type: '0',
+      name: 'Fail',
+      value: 234,
+      outlierStatusType: 'OLD P',
+      withKE: false
+    }, {
+      id: 5,
+      type: '1',
+      name: 'Warning',
+      value: 20,
+      outlierStatusType: 'OLD P',
+      withKE: false
+    }, {
+      id: 6,
+      type: '2',
+      name: 'Pass',
+      value: 28654,
+      outlierStatusType: 'OLD P',
+      withKE: false
+    }, {
+      id: 7,
+      type: '0',
+      name: 'Fail',
+      value: 100,
+      outlierStatusType: 'DECAY',
+      withKE: false
+    }, {
+      id: 8,
+      type: '1',
+      name: 'Warning',
+      value: 300,
+      outlierStatusType: 'DECAY',
+      withKE: false
+    }, {
+      id: 9,
+      type: '2',
+      name: 'Pass',
+      value: 28554,
+      outlierStatusType: 'DECAY',
+      withKE: false
+    }, {
+      id: 10,
+      type: '0',
+      name: 'Fail',
+      value: 250,
+      outlierStatusType: 'MISMATCH',
+      withKE: false
+    }, {
+      id: 11,
+      type: '1',
+      name: 'Warning',
+      value: 154,
+      outlierStatusType: 'MISMATCH',
+      withKE: false
+    }, {
+      id: 12,
+      type: '2',
+      name: 'Pass',
+      value: 28550,
+      outlierStatusType: 'MISMATCH',
+      withKE: false
+    }, {
+      id: 13,
+      type: '0',
+      name: 'Fail',
+      value: 300,
+      outlierStatusType: 'NO P',
+      withKE: false
+    }, {
+      id: 14,
+      type: '1',
+      name: 'Warning',
+      value: 454,
+      outlierStatusType: 'NO P',
+      withKE: false
+    }, {
+      id: 15,
+      type: '2',
+      name: 'Pass',
+      value: 28200,
+      outlierStatusType: 'NO P',
+      withKE: false
+    }
+    ]
+  }, id = 'app-users', click = () => console.log('Click function')) {
+    const Data: {
+      id: number;
+      type: string;
+      name: string;
+      value: number;
+      outlierStatusType: string;
+      withKE: boolean;
+      total: number;
+    }[] = [],
+      tooltip = d3.select('body').append('g').attr('class', 'toolTip');
+
+    kevData.monitorFlagCategory.forEach(d => {
+      const p: any = d;
+      p.total = 0;
+      Data.push(p);
+    });
+    let totalV = 0;
+    Data.forEach((d, i) => {
+      if (+d.type === 0) {
+        totalV = d.value;
+      } else {
+        totalV += d.value;
+      }
+      if (+d.type === 2) {
+        Data[i].total = totalV;
+      }
+    });
+    Data.forEach((d, i) => {
+      if (+d.type === 0) {
+        Data[i].total = Data[i + 2].total;
+      } else if (+d.type === 1) {
+        Data[i].total = Data[i + 1].total;
+      }
+    });
+    const margin = { top: 10, right: 10, bottom: 10, left: 10 };
+    let width = w - margin.left - margin.right,
+      height = h - margin.top - margin.bottom;
+    const radiusL = Math.min(width, height) / 2, radiusS = radiusL / 3, ARC = d3.arc();
+    width = radiusL * 2, height = radiusL * 2,
+      w = width + margin.left + margin.right;
+    h = height + margin.bottom + margin.top;
+    const svgBase = d3.select(id).append('svg');
+    let soFar = 0;
+    svgBase
+      .attr('height', h)
+      .attr('width', w);
+    svgBase.append('rect')
+      .attr('class', 'rim')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('width', w)
+      .attr('height', h);
+    const svg = svgBase.append('g')
+      .attr('transform', `translate(${margin.left + radiusL},${margin.top + radiusL})`);
+    svg.selectAll('.newfive').append('g').data(Data).enter()
+      .append('path')
+      .attr('transform', d => {
+        const circ = Math.floor((+d.id - 1) / 3);
+        const back = circ === 0 ?
+          `translate(0,0)` : `translate(${radiusS * 2 * Math.cos(Math.PI / 2 * circ)},
+      ${radiusS * 2 * Math.sin(Math.PI / 2 * circ)})`;
+        return back;
+      })
+      .attr('class', d => `newfive ${d.name}`)
+      .attr('d', d => {
+        if (+d.type === 0) {
+          soFar = 0;
+        }
+        const st = soFar, en = soFar + d.value / d.total;
+        const back = ARC({ outerRadius: radiusS, innerRadius: radiusS * 0.9, startAngle: st * 2 * Math.PI, endAngle: en * 2 * Math.PI });
+        soFar = en;
+        return back;
+      }).on('mousemove', (d, i, j) => {
+        const here = d3.select(j[i]);
+        tooltip.style('left', d3.event.pageX - 5 + 'px')
+          .style('top', d3.event.pageY + 7 + 'px')
+          .style('display', 'inline-block')
+          .html(`<i class="fa fa-gears leafy"></i>${d.outlierStatusType}<br>${d.value}`);
+      })
+      .on('mouseout', () => tooltip.transition().duration(2).style('display', 'none'))
+      .on('click', () => click())
+      ;
+
+    svg.selectAll('.newfivetext').append('g').data(Data).enter()
+      .append('text')
+      .attr('class', 'newfive')
+      .attr('transform', d => {
+        const circ = Math.floor((+d.id - 1) / 3);
+        const back = circ === 0 ?
+          `translate(0,0)` : `translate(${radiusS * 2 * Math.cos(Math.PI / 2 * circ)},
+      ${radiusS * 2 * Math.sin(Math.PI / 2 * circ)})`;
+        return back;
+      })
+      .text(d => d.outlierStatusType);
+
   }
   fiveCircles(w = 960, h = 500, displayData = ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR'], id = 'app-users') {
     const margin = { top: 10, right: 10, bottom: 10, left: 10 };

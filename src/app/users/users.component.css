@@ -223,3 +223,26 @@ text.five{
     fill: black;
     text-anchor:middle;
 }
+path.newfive.Pass{
+    fill:rgb(118, 113, 113);
+    stroke-width: 1px;
+}
+path.newfive.Warning{
+    fill:rgb(255,192,0);
+    stroke-width: 1px;
+}
+path.newfive.Fail{
+    fill:rgb(255, 21, 21);
+    stroke-width: 1px;
+}
+circle.newfive{
+    stroke:black;
+    fill:none;
+    stroke-width: 3px;
+}
+text.newfive{
+    font-size:30;
+    font-family: Calibri, sans-serif;
+    fill: #757171;
+    text-anchor:middle;
+}
