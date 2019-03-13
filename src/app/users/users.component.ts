@@ -579,7 +579,7 @@ export class UsersComponent implements OnChanges {
       id: 2,
       type: '1',
       name: 'Warning',
-      value: 10,
+      value: 1000,
       outlierStatusType: 'OLD Q',
       withKE: false
     }, {
@@ -593,14 +593,14 @@ export class UsersComponent implements OnChanges {
       id: 4,
       type: '0',
       name: 'Fail',
-      value: 234,
+      value: 2340,
       outlierStatusType: 'OLD P',
       withKE: false
     }, {
       id: 5,
       type: '1',
       name: 'Warning',
-      value: 20,
+      value: 2000,
       outlierStatusType: 'OLD P',
       withKE: false
     }, {
@@ -614,14 +614,14 @@ export class UsersComponent implements OnChanges {
       id: 7,
       type: '0',
       name: 'Fail',
-      value: 100,
+      value: 1000,
       outlierStatusType: 'DECAY',
       withKE: false
     }, {
       id: 8,
       type: '1',
       name: 'Warning',
-      value: 300,
+      value: 3000,
       outlierStatusType: 'DECAY',
       withKE: false
     }, {
@@ -635,14 +635,14 @@ export class UsersComponent implements OnChanges {
       id: 10,
       type: '0',
       name: 'Fail',
-      value: 250,
+      value: 2500,
       outlierStatusType: 'MISMATCH',
       withKE: false
     }, {
       id: 11,
       type: '1',
       name: 'Warning',
-      value: 154,
+      value: 1549,
       outlierStatusType: 'MISMATCH',
       withKE: false
     }, {
@@ -656,14 +656,14 @@ export class UsersComponent implements OnChanges {
       id: 13,
       type: '0',
       name: 'Fail',
-      value: 300,
+      value: 3009,
       outlierStatusType: 'NO P',
       withKE: false
     }, {
       id: 14,
       type: '1',
       name: 'Warning',
-      value: 454,
+      value: 4545,
       outlierStatusType: 'NO P',
       withKE: false
     }, {
