@@ -745,9 +745,9 @@ export class UsersComponent implements OnChanges {
       .transition().duration(2000).ease(easeCircle)
       .attrTween('transform', d => t => {
         const diam = radiusS * 2, t0 = (1 - t) * (1 - t), circ = -+d.id * 0.25 * t0 * Math.PI / 4 +
-        t * Math.floor((+d.id - 1) / 3);
+          t * Math.floor((+d.id - 1) / 3);
         const back = Math.floor((+d.id - 1) / 3) === 0 ?
-          `translate(${t0 * diam + t0 * diam * 2 * Math.cos(t0 * 10)},${-t0 * diam + t0 * diam * 2* Math.sin(t0 * 10)})` :
+          `translate(${t0 * diam + t0 * diam * 2 * Math.cos(t0 * 10)},${-t0 * diam + t0 * diam * 2 * Math.sin(t0 * 10)})` :
           `translate(${diam * Math.cos(Math.PI / 2 * circ)},
       ${diam * Math.sin(Math.PI / 2 * circ)})`;
         return back;
@@ -771,14 +771,16 @@ export class UsersComponent implements OnChanges {
     svg.selectAll('text.newfive').append('g').data(Datas).enter()
       .append('text')
       .attr('class', 'newfive')
-      .attr('transform', (d, i) => {
+      .text(d => d.outlierStatusType)
+      .transition().duration(2000)
+      .attrTween('transform', (d, i) => t => {
         const circ = i;
         const back = circ === 0 ?
-          `translate(0,0)` : `translate(${radiusS * 2 * Math.cos(Math.PI / 2 * circ)},
-      ${radiusS * 2 * Math.sin(Math.PI / 2 * circ)})`;
+          `translate(0,0) rotate(${-180 * (1 - t)})` : `translate(${radiusS * 2 * Math.cos(Math.PI / 2 * circ)},
+      ${radiusS * 2 * Math.sin(Math.PI / 2 * circ)}) rotate(${180 * (1 - t)})`;
         return back;
       })
-      .text(d => d.outlierStatusType);
+      ;
     svg.selectAll('path.newfive')
       .on('mousemove', (dd, i, j) => {
         const here = d3.select(j[i]);
