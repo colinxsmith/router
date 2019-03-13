@@ -3,7 +3,7 @@ import { AppComponent } from '../app.component';
 import { UserService } from './user.service';
 import * as d3 from 'd3';
 import { map } from 'rxjs/operators';
-import { scaleQuantile, ContainerElement, scaleIdentity } from 'd3';
+import { scaleQuantile, ContainerElement, scaleIdentity, easeBounce, easeBackInOut, easeCircle } from 'd3';
 import { fcall } from 'q';
 import { s } from '@angular/core/src/render3';
 @Component({
@@ -742,10 +742,12 @@ export class UsersComponent implements OnChanges {
         soFar = en;
         return back;
       })
-      .transition().duration(2000).attrTween('transform', d => t => {
-        const diam = radiusS * 2, t0 = (1 - t) * (1 - t), circ = -+d.id * 0.25 * t0 * Math.PI / 4 + t * Math.floor((+d.id - 1) / 3);
+      .transition().duration(2000).ease(easeCircle)
+      .attrTween('transform', d => t => {
+        const diam = radiusS * 2, t0 = (1 - t) * (1 - t), circ = -+d.id * 0.25 * t0 * Math.PI / 4 +
+        t * Math.floor((+d.id - 1) / 3);
         const back = Math.floor((+d.id - 1) / 3) === 0 ?
-          `translate(${t0 * diam},${t0 * diam})` :
+          `translate(${t0 * diam + t0 * diam * 2 * Math.cos(t0 * 10)},${-t0 * diam + t0 * diam * 2* Math.sin(t0 * 10)})` :
           `translate(${diam * Math.cos(Math.PI / 2 * circ)},
       ${diam * Math.sin(Math.PI / 2 * circ)})`;
         return back;
