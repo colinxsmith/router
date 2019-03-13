@@ -771,14 +771,17 @@ export class UsersComponent implements OnChanges {
     svg.selectAll('text.newfive').append('g').data(Datas).enter()
       .append('text')
       .attr('class', 'newfive')
-      .text(d => d.outlierStatusType)
       .transition().duration(2000)
-      .attrTween('transform', (d, i) => t => {
+      .tween('transform', (dh, i, j) => t => {
+        const here = d3.select(j[i]);
         const circ = i;
         const back = circ === 0 ?
           `translate(0,0) rotate(${-180 * (1 - t)})` : `translate(${radiusS * 2 * Math.cos(Math.PI / 2 * circ)},
       ${radiusS * 2 * Math.sin(Math.PI / 2 * circ)}) rotate(${180 * (1 - t)})`;
-        return back;
+        here
+          .attr('transform', back)
+          .style('fill-opacity', (-t * (1 - t) * 4 + 1))
+          .text(dh.outlierStatusType);
       })
       ;
     svg.selectAll('path.newfive')
