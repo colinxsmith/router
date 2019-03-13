@@ -732,13 +732,6 @@ export class UsersComponent implements OnChanges {
       .attr('transform', `translate(${margin.left + radiusL},${margin.top + radiusL})`);
     svg.selectAll('path.newfive').append('g').data(Data).enter()
       .append('path')
-      .attr('transform', d => {
-        const circ = Math.floor((+d.id - 1) / 3);
-        const back = circ === 0 ?
-          `translate(0,0)` : `translate(${radiusS * 2 * Math.cos(Math.PI / 2 * circ)},
-      ${radiusS * 2 * Math.sin(Math.PI / 2 * circ)})`;
-        return back;
-      })
       .attr('class', d => `newfive ${d.name}`)
       .attr('d', d => {
         if (+d.type === 0) {
@@ -748,7 +741,16 @@ export class UsersComponent implements OnChanges {
         const back = ARC({ outerRadius: radiusS, innerRadius: radiusS * 0.9, startAngle: st * 2 * Math.PI, endAngle: en * 2 * Math.PI });
         soFar = en;
         return back;
-      });
+      })
+      .transition().duration(2000).attrTween('transform', d => t => {
+        const diam = radiusS * 2, t0 = (1 - t) * (1 - t), circ = -+d.id * 0.25 * t0 * Math.PI / 4 + t * Math.floor((+d.id - 1) / 3);
+        const back = Math.floor((+d.id - 1) / 3) === 0 ?
+          `translate(${t0 * diam},${t0 * diam})` :
+          `translate(${diam * Math.cos(Math.PI / 2 * circ)},
+      ${diam * Math.sin(Math.PI / 2 * circ)})`;
+        return back;
+      })
+      ;
 
     const Datas: {
       id: number;
