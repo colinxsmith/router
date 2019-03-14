@@ -692,18 +692,18 @@ export class UsersComponent implements OnChanges {
       p.total = 0;
       Data.push(p);
     });
-    let totalV = 0;
-    Data.forEach((d, i) => {
+    kevData.monitorFlagCategory.forEach(d => {
+      const i = d.id - 1;
       if (+d.type === 0) {
-        totalV = d.value;
-      } else {
-        totalV += d.value;
-      }
-      if (+d.type === 2) {
-        Data[i].total = totalV;
+        Data[i + 2].total += d.value;
+      } else if (+d.type === 1) {
+        Data[i + 1].total += d.value;
+      } else if (+d.type === 2) {
+        Data[i].total += d.value;
       }
     });
-    Data.forEach((d, i) => {
+    Data.forEach(d => {
+      const i = d.id - 1;
       if (+d.type === 0) {
         Data[i].total = Data[i + 2].total;
       } else if (+d.type === 1) {
@@ -763,7 +763,8 @@ export class UsersComponent implements OnChanges {
       withKE: boolean;
       total: number;
     }[] = [];
-    Data.forEach((d, i) => {
+    Data.forEach(d => {
+      const i = d.id - 1;
       if (i % 3 === 0) {
         Datas.push(d);
       }
@@ -774,7 +775,7 @@ export class UsersComponent implements OnChanges {
       .transition().duration(2000)
       .tween('transform', (dh, i, j) => t => {
         const here = d3.select(j[i]);
-        const circ = i;
+        const circ = Math.floor((dh.id - 1) / 3);
         const back = circ === 0 ?
           `translate(0,0) rotate(${-180 * (1 - t)})` : `translate(${radiusS * 2 * Math.cos(Math.PI / 2 * circ)},
       ${radiusS * 2 * Math.sin(Math.PI / 2 * circ)}) rotate(${180 * (1 - t)})`;
