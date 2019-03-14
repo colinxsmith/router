@@ -693,21 +693,13 @@ export class UsersComponent implements OnChanges {
       Data.push(p);
     });
     kevData.monitorFlagCategory.forEach(d => {
-      const i = d.id - 1;
-      if (+d.type === 0) {
-        Data[i + 2].total += d.value;
-      } else if (+d.type === 1) {
-        Data[i + 1].total += d.value;
-      } else if (+d.type === 2) {
-        Data[i].total += d.value;
-      }
+      const i = d.id - 1 + 2 - +d.type;
+      Data[i].total += d.value;
     });
     Data.forEach(d => {
       const i = d.id - 1;
-      if (+d.type === 0) {
-        Data[i].total = Data[i + 2].total;
-      } else if (+d.type === 1) {
-        Data[i].total = Data[i + 1].total;
+      if (+d.total !== 2) {
+        Data[i].total = Data[i + 2 - +d.type].total;
       }
     });
     const margin = { top: 10, right: 10, bottom: 10, left: 10 };
