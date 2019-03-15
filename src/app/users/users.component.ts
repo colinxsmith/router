@@ -705,7 +705,7 @@ export class UsersComponent implements OnChanges {
     const margin = { top: 10, right: 10, bottom: 10, left: 10 };
     let width = w - margin.left - margin.right,
       height = h - margin.top - margin.bottom;
-    const radiusL = Math.min(width, height) / 2, radiusS = radiusL / 3, ARC = d3.arc();
+    const radiusL = Math.min(width, height) / 2, radiusS = radiusL / (1 + Math.sqrt(2)), extra = Math.PI * 0.25, ARC = d3.arc();
     width = radiusL * 2, height = radiusL * 2,
       w = width + margin.left + margin.right;
     h = height + margin.bottom + margin.top;
@@ -740,8 +740,8 @@ export class UsersComponent implements OnChanges {
           t * Math.floor((+d.id - 1) / 3);
         const back = Math.floor((+d.id - 1) / 3) === 0 ?
           `translate(${t0 * diam + t0 * diam * 2 * Math.cos(t0 * 10)},${-t0 * diam + t0 * diam * 2 * Math.sin(t0 * 10)})` :
-          `translate(${diam * Math.cos(Math.PI / 2 * circ)},
-      ${diam * Math.sin(Math.PI / 2 * circ)})`;
+          `translate(${diam * Math.cos(Math.PI / 2 * circ + extra)},
+      ${diam * Math.sin(Math.PI / 2 * circ + extra)})`;
         return back;
       })
       ;
@@ -769,8 +769,8 @@ export class UsersComponent implements OnChanges {
         const here = d3.select(j[i]);
         const circ = Math.floor((dh.id - 1) / 3);
         const back = circ === 0 ?
-          `translate(0,0) rotate(${-180 * (1 - t)})` : `translate(${radiusS * 2 * Math.cos(Math.PI / 2 * circ)},
-      ${radiusS * 2 * Math.sin(Math.PI / 2 * circ)}) rotate(${180 * (1 - t)})`;
+          `translate(0,0) rotate(${-180 * (1 - t)})` : `translate(${radiusS * 2 * Math.cos(Math.PI / 2 * circ + extra)},
+      ${radiusS * 2 * Math.sin(Math.PI / 2 * circ + extra)}) rotate(${180 * (1 - t)})`;
         here
           .attr('transform', back)
           .style('fill-opacity', (-t * (1 - t) * 4 + 1))
