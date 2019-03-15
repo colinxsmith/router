@@ -304,7 +304,7 @@ export class UsersComponent implements OnChanges {
       totalsCol[Math.floor(i / weights.length)] += d;
       sumEx += d;
     });
-    const svgBase = d3.select(id).append('svg')
+    const svgBase = d3.select(id).append('g').append('svg')
       .attr('width', w).attr('height', h),
       svg = svgBase.append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`),
@@ -501,7 +501,7 @@ export class UsersComponent implements OnChanges {
     height = (squareSide + spacer) * factorNames.length;
     w = width + margin.right + margin.left;
     h = height + margin.bottom + margin.top;
-    const svgBase = d3.select(id).append('svg')
+    const svgBase = d3.select(id).append('g').append('svg')
       .attr('width', w).attr('height', h),
       svg = svgBase.append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
@@ -569,15 +569,15 @@ export class UsersComponent implements OnChanges {
     chartType: 'MULTI',
     tooltip: '',
     monitorFlagCategory: [{
-      id: 1,
-      type: '0',
+      id: 2,
+      type: '1',
       name: 'Fail',
       value: 385,
       outlierStatusType: 'OLD Q',
       withKE: false
     }, {
-      id: 2,
-      type: '1',
+      id: 1,
+      type: '0',
       name: 'Warning',
       value: 1000,
       outlierStatusType: 'OLD Q',
@@ -709,7 +709,7 @@ export class UsersComponent implements OnChanges {
     width = radiusL * 2, height = radiusL * 2,
       w = width + margin.left + margin.right;
     h = height + margin.bottom + margin.top;
-    const svgBase = d3.select(id).append('svg');
+    const svgBase = d3.select(id).append('g').append('svg');
     let soFar = 0;
     svgBase
       .attr('height', h)
@@ -725,8 +725,8 @@ export class UsersComponent implements OnChanges {
     svg.selectAll('path.newfive').append('g').data(Data).enter()
       .append('path')
       .attr('class', d => `newfive ${d.name}`)
-      .attr('d', d => {
-        if (+d.type === 0) {
+      .attr('d', (d, i) => {
+        if (i % 3 === 0) {
           soFar = 0;
         }
         const st = soFar, en = soFar + d.value / d.total;
@@ -799,7 +799,7 @@ export class UsersComponent implements OnChanges {
     width = squareSide, height = squareSide,
       w = width + margin.left + margin.right;
     h = height + margin.bottom + margin.top;
-    const svgBase = d3.select(id).append('svg'), circleRad = squareSide / 6, root2 = Math.sqrt(2),
+    const svgBase = d3.select(id).append('g').append('svg'), circleRad = squareSide / 6, root2 = Math.sqrt(2),
       spacer = (root2 * squareSide / 2 - 3 * circleRad) / 2 * root2,
       filler = d3.interpolateRgb('magenta', 'cyan');
     svgBase
@@ -920,7 +920,7 @@ export class UsersComponent implements OnChanges {
       .domain(minmaxE).range([2 * Math.PI / 5 + Math.PI / 2, -2 * Math.PI / 5 + Math.PI / 2]);
     const labPad = 40, padRow = 20, numCol = 4,
       width = wh * numCol, height = (wh + labPad * 1.5) * exposures.length / numCol, mx = 10, my = 20,
-      svg = d3.select(id).append('svg'),
+      svg = d3.select(id).append('g').append('svg'),
       th = 4, rad = Math.min((width - padRow * (numCol - 1)) / numCol, height),
       dialParts = [], npoints = 50;
     for (let i = 0; i < npoints; ++i) {
@@ -1129,7 +1129,7 @@ export class UsersComponent implements OnChanges {
     const rScale = d3.scaleLinear<number, number>()
       .range([0, radius])
       .domain([pMin, pMax]);
-    const svg = d3.select(id).append('svg'), doView = false;
+    const svg = d3.select(id).append('g').append('svg'), doView = false;
     if (doView) {
       svg.attr('viewBox', `0 0 ${cfg.w + cfg.margin.left + cfg.margin.right} ${cfg.h + cfg.margin.top + cfg.margin.bottom}`)
         .attr('class', 'radar' + id);
@@ -1238,8 +1238,7 @@ export class UsersComponent implements OnChanges {
         d3.selectAll(`.totals`).nodes().forEach(hh => {
           const h = d3.select(hh);
           if (+h.attr('picId') === i) {
-            h.transition().duration(2)
-              .style('fill-opacity', 0.7);
+            h.classed('over', true);
           }
         });
       })
@@ -1253,9 +1252,7 @@ export class UsersComponent implements OnChanges {
         d3.selectAll('.weightSingleMinus')
           .transition().duration(2)
           .style('fill-opacity', cfg.opacityArea);
-        d3.selectAll('.totals')
-          .transition().duration(10)
-          .style('fill-opacity', cfg.opacityArea);
+        d3.selectAll('.totals').classed('over', false);
       }
       );
     blobWrapper.append('path')
