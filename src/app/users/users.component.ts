@@ -569,15 +569,15 @@ export class UsersComponent implements OnChanges {
     chartType: 'MULTI',
     tooltip: '',
     monitorFlagCategory: [{
-      id: 2,
-      type: '1',
+      id: 1,
+      type: '0',
       name: 'Fail',
       value: 385,
       outlierStatusType: 'OLD Q',
       withKE: false
     }, {
-      id: 1,
-      type: '0',
+      id: 2,
+      type: '1',
       name: 'Warning',
       value: 1000,
       outlierStatusType: 'OLD Q',
@@ -764,13 +764,15 @@ export class UsersComponent implements OnChanges {
     svg.selectAll('text.newfive').append('g').data(Datas).enter()
       .append('text')
       .attr('class', 'newfive')
+      .on('mouseover', (d, i, j) => d3.select(j[i]).classed('over', true))
+      .on('mouseout', (d, i, j) => d3.select(j[i]).classed('over', false))
       .transition().duration(2000)
       .tween('transform', (dh, i, j) => t => {
-        const here = d3.select(j[i]);
+        const here = d3.select(j[i]), down = 8;
         const circ = Math.floor((dh.id - 1) / 3);
         const back = circ === 0 ?
-          `translate(0,0) rotate(${-180 * (1 - t)})` : `translate(${radiusS * 2 * Math.cos(Math.PI / 2 * circ + extra)},
-      ${radiusS * 2 * Math.sin(Math.PI / 2 * circ + extra)}) rotate(${180 * (1 - t)})`;
+          `translate(0,${down * t}) rotate(${-180 * (1 - t)})` : `translate(${radiusS * 2 * Math.cos(Math.PI / 2 * circ + extra)},
+      ${radiusS * 2 * Math.sin(Math.PI / 2 * circ + extra) + down * t}) rotate(${180 * (1 - t)})`;
         here
           .attr('transform', back)
           .style('fill-opacity', (-t * (1 - t) * 4 + 1))

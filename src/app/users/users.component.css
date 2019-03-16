@@ -244,8 +244,13 @@ circle.newfive{
     stroke-width: 3px;
 }
 text.newfive{
-    font-size:30;
+    font-size:25px;
     font-family: Calibri, sans-serif;
     fill: #757171;
     text-anchor:middle;
+}
+text.over{
+    font-size: 30px;
+    stroke: #635555;
+    fill:red;
 }
