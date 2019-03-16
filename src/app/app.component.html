@@ -3,6 +3,6 @@
 <select [ngModel] = "type" (ngModelChange)="changeType($event)" >
     <option *ngFor="let i of optType;"   [value]="i" >{{i}}</option>
 </select>
-Number of stock in portfolio<input (change)="changeStocks(+$event.target.value)" size="1" maxlength="4" value={{stocks}}>
+Number of stocks in portfolio<input (change)="changeStocks(+$event.target.value)" size="1" maxlength="4" value={{stocks}}>
 <app-users [getType]="type" [nStocks]="stocks" [factorConstraintChange]="factorWants"></app-users> 
 </div>
