@@ -250,7 +250,7 @@ text.newfive{
     text-anchor:middle;
 }
 text.over{
-    font-size: 30px;
-    stroke: #635555;
-    fill:red;
+    font-size: 35px;
+    stroke:  rgb(156, 150, 150);
+    fill:rgb(125, 231, 148);
 }

@@ -764,8 +764,12 @@ export class UsersComponent implements OnChanges {
     svg.selectAll('text.newfive').append('g').data(Datas).enter()
       .append('text')
       .attr('class', 'newfive')
-      .on('mouseover', (d, i, j) => d3.select(j[i]).classed('over', true))
-      .on('mouseout', (d, i, j) => d3.select(j[i]).classed('over', false))
+      .on('mouseover', (d, i, j) => d3.select(j[i]).transition().duration(200)
+        .attr('class', 'newfive over')
+        .styleTween('opacity', () => t => `${t}`))
+      .on('mouseout', (d, i, j) => d3.select(j[i]).transition().duration(400)
+        .attr('class', 'newfive')
+        .styleTween('opacity', () => t => `${t}`))
       .transition().duration(2000)
       .tween('transform', (dh, i, j) => t => {
         const here = d3.select(j[i]), down = 8;
