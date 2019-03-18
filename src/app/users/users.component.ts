@@ -3,9 +3,6 @@ import { AppComponent } from '../app.component';
 import { UserService } from './user.service';
 import * as d3 from 'd3';
 import { map } from 'rxjs/operators';
-import { scaleQuantile, ContainerElement, scaleIdentity, easeBounce, easeBackInOut, easeCircle } from 'd3';
-import { fcall } from 'q';
-import { s } from '@angular/core/src/render3';
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
@@ -304,7 +301,7 @@ export class UsersComponent implements OnChanges {
       totalsCol[Math.floor(i / weights.length)] += d;
       sumEx += d;
     });
-    const svgBase = d3.select(id).append('g').append('svg')
+    const svgBase = d3.select(id).attr('class', 'main').append('g').append('svg')
       .attr('width', w).attr('height', h),
       svg = svgBase.append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`),
@@ -501,7 +498,7 @@ export class UsersComponent implements OnChanges {
     height = (squareSide + spacer) * factorNames.length;
     w = width + margin.right + margin.left;
     h = height + margin.bottom + margin.top;
-    const svgBase = d3.select(id).append('g').append('svg')
+    const svgBase = d3.select(id).attr('class', 'main').append('g').append('svg')
       .attr('width', w).attr('height', h),
       svg = svgBase.append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
@@ -709,7 +706,7 @@ export class UsersComponent implements OnChanges {
     width = radiusL * 2, height = radiusL * 2,
       w = width + margin.left + margin.right;
     h = height + margin.bottom + margin.top;
-    const svgBase = d3.select(id).append('g').append('svg');
+    const svgBase = d3.select(id).attr('class', 'main').append('g').append('svg');
     let soFar = 0;
     svgBase
       .attr('height', h)
@@ -734,7 +731,7 @@ export class UsersComponent implements OnChanges {
         soFar = en;
         return back;
       })
-      .transition().duration(2000).ease(easeCircle)
+      .transition().duration(2000).ease(d3.easeCircle)
       .attrTween('transform', d => t => {
         const diam = radiusS * 2, t0 = (1 - t) * (1 - t), circ = -+d.id * 0.25 * t0 * Math.PI / 4 +
           t * Math.floor((+d.id - 1) / 3);
@@ -764,10 +761,10 @@ export class UsersComponent implements OnChanges {
     svg.selectAll('text.newfive').append('g').data(Datas).enter()
       .append('text')
       .attr('class', 'newfive')
-      .on('mouseover', (d, i, j) => d3.select(j[i]).transition().duration(200)
+      .on('mouseover', (d, i, j) => d3.select(j[i]).transition().duration(2)
         .attr('class', 'newfive over')
         .styleTween('opacity', () => t => `${t}`))
-      .on('mouseout', (d, i, j) => d3.select(j[i]).transition().duration(400)
+      .on('mouseout', (d, i, j) => d3.select(j[i]).transition().duration(4)
         .attr('class', 'newfive')
         .styleTween('opacity', () => t => `${t}`))
       .transition().duration(2000)
@@ -805,7 +802,7 @@ export class UsersComponent implements OnChanges {
     width = squareSide, height = squareSide,
       w = width + margin.left + margin.right;
     h = height + margin.bottom + margin.top;
-    const svgBase = d3.select(id).append('g').append('svg'), circleRad = squareSide / 6, root2 = Math.sqrt(2),
+    const svgBase = d3.select(id).attr('class', 'main').append('g').append('svg'), circleRad = squareSide / 6, root2 = Math.sqrt(2),
       spacer = (root2 * squareSide / 2 - 3 * circleRad) / 2 * root2,
       filler = d3.interpolateRgb('magenta', 'cyan');
     svgBase
@@ -926,7 +923,7 @@ export class UsersComponent implements OnChanges {
       .domain(minmaxE).range([2 * Math.PI / 5 + Math.PI / 2, -2 * Math.PI / 5 + Math.PI / 2]);
     const labPad = 40, padRow = 20, numCol = 4,
       width = wh * numCol, height = (wh + labPad * 1.5) * exposures.length / numCol, mx = 10, my = 20,
-      svg = d3.select(id).append('g').append('svg'),
+      svg = d3.select(id).attr('class', 'main').append('g').append('svg'),
       th = 4, rad = Math.min((width - padRow * (numCol - 1)) / numCol, height),
       dialParts = [], npoints = 50;
     for (let i = 0; i < npoints; ++i) {
@@ -985,9 +982,7 @@ export class UsersComponent implements OnChanges {
     for (let iExp = 0; iExp < exposures.length; ++iExp) {
       gaugeplate.append('g').selectAll('.dials').data(dialParts).enter()
         .append('path')
-        .attr('class', () => `dials${iExp}`)
-        .style('fill', 'none')
-        .style('stroke', 'red')
+        .attr('class', () => `dials${iExp} dscale`)
         .attr('transform', () => `translate(${mx + rad / 2 + (iExp % numCol) * (rad + padRow)},
         ${my + rad / 2 + Math.floor(iExp / numCol) * (rad + labPad)})`)
         .attr('d', (d, iDialPart) => {
@@ -1002,17 +997,18 @@ export class UsersComponent implements OnChanges {
         .on('mouseover', (d, iDialPart, jj) => {
           const here = d3.select(jj[iDialPart]);
           const st = iDialPart / (dialParts.length) * (angScale.range()[0] - angScale.range()[1]) + angScale.range()[1];
-          const mousePos = d3.mouse(<ContainerElement>(jj[iDialPart]));
+          const mousePos = d3.mouse(<d3.ContainerElement>(jj[iDialPart]));
           console.log(mousePos[0], mousePos[1]);
+          console.log(here.attr('transform'));
           here
             .transition().duration(2)
-            .style('fill', 'red');
+            .attr('class', 'choose');
         })
         .on('click', (d, iDialPart, jj) => {
           const here = d3.select(jj[iDialPart]);
           here
             .transition().duration(2)
-            .style('fill', 'rgb(0 , 128, 0)');
+            .attr('class', 'choose');
           const newVal = (iDialPart + 0.5) / (dialParts.length) * (angScale.range()[1] - angScale.range()[0]) + angScale.range()[0];
           console.log(angScale.invert(newVal));
           newVals[iExp] = angScale.invert(newVal);
@@ -1040,7 +1036,7 @@ export class UsersComponent implements OnChanges {
           const here = d3.select(jj[iDialPart]);
           const colour = here.style('fill');
           here.transition().duration(2)
-            .style('fill', 'none');
+            .attr('class', 'dscale');
         })
         ;
     }
@@ -1135,7 +1131,7 @@ export class UsersComponent implements OnChanges {
     const rScale = d3.scaleLinear<number, number>()
       .range([0, radius])
       .domain([pMin, pMax]);
-    const svg = d3.select(id).append('g').append('svg'), doView = false;
+    const svg = d3.select(id).attr('class', 'main').append('g').append('svg'), doView = false;
     if (doView) {
       svg.attr('viewBox', `0 0 ${cfg.w + cfg.margin.left + cfg.margin.right} ${cfg.h + cfg.margin.top + cfg.margin.bottom}`)
         .attr('class', 'radar' + id);
@@ -1279,7 +1275,7 @@ export class UsersComponent implements OnChanges {
       .attr('r', cfg.dotRadius)
       .attr('cx', (d, i) => rScale(d.value) * Math.cos(angleScale(i) - Math.PI / 2))
       .attr('cy', (d, i) => rScale(d.value) * Math.sin(angleScale(i) - Math.PI / 2))
-      .style('fill', (d, i, j) => cfg.colour(+(<HTMLSelectElement>(j[i]).parentNode).getAttribute('data-index')))
+      .style('fill', (d, i, j) => cfg.colour(+d3.select(<HTMLSelectElement>(j[i]).parentNode).attr('data-index')))
       .style('fill-opacity', 0.8);
     const blobCircleWrapper = g.selectAll('.radarCircleWrapper')
       .data(data)
@@ -1293,11 +1289,11 @@ export class UsersComponent implements OnChanges {
       .attr('r', cfg.dotRadius * 1.1)
       .attr('cx', (d, i) => rScale(d.value) * Math.cos(angleScale(i) - Math.PI / 2))
       .attr('cy', (d, i) => rScale(d.value) * Math.sin(angleScale(i) - Math.PI / 2))
-      .style('fill', (d, i, j) => cfg.colour(+(<HTMLSelectElement>(j[i]).parentNode).getAttribute('data-index')))
+      .style('fill', (d, i, j) => cfg.colour(+d3.select(<HTMLSelectElement>(j[i]).parentNode).attr('data-index')))
       .style('pointer-events', 'all')
       .on('mouseover', (d, i, j) => localTiptool
-        .attr('x', parseFloat(((j[i])).getAttribute('cx')) - 10)
-        .attr('y', parseFloat(((j[i])).getAttribute('cy')) - 10)
+        .attr('x', parseFloat((d3.select(j[i])).attr('cx')) - 10)
+        .attr('y', parseFloat((d3.select(j[i])).attr('cy')) - 10)
         .style('fill', 'none')
         .style('opacity', 1)
         .text(percentFormat(+d.value))
