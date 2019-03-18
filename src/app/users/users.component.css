@@ -16,7 +16,6 @@ rect.users {
 }
 text.tooltipRadar{
     font-size: 30px;
-    font-family: Calibri, sans-serif;
 }
 text.legendRadar{
     font-size: 10px;
@@ -27,7 +26,6 @@ text.legendRadar{
 text.axisRadar{
     font-size: 15px;
     font-stretch: expanded;
-    font-family: Calibri, sans-serif;
     fill:black;
     text-anchor:start;
     text-align: center;
@@ -88,20 +86,20 @@ line.line {
 
 text.axisLabel {
     stroke-width: 0.5px;
-    font: 25px Calibri,sans-serif;
+    font-size: 25px;
     text-anchor: middle;
     fill:rgba(211, 127, 56, 0.74);
 }
 text.axisNames {
     stroke-width: 0.5px;
-    font: 10px Calibri,sans-serif;
+    font-size: 10px;
     text-anchor: end;
     fill: rgb(123, 168, 99);
 }
 
 text.axis {
     stroke-width: 4px;
-    font: 25px Calibri,sans-serif;
+    font-size: 25px;
 }
 rect.barrim {
     opacity:1;

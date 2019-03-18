@@ -695,7 +695,7 @@ export class UsersComponent implements OnChanges {
     });
     Data.forEach(d => {
       const i = d.id - 1;
-      if (+d.total !== 2) {
+      if (+d.type !== 2) {
         Data[i].total = Data[i + 2 - +d.type].total;
       }
     });
