@@ -764,9 +764,9 @@ export class UsersComponent implements OnChanges {
       .on('mouseover', (d, i, j) => d3.select(j[i]).transition().duration(2)
         .attr('class', 'newfive over')
         .styleTween('opacity', () => t => `${t}`))
-      .on('mouseout', (d, i, j) => d3.select(j[i]).transition().duration(4)
+      .on('mouseout', (d, i, j) => d3.select(j[i]).transition().duration(10)
         .attr('class', 'newfive')
-        .styleTween('opacity', () => t => `${t}`))
+        .styleTween('fill-opacity', () => t => `${-t * (1 - t) * 4 + 1}`))
       .transition().duration(2000)
       .tween('transform', (dh, i, j) => t => {
         const here = d3.select(j[i]), down = 8;
@@ -921,9 +921,12 @@ export class UsersComponent implements OnChanges {
     this.factorConstraintChange = newVals;
     const angScale = d3.scaleLinear<number, number>()
       .domain(minmaxE).range([2 * Math.PI / 5 + Math.PI / 2, -2 * Math.PI / 5 + Math.PI / 2]);
-    const labPad = 40, padRow = 20, numCol = 4,
-      width = wh * numCol, height = (wh + labPad * 1.5) * exposures.length / numCol, mx = 10, my = 20,
-      svg = d3.select(id).attr('class', 'main').append('g').append('svg'),
+    const labPad = 5, padRow = 5, numCol = 4,
+      width = wh * numCol, height = (wh + labPad * 1.5) * exposures.length / numCol, mx = 40, my = 40,
+      svg = d3.select(id).attr('class', 'main').append('svg').attr('x', 0)
+      .attr('y', my)
+      .attr('width', width + mx * 2)
+      .attr('height', height + my * 2),
       th = 4, rad = Math.min((width - padRow * (numCol - 1)) / numCol, height),
       dialParts = [], npoints = 50;
     for (let i = 0; i < npoints; ++i) {
@@ -935,11 +938,6 @@ export class UsersComponent implements OnChanges {
       .attr('y', 0)
       .attr('width', width + mx * 2)
       .attr('height', height + my * 2);
-    svg.attr('x', 0)
-      .attr('y', 0)
-      .attr('width', width + mx * 2)
-      .attr('height', height + my * 2)
-      .attr('class', 'factorgauge');
     const gaugeplate = svg.append('g');
     gaugeplate.selectAll('.meters').select('g').data(exposures).enter()
       .append('path')
@@ -966,11 +964,11 @@ export class UsersComponent implements OnChanges {
       .attr('class', 'factorlabels')
       .attr('x', 0)
       .attr('y', th * 4)
-      .attr('dy', '1em')
+      .attr('dy', '1.5em')
       .attr('transform', (d, i) => `translate(${mx + rad / 2 + (i % numCol) * (rad + padRow)},
       ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)})`)
       .text(d => d.axis)
-      .call(this.wrapFunction, 60, 1);
+      .call(this.wrapFunction, 190, 1);
     gaugeplate.selectAll('.newvals').data(newVals).enter()
       .append('text')
       .attr('class', 'newvals')
@@ -1030,7 +1028,6 @@ export class UsersComponent implements OnChanges {
                 return old;
               }
             });
-
         })
         .on('mouseout', (d, iDialPart, jj) => {
           const here = d3.select(jj[iDialPart]);
