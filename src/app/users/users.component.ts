@@ -283,7 +283,7 @@ export class UsersComponent implements OnChanges {
     factorBetas: number[], fNames: string[], totals = 0, w = 960, h = 960, id = 'app-users') {
     const nRow = weights.length + totals, nfac = factorBetas.length / weights.length, nCol = nfac + totals,
       margin = { top: 250, right: 10, bottom: 10, left: 100 },
-      tooltip = d3.select('body').append('g').attr('class', 'toolTip');
+      tooltip = d3.select(id).append('g').attr('class', 'toolTip');
     let width = w - margin.left - margin.right,
       height = h - margin.top - margin.bottom;
     const spacer = 10, rotateAngle = -45,
@@ -489,7 +489,7 @@ export class UsersComponent implements OnChanges {
       }
     }
     const margin = { top: 90, right: 140, bottom: 10, left: 10 },
-      tooltip = d3.select('body').append('g').attr('class', 'toolTip');
+      tooltip = d3.select(id).append('g').attr('class', 'toolTip');
     let width = w - margin.left - margin.right,
       height = h - margin.top - margin.bottom;
     const spacer = 10, rotateAngle = -45,
@@ -682,7 +682,7 @@ export class UsersComponent implements OnChanges {
       withKE: boolean;
       total: number;
     }[] = [],
-      tooltip = d3.select('body').append('g').attr('class', 'toolTip');
+      tooltip = d3.select(id).append('g').attr('class', 'toolTip');
 
     kevData.monitorFlagCategory.forEach(d => {
       const p: any = d;
@@ -1399,7 +1399,7 @@ export class UsersComponent implements OnChanges {
       , rim = 5 * scaleAll
       , width = ww - margin.left - margin.right
       , height = hh - margin.top - margin.bottom
-      , tooltip = d3.select('body').append('g').attr('class', 'toolTip')
+      , tooltip = d3.select('app-users').append('g').attr('class', 'toolTip')
       , x = d3.scaleBand().rangeRound([0, bandfiddle * width]).paddingInner(0.1)
       , xx = d3.scaleBand().rangeRound([0, width]).paddingInner(0.1)
       , y = d3.scaleLinear<number, number>().range([height, 0])
