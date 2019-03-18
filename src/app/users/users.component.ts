@@ -305,7 +305,7 @@ export class UsersComponent implements OnChanges {
       .attr('width', w).attr('height', h),
       svg = svgBase.append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`),
-      radScale = d3.scaleLinear().range([Side / 4, Side / 2]).domain([-d3.min(factorBetas.map(d => Math.abs(d))),
+      radScale = d3.scaleLinear().range([Side / 8, Side / 2]).domain([d3.min(factorBetas.map(d => Math.abs(d))),
       d3.max(factorBetas.map(d => Math.abs(d)))]);
     svg.append('rect')
       .attr('class', 'rim')
@@ -414,7 +414,7 @@ export class UsersComponent implements OnChanges {
         here.style('font-size', font + 'px');
         return Side / 2 + font / 4;
       })
-      .text(d => d3.format('0.2f')(d))
+      .text(d => d === 0 ? '' : d3.format('0.2f')(d))
       .on('mousemove', (d, i) => {
         tooltip.style('left', d3.event.pageX - 50 + 'px')
           .style('top', d3.event.pageY - 70 + 'px')
