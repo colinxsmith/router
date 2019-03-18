@@ -1002,13 +1002,13 @@ export class UsersComponent implements OnChanges {
           console.log(here.attr('transform'));
           here
             .transition().duration(2)
-            .attr('class', 'choose');
+            .attr('class', 'dscale choose');
         })
         .on('click', (d, iDialPart, jj) => {
           const here = d3.select(jj[iDialPart]);
           here
             .transition().duration(2)
-            .attr('class', 'choose');
+            .attr('class', 'dscale choose');
           const newVal = (iDialPart + 0.5) / (dialParts.length) * (angScale.range()[1] - angScale.range()[0]) + angScale.range()[0];
           console.log(angScale.invert(newVal));
           newVals[iExp] = angScale.invert(newVal);
