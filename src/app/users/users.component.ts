@@ -108,7 +108,7 @@ export class UsersComponent implements OnChanges {
   changeLs(type: string, pointed = false) {
     // this.getType = type;
     console.log('Data changed is ' + this.dataChangedDueToAnotherSessionOptimising);
-    d3.select('app-users').selectAll('svg').remove();
+    d3.select('app-users').selectAll('.main').remove();
     if (this.dataChangedDueToAnotherSessionOptimising) {
       this.chooseData(this.getKey, pointed);
     } else {
@@ -305,7 +305,7 @@ export class UsersComponent implements OnChanges {
       .attr('width', w).attr('height', h),
       svg = svgBase.append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`),
-      radScale = d3.scaleLinear().range([Side / 4, Side / 2]).domain([d3.min(factorBetas.map(d => Math.abs(d))),
+      radScale = d3.scaleLinear().range([Side / 4, Side / 2]).domain([-d3.min(factorBetas.map(d => Math.abs(d))),
       d3.max(factorBetas.map(d => Math.abs(d)))]);
     svg.append('rect')
       .attr('class', 'rim')
@@ -338,7 +338,7 @@ export class UsersComponent implements OnChanges {
       .attr('transform', (d, i) => `translate(${(Math.floor(i / weights.length)) * Side},${Math.floor(i % weights.length) * Side})`)
       .attr('cx', Side / 2)
       .attr('cy', Side / 2)
-      .attr('r', d => radScale(Math.abs(d)))
+      .attr('r', d => d === 0 ? 0 : radScale(Math.abs(d)))
       .on('mousemove', (d, i) => {
         tooltip.style('left', d3.event.pageX - 50 + 'px')
           .style('top', d3.event.pageY - 70 + 'px')
@@ -922,7 +922,7 @@ export class UsersComponent implements OnChanges {
     const angScaleSeparate: d3.ScaleLinear<number, number>[] = [];
     exposures.forEach(expo => {
       const aScale = d3.scaleLinear<number, number>()
-        .domain(expo.value === 0 ? [-1, 1] : [-2 * Math.abs(expo.value), 2 * Math.abs(expo.value)])
+        .domain(expo.value === 0 ? [-1, 1] : [-10 * Math.abs(expo.value), 10 * Math.abs(expo.value)])
         .range([2 * Math.PI / 5 + Math.PI / 2, -2 * Math.PI / 5 + Math.PI / 2]);
       angScaleSeparate.push(aScale);
     });
