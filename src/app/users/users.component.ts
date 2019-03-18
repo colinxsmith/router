@@ -919,14 +919,19 @@ export class UsersComponent implements OnChanges {
       });
     }
     this.factorConstraintChange = newVals;
-    const angScale = d3.scaleLinear<number, number>()
-      .domain(minmaxE).range([2 * Math.PI / 5 + Math.PI / 2, -2 * Math.PI / 5 + Math.PI / 2]);
+    const angScaleSeparate: d3.ScaleLinear<number, number>[] = [];
+    exposures.forEach(expo => {
+      const aScale = d3.scaleLinear<number, number>()
+        .domain(expo.value === 0 ? [-1, 1] : [-2 * Math.abs(expo.value), 2 * Math.abs(expo.value)])
+        .range([2 * Math.PI / 5 + Math.PI / 2, -2 * Math.PI / 5 + Math.PI / 2]);
+      angScaleSeparate.push(aScale);
+    });
     const labPad = 5, padRow = 5, numCol = 4,
       width = wh * numCol, height = (wh + labPad * 1.5) * exposures.length / numCol, mx = 40, my = 40,
       svg = d3.select(id).attr('class', 'main').append('svg').attr('x', 0)
-      .attr('y', my)
-      .attr('width', width + mx * 2)
-      .attr('height', height + my * 2),
+        .attr('y', my)
+        .attr('width', width + mx * 2)
+        .attr('height', height + my * 2),
       th = 4, rad = Math.min((width - padRow * (numCol - 1)) / numCol, height),
       dialParts = [], npoints = 50;
     for (let i = 0; i < npoints; ++i) {
@@ -946,8 +951,9 @@ export class UsersComponent implements OnChanges {
       .style('stroke', 'green')
       .attr('transform', (d, i) => `translate(${mx + rad / 2 + (i % numCol) * (rad + padRow)},
       ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)})`)
-      .attr('d', (d) => {
-        const cc = (rad - th * 2) * Math.cos(angScale(d.value)), ss = (rad - th * 2) * Math.sin(angScale(d.value));
+      .attr('d', (d, iExp) => {
+        const cc = (rad - th * 2) * Math.cos(angScaleSeparate[iExp](d.value)),
+          ss = (rad - th * 2) * Math.sin(angScaleSeparate[iExp](d.value));
         return `M${-rad / 2} 0l0 -${th}l${rad} 0l0 ${th}Z` + `M0 0l${th / 2} 0l${cc / 2} ${-ss / 2}l-${th} 0l${-cc / 2} ${ss / 2}Z`;
       }
       );
@@ -984,8 +990,10 @@ export class UsersComponent implements OnChanges {
         .attr('transform', () => `translate(${mx + rad / 2 + (iExp % numCol) * (rad + padRow)},
         ${my + rad / 2 + Math.floor(iExp / numCol) * (rad + labPad)})`)
         .attr('d', (d, iDialPart) => {
-          const st = iDialPart / (dialParts.length) * (angScale.range()[0] - angScale.range()[1]) + angScale.range()[1];
-          const en = (iDialPart + 1) / (dialParts.length) * (angScale.range()[0] - angScale.range()[1]) + angScale.range()[1];
+          const st = iDialPart / (dialParts.length) * (angScaleSeparate[iExp].range()[0] -
+            angScaleSeparate[iExp].range()[1]) + angScaleSeparate[iExp].range()[1];
+          const en = (iDialPart + 1) / (dialParts.length) * (angScaleSeparate[iExp].range()[0] -
+            angScaleSeparate[iExp].range()[1]) + angScaleSeparate[iExp].range()[1];
           return d3.arc()({
             innerRadius: rad / 2 - th, outerRadius: rad / 2, startAngle: st - Math.PI / 2,
             endAngle: en - Math.PI / 2
@@ -994,7 +1002,8 @@ export class UsersComponent implements OnChanges {
       gaugeplate.selectAll(`.dials${iExp}`)
         .on('mouseover', (d, iDialPart, jj) => {
           const here = d3.select(jj[iDialPart]);
-          const st = iDialPart / (dialParts.length) * (angScale.range()[0] - angScale.range()[1]) + angScale.range()[1];
+          const st = iDialPart / (dialParts.length) * (angScaleSeparate[iExp].range()[0] -
+            angScaleSeparate[iExp].range()[1]) + angScaleSeparate[iExp].range()[1];
           const mousePos = d3.mouse(<d3.ContainerElement>(jj[iDialPart]));
           console.log(mousePos[0], mousePos[1]);
           console.log(here.attr('transform'));
@@ -1007,9 +1016,10 @@ export class UsersComponent implements OnChanges {
           here
             .transition().duration(2)
             .attr('class', 'dscale choose');
-          const newVal = (iDialPart + 0.5) / (dialParts.length) * (angScale.range()[1] - angScale.range()[0]) + angScale.range()[0];
-          console.log(angScale.invert(newVal));
-          newVals[iExp] = angScale.invert(newVal);
+          const newVal = (iDialPart + 0.5) / (dialParts.length) * (angScaleSeparate[iExp].range()[1] -
+            angScaleSeparate[iExp].range()[0]) + angScaleSeparate[iExp].range()[0];
+          console.log(angScaleSeparate[iExp].invert(newVal));
+          newVals[iExp] = angScaleSeparate[iExp].invert(newVal);
           gaugeplate.selectAll('.newvals')
             .text((df, iii) => {
               return iii === iExp ? formatG(newVals[iExp]) : isNaN(+formatG(newVals[iii])) ? '' : formatG(newVals[iii]);
@@ -1022,7 +1032,8 @@ export class UsersComponent implements OnChanges {
                 const oldc = old.replace(/Z m.*/, 'Z').replace(/Zm.*/, 'Z');
                 console.log(old);
                 console.log(oldc);
-                const cc = (rad - th * 2) * Math.cos(angScale(newVals[iExp])), ss = (rad - th * 2) * Math.sin(angScale(newVals[iExp]));
+                const cc = (rad - th * 2) * Math.cos(angScaleSeparate[iExp](newVals[iExp])),
+                  ss = (rad - th * 2) * Math.sin(angScaleSeparate[iExp](newVals[iExp]));
                 return oldc + `m0 0M0 0l${th1 / 2} 0l${cc / 2} ${-ss / 2}l ${th1} 0l${-cc / 2} ${ss / 2}Z`;
               } else {
                 return old;
