@@ -222,12 +222,13 @@ export class UsersComponent implements OnChanges {
           data1 = this.pickOutNonZeroValues(data1);
           this.RadarChart('app-users', data1, radarChartOptions);
           data1.forEach((ddd, i: number) => {
+            const idisp = data1.length === 4 ? i : this.choose2[i];
             this.stockbars(ddd, i, ww, hh, 2000, 'Weights', 'Assets');
             this.simpleDisplay(ddd);
             d3.select('app-users').append('svg').attr('width', 600).attr('height', 50).append('g').append('text')
               .attr('transform', 'translate(0,30)').attr('class', 'users')
-              .text(() => `Risk: ${this.displayData[i].risk}, Return: ${this.displayData[i].return},
-                gamma: ${this.displayData[i].gamma}`);
+              .text(() => `Risk: ${this.displayData[idisp].risk}, Return: ${this.displayData[idisp].return},
+                gamma: ${this.displayData[idisp].gamma}`);
           });
         } else if (this.getKey === 'newData') {
           if (this.displayData.length !== undefined) {
