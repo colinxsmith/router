@@ -55,6 +55,7 @@ export class UsersComponent implements OnChanges {
     const displayData: { alpha: number, axis: string, value: number, id: number }[][] = [];
     const maxFac: number[] = Array(data[0].length);
     const minFac: number[] = Array(data[0].length);
+    const aim = 12;
     let base = 1e-2;
     for (let i = 0; i < data[0].length; ++i) {
       maxFac[i] = -1e9;
@@ -69,14 +70,14 @@ export class UsersComponent implements OnChanges {
     data.forEach((dad) => {
       const newDat: { alpha: number, axis: string, value: number, id: number }[] = [];
       let numberOk = 0;
-      while (numberOk < 12 && base > 1e-5) {
+      while (numberOk < aim && base > 1e-5) {
         numberOk = 0;
         dad.forEach((vals, i) => {
           if (!(minFac[i] > -base && maxFac[i] < base)) {
             numberOk++;
           }
         });
-        if (numberOk < 12 && base > 1e-5) {
+        if (numberOk < aim && base > 1e-5) {
           base /= 2;
         }
       }
@@ -204,7 +205,7 @@ export class UsersComponent implements OnChanges {
             };
 
           let data1: { alpha: number, axis: string, value: number, id: number }[][]
-            = this.displayData[0].portfolio !== undefined ? this.displayData.map((ddd) => ddd.portfolio) : this.displayData;
+            = this.displayData[0].portfolio !== undefined ? this.displayData.map(ddd => ddd.portfolio) : this.displayData;
           if (data1[0][0].alpha !== undefined) {
             data1.forEach((ddd) => {
               ddd.sort((d1, d2) => {
@@ -261,7 +262,7 @@ export class UsersComponent implements OnChanges {
           }
           this.RadarChart('app-users', this.pickOutNonZeroValues(this.displayData.map(d => d.factors)), options);
           this.correlationMatrix(FC, this.displayData[0].factors.map(d => d.axis), 700);
-          this.displayData.forEach((DATA, ii) => {
+          this.displayData.forEach((DATA, ii: number) => {
             const usedweight = DATA.w;
             const factorBetas = DATA.FL;
             this.matrixFLorFX(ii, usedweight, factorBetas, this.displayData[0].factors.map(d => d.axis), 0, 700);
@@ -305,7 +306,7 @@ export class UsersComponent implements OnChanges {
       .attr('width', w).attr('height', h),
       svg = svgBase.append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`),
-      radScale = d3.scaleLinear().range([Side / 8, Side / 2]).domain([d3.min(factorBetas.map(d => Math.abs(d))),
+      radScale = d3.scaleLinear().range([0, Side / 2]).domain([d3.min(factorBetas.map(d => Math.abs(d))),
       d3.max(factorBetas.map(d => Math.abs(d)))]);
     svg.append('rect')
       .attr('class', 'rim')
@@ -326,7 +327,7 @@ export class UsersComponent implements OnChanges {
     svg.selectAll('.stockLabels').select('g').data(weights.map(d => d.name)).enter()
       .append('text')
       .attr('class', 'stockLabels').attr('x', 0)
-      .attr('transform', (d, i) => `translate(${-spacer},${i * Side + Side / 4})`)
+      .attr('transform', (d, i) => `translate(${-spacer},${i * Side + (d.indexOf(' ') > -1 ? Side / 4 : Side / 2)})`)
       .attr('y', 0)
       .attr('dy', '0.35em')
       .text(d => d)
@@ -406,7 +407,8 @@ export class UsersComponent implements OnChanges {
     svg.selectAll('.fbetas').select('g').data(factorBetas).enter()
       .append('text')
       .attr('class', 'fbetas')
-      .attr('transform', (d, i) => `translate(${(Math.floor(i / weights.length)) * Side},${Math.floor(i % weights.length) * Side})`)
+      .attr('transform', (d, i) => `translate(${(Math.floor(i / weights.length)) * Side},
+      ${Math.floor(i % weights.length) * Side})`)
       .attr('x', Side / 2)
       .attr('y', (d, i, j) => {
         const here = d3.select(j[i]);
@@ -414,7 +416,7 @@ export class UsersComponent implements OnChanges {
         here.style('font-size', font + 'px');
         return Side / 2 + font / 4;
       })
-      .text(d => d === 0 ? '' : d3.format('0.2f')(d))
+      .text(d => d === 0 ? '0' : d3.format('0.2f')(d))
       .on('mousemove', (d, i) => {
         tooltip.style('left', d3.event.pageX - 50 + 'px')
           .style('top', d3.event.pageY - 70 + 'px')
@@ -429,7 +431,8 @@ export class UsersComponent implements OnChanges {
       svg.selectAll('.fbetas').select('g').data(totalsCol).enter()
         .append('text')
         .attr('class', 'fbetas')
-        .attr('transform', (d, i) => `translate(${i * Side},${Math.floor(weights.length) * Side})`)
+        .attr('transform', (d, i) => `translate(${i * Side},
+          ${Math.floor(weights.length) * Side})`)
         .attr('x', Side / 2)
         .attr('y', (d, i, j) => {
           const here = d3.select(j[i]);
