@@ -1021,7 +1021,7 @@ export class UsersComponent implements OnChanges {
         const st = soFar, en = soFar + d.value / d.total;
         const back = ARC({ outerRadius: radiusS, innerRadius: radiusS * 0.9, startAngle: st * 2 * Math.PI, endAngle: en * 2 * Math.PI });
         soFar = en;
-        return back;
+        return '';
       })
       .transition().duration(2000).ease(d3.easeCircle)
       .attrTween('transform', d => (t: number) => {
@@ -1031,6 +1031,16 @@ export class UsersComponent implements OnChanges {
           `translate(${t0 * diam + t0 * diam * 2 * Math.cos(t0 * 10)},${-t0 * diam + t0 * diam * 2 * Math.sin(t0 * 10)})` :
           `translate(${diam * Math.cos(Math.PI / 2 * circ + extra)},
       ${diam * Math.sin(Math.PI / 2 * circ + extra)})`;
+        return back;
+      })
+      .attrTween('d', (d, i) => tt => {
+        const ARCHh = tt < 0.95 ? d3.arc() : this.squareArc;
+        if (i % 3 === 0) {
+          soFar = 0;
+        }
+        const st = soFar, en = soFar + d.value / d.total;
+        const back = ARCHh({ outerRadius: radiusS, innerRadius: radiusS * 0.9, startAngle: st * 2 * Math.PI, endAngle: en * 2 * Math.PI });
+        soFar = en;
         return back;
       })
       ;
