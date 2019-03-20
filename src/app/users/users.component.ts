@@ -965,7 +965,6 @@ export class UsersComponent implements OnChanges {
       total: number;
     }[] = [],
       tooltip = d3.select(id).append('g').attr('class', 'toolTip');
-
     kevData.monitorFlagCategory.forEach(d => {
       const p: any = d;
       p.total = 0;
@@ -981,6 +980,16 @@ export class UsersComponent implements OnChanges {
         Data[i].total = Data[i + 2 - +d.type].total;
       }
     });
+    /* This is probably better
+    kevData.monitorFlagCategory.forEach((d, j) => {
+      Data[j + 2 - j % 3].total += d.value;
+    });
+    Data.forEach((d, j) => {
+      if (j % 3 !== 2) {
+        Data[j].total = Data[j + 2 - j % 3].total;
+      }
+    });
+    */
     const margin = { top: 10, right: 10, bottom: 10, left: 10 };
     let width = w - margin.left - margin.right,
       height = h - margin.top - margin.bottom;
