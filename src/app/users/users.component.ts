@@ -50,6 +50,283 @@ export class UsersComponent implements OnChanges {
     this.changeLs(this.getType, this.updateLabel !== 'MAKE POINTED');
     console.log(changed);
   }
+  squareArc = (parm: { outerRadius: number, innerRadius: number, startAngle: number, endAngle: number }) => {
+    parm.startAngle -= Math.PI * 0.5;
+    parm.endAngle -= Math.PI * 0.5;
+    const makeZ = (x: number) => Math.abs(x) < 1e-8 ? 0 : x;
+    const seg1 = { xx1: 0, xx2: 0, yy1: 0, yy2: 0 };
+    const seg2 = { xx1: 0, xx2: 0, yy1: 0, yy2: 0, face: 0 };
+    if (parm.innerRadius === 0) {
+      parm.innerRadius = 1e-7;
+    }
+    if (parm.outerRadius === 0) {
+      parm.outerRadius = 1e-7;
+    }
+    seg1.xx1 = parm.innerRadius * Math.cos(parm.startAngle);
+    seg1.yy1 = parm.innerRadius * Math.sin(parm.startAngle);
+    if (Math.abs(seg1.xx1) > Math.abs(seg1.yy1)) {
+      seg1.yy1 *= Math.abs(parm.innerRadius / seg1.xx1);
+      seg1.xx1 = seg1.xx1 < 0 ? -parm.innerRadius : parm.innerRadius;
+    } else {
+      seg1.xx1 *= Math.abs(parm.innerRadius / seg1.yy1);
+      seg1.yy1 = seg1.yy1 < 0 ? -parm.innerRadius : parm.innerRadius;
+    }
+    seg1.xx2 = parm.outerRadius * Math.cos(parm.startAngle);
+    seg1.yy2 = parm.outerRadius * Math.sin(parm.startAngle);
+    if (Math.abs(seg1.xx2) > Math.abs(seg1.yy2)) {
+      seg1.yy2 *= Math.abs(parm.outerRadius / seg1.xx2);
+      seg1.xx2 = seg1.xx2 < 0 ? -parm.outerRadius : parm.outerRadius;
+    } else {
+      seg1.xx2 *= Math.abs(parm.outerRadius / seg1.yy2);
+      seg1.yy2 = seg1.yy2 < 0 ? -parm.outerRadius : parm.outerRadius;
+    }
+    seg2.xx1 = parm.innerRadius * Math.cos(parm.endAngle);
+    seg2.yy1 = parm.innerRadius * Math.sin(parm.endAngle);
+    if (Math.abs(seg2.xx1) > Math.abs(seg2.yy1)) {
+      seg2.yy1 *= Math.abs(parm.innerRadius / seg2.xx1);
+      seg2.xx1 = seg2.xx1 < 0 ? -parm.innerRadius : parm.innerRadius;
+    } else {
+      seg2.xx1 *= Math.abs(parm.innerRadius / seg2.yy1);
+      seg2.yy1 = seg2.yy1 < 0 ? -parm.innerRadius : parm.innerRadius;
+    }
+    seg2.xx2 = parm.outerRadius * Math.cos(parm.endAngle);
+    seg2.yy2 = parm.outerRadius * Math.sin(parm.endAngle);
+    if (Math.abs(seg2.xx2) > Math.abs(seg2.yy2)) {
+      seg2.yy2 *= Math.abs(parm.outerRadius / seg2.xx2);
+      seg2.xx2 = seg2.xx2 < 0 ? -parm.outerRadius : parm.outerRadius;
+    } else {
+      seg2.xx2 *= Math.abs(parm.outerRadius / seg2.yy2);
+      seg2.yy2 = seg2.yy2 < 0 ? -parm.outerRadius : parm.outerRadius;
+    }
+    if (seg1.xx1 === -parm.innerRadius && seg2.xx1 === -parm.innerRadius) {
+      // both left side
+      if (seg2.yy1 <= seg1.yy1) {
+        seg2.face = 0;
+      } else {
+        seg2.face = 4;
+      }
+    } else if (seg1.yy1 === -parm.innerRadius && seg2.yy1 === -parm.innerRadius) {
+      // both top side
+      if (seg2.xx1 >= seg1.xx1) {
+        seg2.face = 0;
+      } else {
+        seg2.face = 4;
+      }
+    } else if (seg1.xx1 === parm.innerRadius && seg2.xx1 === parm.innerRadius) {
+      // both right side
+      if (seg2.yy1 >= seg1.yy1) {
+        seg2.face = 0;
+      } else {
+        seg2.face = 4;
+      }
+    } else if (seg1.yy1 === parm.innerRadius && seg2.yy1 === parm.innerRadius) {
+      // both bottom side
+      if (seg2.xx1 <= seg1.xx1) {
+        seg2.face = 0;
+      } else {
+        seg2.face = 4;
+      }
+    } else if (seg1.xx1 === -parm.innerRadius && seg2.yy1 === -parm.innerRadius) {
+      // left to top
+      seg2.face = 1;
+    } else if (seg1.xx1 === -parm.innerRadius && seg2.xx1 === parm.innerRadius) {
+      // left to right
+      seg2.face = 2;
+    } else if (seg1.xx1 === -parm.innerRadius && seg2.yy1 === parm.innerRadius) {
+      // left to bottom
+      seg2.face = 3;
+    } else if (seg1.yy1 === -parm.innerRadius && seg2.xx1 === parm.innerRadius) {
+      // top to right
+      seg2.face = 1;
+    } else if (seg1.yy1 === -parm.innerRadius && seg2.yy1 === parm.innerRadius) {
+      // top to bottom
+      seg2.face = 2;
+    } else if (seg1.yy1 === -parm.innerRadius && seg2.xx1 === -parm.innerRadius) {
+      // top to left
+      seg2.face = 3;
+    } else if (seg1.xx1 === parm.innerRadius && seg2.yy1 === parm.innerRadius) {
+      // right to bottom
+      seg2.face = 1;
+    } else if (seg1.xx1 === parm.innerRadius && seg2.xx1 === -parm.innerRadius) {
+      // right to left
+      seg2.face = 2;
+    } else if (seg1.xx1 === parm.innerRadius && seg2.yy1 === -parm.innerRadius) {
+      // right to top
+      seg2.face = 3;
+    } else if (seg1.yy1 === parm.innerRadius && seg2.xx1 === -parm.innerRadius) {
+      // bottom to left
+      seg2.face = 1;
+    } else if (seg1.yy1 === parm.innerRadius && seg2.yy1 === -parm.innerRadius) {
+      // bottom to top
+      seg2.face = 2;
+    } else if (seg1.yy1 === parm.innerRadius && seg2.xx1 === parm.innerRadius) {
+      // bottom to right
+      seg2.face = 3;
+    }
+    let quadR = 'M ' + seg1.xx2 + ' ' + seg1.yy2 + ' L ' + seg1.xx1 + ' ' + seg1.yy1;
+    seg1.xx1 = makeZ(seg1.xx1);
+    seg1.yy1 = makeZ(seg1.yy1);
+    seg1.xx2 = makeZ(seg1.xx2);
+    seg1.yy2 = makeZ(seg1.yy2);
+    seg2.xx1 = makeZ(seg2.xx1);
+    seg2.yy1 = makeZ(seg2.yy1);
+    seg2.xx2 = makeZ(seg2.xx2);
+    seg2.yy2 = makeZ(seg2.yy2);
+    if (seg2.face === 0) {
+      if (seg1.xx1 === -parm.innerRadius) {
+        quadR += 'L ' + -parm.innerRadius + ' ' + seg2.yy1;
+        quadR += 'L ' + -parm.outerRadius + ' ' + seg2.yy2;
+      } else if (seg1.xx1 === parm.innerRadius) {
+        quadR += 'L ' + parm.innerRadius + ' ' + seg2.yy1;
+        quadR += 'L ' + parm.outerRadius + ' ' + seg2.yy2;
+      } else if (seg1.yy1 === -parm.innerRadius) {
+        quadR += 'L ' + seg2.xx1 + ' ' + -parm.innerRadius;
+        quadR += 'L ' + seg2.xx2 + ' ' + -parm.outerRadius;
+      } else if (seg1.yy1 === parm.innerRadius) {
+        quadR += 'L ' + seg2.xx1 + ' ' + parm.innerRadius;
+        quadR += 'L ' + seg2.xx2 + ' ' + parm.outerRadius;
+      }
+    } else if (seg2.face === 1) {
+      if (seg1.xx1 === -parm.innerRadius) {
+        quadR += 'L ' + -parm.innerRadius + ' ' + -parm.innerRadius;
+        quadR += 'L ' + seg2.xx1 + ' ' + -parm.innerRadius;
+        quadR += 'L ' + seg2.xx2 + ' ' + -parm.outerRadius;
+        quadR += 'L ' + -parm.outerRadius + ' ' + -parm.outerRadius;
+      } else if (seg1.xx1 === parm.innerRadius) {
+        quadR += 'L ' + parm.innerRadius + ' ' + parm.innerRadius;
+        quadR += 'L ' + seg2.xx1 + ' ' + parm.innerRadius;
+        quadR += 'L ' + seg2.xx2 + ' ' + parm.outerRadius;
+        quadR += 'L ' + parm.outerRadius + ' ' + parm.outerRadius;
+      } else if (seg1.yy1 === -parm.innerRadius) {
+        quadR += 'L ' + parm.innerRadius + ' ' + -parm.innerRadius;
+        quadR += 'L ' + parm.innerRadius + ' ' + seg2.yy1;
+        quadR += 'L ' + parm.outerRadius + ' ' + seg2.yy2;
+        quadR += 'L ' + parm.outerRadius + ' ' + -parm.outerRadius;
+      } else if (seg1.yy1 === parm.innerRadius) {
+        quadR += 'L ' + -parm.innerRadius + ' ' + parm.innerRadius;
+        quadR += 'L ' + -parm.innerRadius + ' ' + seg2.yy1;
+        quadR += 'L ' + -parm.outerRadius + ' ' + seg2.yy2;
+        quadR += 'L ' + -parm.outerRadius + ' ' + parm.outerRadius;
+      }
+    } else if (seg2.face === 2) {
+      if (seg1.xx1 === -parm.innerRadius) {
+        quadR += 'L ' + -parm.innerRadius + ' ' + -parm.innerRadius;
+        quadR += 'L ' + parm.innerRadius + ' ' + -parm.innerRadius;
+        quadR += 'L ' + parm.innerRadius + ' ' + seg2.yy1;
+        quadR += 'L ' + parm.outerRadius + ' ' + seg2.yy2;
+        quadR += 'L ' + parm.outerRadius + ' ' + -parm.outerRadius;
+        quadR += 'L ' + -parm.outerRadius + ' ' + -parm.outerRadius;
+      } else if (seg1.xx1 === parm.innerRadius) {
+        quadR += 'L ' + parm.innerRadius + ' ' + parm.innerRadius;
+        quadR += 'L ' + -parm.innerRadius + ' ' + parm.innerRadius;
+        quadR += 'L ' + -parm.innerRadius + ' ' + seg2.yy1;
+        quadR += 'L ' + -parm.outerRadius + ' ' + seg2.yy2;
+        quadR += 'L ' + -parm.outerRadius + ' ' + parm.outerRadius;
+        quadR += 'L ' + parm.outerRadius + ' ' + parm.outerRadius;
+      } else if (seg1.yy1 === -parm.innerRadius) {
+        quadR += 'L ' + parm.innerRadius + ' ' + -parm.innerRadius;
+        quadR += 'L ' + parm.innerRadius + ' ' + parm.innerRadius;
+        quadR += 'L ' + seg2.xx1 + ' ' + parm.innerRadius;
+        quadR += 'L ' + seg2.xx2 + ' ' + parm.outerRadius;
+        quadR += 'L ' + parm.outerRadius + ' ' + parm.outerRadius;
+        quadR += 'L ' + parm.outerRadius + ' ' + -parm.outerRadius;
+      } else if (seg1.yy1 === parm.innerRadius) {
+        quadR += 'L ' + -parm.innerRadius + ' ' + parm.innerRadius;
+        quadR += 'L ' + -parm.innerRadius + ' ' + -parm.innerRadius;
+        quadR += 'L ' + seg2.xx1 + ' ' + -parm.innerRadius;
+        quadR += 'L ' + seg2.xx2 + ' ' + -parm.outerRadius;
+        quadR += 'L ' + -parm.outerRadius + ' ' + -parm.outerRadius;
+        quadR += 'L ' + -parm.outerRadius + ' ' + parm.outerRadius;
+      }
+    } else if (seg2.face === 3) {
+      if (seg1.xx1 === -parm.innerRadius) {
+        quadR += 'L ' + -parm.innerRadius + ' ' + -parm.innerRadius;
+        quadR += 'L ' + parm.innerRadius + ' ' + -parm.innerRadius;
+        quadR += 'L ' + parm.innerRadius + ' ' + parm.innerRadius;
+        quadR += 'L ' + seg2.xx1 + ' ' + parm.innerRadius;
+        quadR += 'L ' + seg2.xx2 + ' ' + parm.outerRadius;
+        quadR += 'L ' + parm.outerRadius + ' ' + parm.outerRadius;
+        quadR += 'L ' + parm.outerRadius + ' ' + -parm.outerRadius;
+        quadR += 'L ' + -parm.outerRadius + ' ' + -parm.outerRadius;
+      } else if (seg1.xx1 === parm.innerRadius) {
+        quadR += 'L ' + parm.innerRadius + ' ' + parm.innerRadius;
+        quadR += 'L ' + -parm.innerRadius + ' ' + parm.innerRadius;
+        quadR += 'L ' + -parm.innerRadius + ' ' + -parm.innerRadius;
+        quadR += 'L ' + seg2.xx1 + ' ' + -parm.innerRadius;
+        quadR += 'L ' + seg2.xx2 + ' ' + -parm.outerRadius;
+        quadR += 'L ' + -parm.outerRadius + ' ' + -parm.outerRadius;
+        quadR += 'L ' + -parm.outerRadius + ' ' + parm.outerRadius;
+        quadR += 'L ' + parm.outerRadius + ' ' + parm.outerRadius;
+      } else if (seg1.yy1 === -parm.innerRadius) {
+        quadR += 'L ' + parm.innerRadius + ' ' + -parm.innerRadius;
+        quadR += 'L ' + parm.innerRadius + ' ' + parm.innerRadius;
+        quadR += 'L ' + -parm.innerRadius + ' ' + parm.innerRadius;
+        quadR += 'L ' + -parm.innerRadius + ' ' + seg2.yy1;
+        quadR += 'L ' + -parm.outerRadius + ' ' + seg2.yy2;
+        quadR += 'L ' + -parm.outerRadius + ' ' + parm.outerRadius;
+        quadR += 'L ' + parm.outerRadius + ' ' + parm.outerRadius;
+        quadR += 'L ' + parm.outerRadius + ' ' + -parm.outerRadius;
+      } else if (seg1.yy1 === parm.innerRadius) {
+        quadR += 'L ' + -parm.innerRadius + ' ' + parm.innerRadius;
+        quadR += 'L ' + -parm.innerRadius + ' ' + -parm.innerRadius;
+        quadR += 'L ' + parm.innerRadius + ' ' + -parm.innerRadius;
+        quadR += 'L ' + parm.innerRadius + ' ' + seg2.yy1;
+        quadR += 'L ' + parm.outerRadius + ' ' + seg2.yy2;
+        quadR += 'L ' + parm.outerRadius + ' ' + -parm.outerRadius;
+        quadR += 'L ' + -parm.outerRadius + ' ' + -parm.outerRadius;
+        quadR += 'L ' + -parm.outerRadius + ' ' + parm.outerRadius;
+      }
+    } else if (seg2.face === 4) {
+      if (seg1.xx1 === -parm.innerRadius) {
+        quadR += 'L ' + -parm.innerRadius + ' ' + -parm.innerRadius;
+        quadR += 'L ' + parm.innerRadius + ' ' + -parm.innerRadius;
+        quadR += 'L ' + parm.innerRadius + ' ' + parm.innerRadius;
+        quadR += 'L ' + -parm.innerRadius + ' ' + parm.innerRadius;
+        quadR += 'L ' + -parm.innerRadius + ' ' + seg2.yy1;
+        quadR += 'L ' + -parm.outerRadius + ' ' + seg2.yy2;
+        quadR += 'L ' + -parm.outerRadius + ' ' + parm.outerRadius;
+        quadR += 'L ' + parm.outerRadius + ' ' + parm.outerRadius;
+        quadR += 'L ' + parm.outerRadius + ' ' + -parm.outerRadius;
+        quadR += 'L ' + -parm.outerRadius + ' ' + -parm.outerRadius;
+      } else if (seg1.xx1 === parm.innerRadius) {
+        quadR += 'L ' + parm.innerRadius + ' ' + parm.innerRadius;
+        quadR += 'L ' + -parm.innerRadius + ' ' + parm.innerRadius;
+        quadR += 'L ' + -parm.innerRadius + ' ' + -parm.innerRadius;
+        quadR += 'L ' + parm.innerRadius + ' ' + -parm.innerRadius;
+        quadR += 'L ' + parm.innerRadius + ' ' + seg2.yy1;
+        quadR += 'L ' + parm.outerRadius + ' ' + seg2.yy2;
+        quadR += 'L ' + parm.outerRadius + ' ' + -parm.outerRadius;
+        quadR += 'L ' + -parm.outerRadius + ' ' + -parm.outerRadius;
+        quadR += 'L ' + -parm.outerRadius + ' ' + parm.outerRadius;
+        quadR += 'L ' + parm.outerRadius + ' ' + parm.outerRadius;
+      } else if (seg1.yy1 === -parm.innerRadius) {
+        quadR += 'L ' + parm.innerRadius + ' ' + -parm.innerRadius;
+        quadR += 'L ' + parm.innerRadius + ' ' + parm.innerRadius;
+        quadR += 'L ' + -parm.innerRadius + ' ' + parm.innerRadius;
+        quadR += 'L ' + -parm.innerRadius + ' ' + -parm.innerRadius;
+        quadR += 'L ' + seg2.xx1 + ' ' + -parm.innerRadius;
+        quadR += 'L ' + seg2.xx2 + ' ' + -parm.outerRadius;
+        quadR += 'L ' + -parm.outerRadius + ' ' + -parm.outerRadius;
+        quadR += 'L ' + -parm.outerRadius + ' ' + parm.outerRadius;
+        quadR += 'L ' + parm.outerRadius + ' ' + parm.outerRadius;
+        quadR += 'L ' + parm.outerRadius + ' ' + -parm.outerRadius;
+      } else if (seg1.yy1 === parm.innerRadius) {
+        quadR += 'L ' + -parm.innerRadius + ' ' + parm.innerRadius;
+        quadR += 'L ' + -parm.innerRadius + ' ' + -parm.innerRadius;
+        quadR += 'L ' + parm.innerRadius + ' ' + -parm.innerRadius;
+        quadR += 'L ' + parm.innerRadius + ' ' + parm.innerRadius;
+        quadR += 'L ' + seg2.xx1 + ' ' + parm.innerRadius;
+        quadR += 'L ' + seg2.xx2 + ' ' + parm.outerRadius;
+        quadR += 'L ' + parm.outerRadius + ' ' + parm.outerRadius;
+        quadR += 'L ' + parm.outerRadius + ' ' + -parm.outerRadius;
+        quadR += 'L ' + -parm.outerRadius + ' ' + -parm.outerRadius;
+        quadR += 'L ' + -parm.outerRadius + ' ' + parm.outerRadius;
+      }
+    }
+    quadR += 'Z'; // Closed curve
+    return quadR;
+  }
+
   pickOutNonZeroValues(data: { alpha: number, axis: string, value: number, id: number }[][]) {
     data = this.choose2[0] === this.choose2[1] ? data : [data[this.choose2[0]], data[this.choose2[1]]];
     const displayData: { alpha: number, axis: string, value: number, id: number }[][] = [];
@@ -345,7 +622,7 @@ export class UsersComponent implements OnChanges {
         tooltip.style('left', d3.event.pageX - 50 + 'px')
           .style('top', d3.event.pageY - 70 + 'px')
           .style('display', 'inline-block')
-          .html(`<i class="fa fa-gears leafy"></i>${totals === 1 ? 'Exposure' : '&beta;'} of
+          .html(`<i class='fa fa-gears leafy'></i>${totals === 1 ? 'Exposure' : '&beta;'} of
           ${weights[Math.floor(i % weights.length)].name}<br> to
           ${fNames[Math.floor(i / weights.length)]}:<br>${d3.format('0.4f')(d)}`);
       })
@@ -379,7 +656,7 @@ export class UsersComponent implements OnChanges {
           tooltip.style('left', d3.event.pageX - 50 + 'px')
             .style('top', d3.event.pageY - 70 + 'px')
             .style('display', 'inline-block')
-            .html(`<i class="fa fa-gears leafy"></i>Total: ${fNames[i]}<br>${d3.format('0.4f')(d)}`);
+            .html(`<i class='fa fa-gears leafy'></i>Total: ${fNames[i]}<br>${d3.format('0.4f')(d)}`);
         })
         .on('mouseout', () => tooltip.style('display', 'none'))
         .transition().duration(2000).attrTween('transform', (d, i) => (t) =>
@@ -398,7 +675,7 @@ export class UsersComponent implements OnChanges {
           tooltip.style('left', d3.event.pageX - 50 + 'px')
             .style('top', d3.event.pageY - 70 + 'px')
             .style('display', 'inline-block')
-            .html(`<i class="fa fa-gears leafy"></i>Total: ${d3.format('0.4f')(sumEx)}`);
+            .html(`<i class='fa fa-gears leafy'></i>Total: ${d3.format('0.4f')(sumEx)}`);
         })
         .on('mouseout', () => tooltip.style('display', 'none'))
         .transition().duration(2000).attrTween('transform', () => (t) =>
@@ -422,7 +699,7 @@ export class UsersComponent implements OnChanges {
         tooltip.style('left', d3.event.pageX - 50 + 'px')
           .style('top', d3.event.pageY - 70 + 'px')
           .style('display', 'inline-block')
-          .html(`<i class="fa fa-gears leafy"></i>${totals === 1 ? 'Exposure' : '&beta;'} of
+          .html(`<i class='fa fa-gears leafy'></i>${totals === 1 ? 'Exposure' : '&beta;'} of
           ${weights[Math.floor(i % weights.length)].name}<br> to
           ${fNames[Math.floor(i / weights.length)]}:<br>${d3.format('0.4f')(d)}`);
       })
@@ -446,7 +723,7 @@ export class UsersComponent implements OnChanges {
           tooltip.style('left', d3.event.pageX - 50 + 'px')
             .style('top', d3.event.pageY - 70 + 'px')
             .style('display', 'inline-block')
-            .html(`<i class="fa fa-gears leafy"></i>Total: ${fNames[i]}<br>${d3.format('0.4f')(d)}`);
+            .html(`<i class='fa fa-gears leafy'></i>Total: ${fNames[i]}<br>${d3.format('0.4f')(d)}`);
         })
         .on('mouseout', () => tooltip.style('display', 'none'))
         ;
@@ -465,7 +742,7 @@ export class UsersComponent implements OnChanges {
           tooltip.style('left', d3.event.pageX - 50 + 'px')
             .style('top', d3.event.pageY - 70 + 'px')
             .style('display', 'inline-block')
-            .html(`<i class="fa fa-gears leafy"></i>Total: ${d3.format('0.4f')(sumEx)}`);
+            .html(`<i class='fa fa-gears leafy'></i>Total: ${d3.format('0.4f')(sumEx)}`);
         })
         .on('mouseout', () => tooltip.style('display', 'none'))
         ;
@@ -520,7 +797,7 @@ export class UsersComponent implements OnChanges {
       .on('mousemove', (d) => tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px')
         .style('display', 'inline-block')
-        .html(`<i class="fa fa-gears leafy"></i>${factorNames[d.i]}<br>${factorNames[d.j]}
+        .html(`<i class='fa fa-gears leafy'></i>${factorNames[d.i]}<br>${factorNames[d.j]}
         <br>correlation:${d3.format('0.4f')(d.correlation)}`))
       .on('mouseout', (d) => tooltip.style('display', 'none'))
       .transition().duration(2000).attrTween('transform', d => (t) =>
@@ -538,7 +815,7 @@ export class UsersComponent implements OnChanges {
       .on('mousemove', (d) => tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px')
         .style('display', 'inline-block')
-        .html(`<i class="fa fa-gears leafy"></i>${factorNames[d.i]}<br>${factorNames[d.j]}
+        .html(`<i class='fa fa-gears leafy'></i>${factorNames[d.i]}<br>${factorNames[d.j]}
         <br>correlation:${d3.format('0.4f')(d.correlation)}`))
       .on('mouseout', (d) => tooltip.style('display', 'none'));
     svg.selectAll('.factorLabels').select('g').data(factorNames).enter()
@@ -676,7 +953,8 @@ export class UsersComponent implements OnChanges {
       withKE: false
     }
     ]
-  }, id = 'app-users', click = (i: number, j: d3.BaseType[] | d3.ArrayLike<d3.BaseType>) => console.log('Object', j[i])) {
+  }, id = 'app-users', click = (i: number, j: d3.BaseType[] | d3.ArrayLike<d3.BaseType>) => console.log('Object', j[i]),
+    useSquare = true) {
     const Data: {
       id: number;
       type: string;
@@ -706,7 +984,8 @@ export class UsersComponent implements OnChanges {
     const margin = { top: 10, right: 10, bottom: 10, left: 10 };
     let width = w - margin.left - margin.right,
       height = h - margin.top - margin.bottom;
-    const radiusL = Math.min(width, height) / 2, radiusS = radiusL / (1 + Math.sqrt(2)), extra = Math.PI * 0.25, ARC = d3.arc();
+    const radiusL = Math.min(width, height) / 2, radiusS = radiusL / (1 + Math.sqrt(2)), extra = Math.PI * 0.25,
+      ARC = useSquare ? this.squareArc : d3.arc();
     width = radiusL * 2, height = radiusL * 2,
       w = width + margin.left + margin.right;
     h = height + margin.bottom + margin.top;
@@ -723,7 +1002,7 @@ export class UsersComponent implements OnChanges {
       .attr('height', h);
     const svg = svgBase.append('g')
       .attr('transform', `translate(${margin.left + radiusL},${margin.top + radiusL})`);
-    svg.selectAll('path.newfive').append('g').data(Data).enter()
+    svg.selectAll('path.newfive').data(Data).enter()
       .append('path')
       .attr('class', d => `newfive ${d.name}`)
       .attr('d', (d, i) => {
@@ -736,7 +1015,7 @@ export class UsersComponent implements OnChanges {
         return back;
       })
       .transition().duration(2000).ease(d3.easeCircle)
-      .attrTween('transform', d => t => {
+      .attrTween('transform', d => (t: number) => {
         const diam = radiusS * 2, t0 = (1 - t) * (1 - t), circ = -+d.id * 0.25 * t0 * Math.PI / 4 +
           t * Math.floor((+d.id - 1) / 3);
         const back = Math.floor((+d.id - 1) / 3) === 0 ?
@@ -791,7 +1070,7 @@ export class UsersComponent implements OnChanges {
         tooltip.style('left', d3.event.pageX - 5 + 'px')
           .style('top', d3.event.pageY + 7 + 'px')
           .style('display', 'inline-block')
-          .html(`<i class="fa fa-gears leafy"></i>${d.outlierStatusType}<br>${d.name}<br>${d.value}`);
+          .html(`<i class='fa fa-gears leafy'></i>${d.outlierStatusType}<br>${d.name}<br>${d.value}`);
       })
       .on('mouseout', () => tooltip.transition().duration(2).style('display', 'none'))
       .on('click', (d, i, j) => click(i, j))
@@ -1433,7 +1712,7 @@ export class UsersComponent implements OnChanges {
       .on('mousemove', (d) => tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px')
         .style('display', 'inline-block')
-        .html(`<i class="fa fa-gears leafy"></i>${d.axis}<br>weight:${d.value}`))
+        .html(`<i class='fa fa-gears leafy'></i>${d.axis}<br>weight:${d.value}`))
       .on('mouseout', (d) => tooltip.style('display', 'none'));
     // --------------------------------------------------------------------------------------------
     chart.selectAll('.bar').data(DATA).enter().append('rect')
@@ -1452,7 +1731,7 @@ export class UsersComponent implements OnChanges {
       .style('fill-opacity', 0.35)
       .on('mousemove', (d) => tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px').style('display', 'inline-block')
-        .html(`<i class="fa fa-gears leafy"></i>${d.axis}<br>weight:${d3.format('0.5f')(d.value)}<br>
+        .html(`<i class='fa fa-gears leafy'></i>${d.axis}<br>weight:${d3.format('0.5f')(d.value)}<br>
         ${d.alpha === undefined ? '' : 'alpha:' + d3.format('0.5f')(d.alpha)}`))
       .on('mouseout', (d) => tooltip.style('display', 'none'))
       .transition().duration(durationtime)
