@@ -1034,7 +1034,7 @@ export class UsersComponent implements OnChanges {
         return back;
       })
       .attrTween('d', (d, i) => tt => {
-        const ARCHh = tt < 0.95 ? d3.arc() : this.squareArc;
+        const ARCHh = tt < 0.95 ? d3.arc() : ARC;
         if (i % 3 === 0) {
           soFar = 0;
         }
@@ -1304,14 +1304,17 @@ export class UsersComponent implements OnChanges {
       gaugeplate.selectAll(`.dials${iExp}`)
         .on('mouseover', (d, iDialPart, jj) => {
           const here = d3.select(jj[iDialPart]);
-          const st = iDialPart / (dialParts.length) * (angScaleSeparate[iExp].range()[0] -
-            angScaleSeparate[iExp].range()[1]) + angScaleSeparate[iExp].range()[1];
-          const mousePos = d3.mouse(<d3.ContainerElement>(jj[iDialPart]));
-          console.log(mousePos[0], mousePos[1]);
-          console.log(here.attr('transform'));
           here
             .transition().duration(2)
             .attr('class', 'dscale choose');
+          const newVal = (iDialPart + 0.5) / (dialParts.length) * (angScaleSeparate[iExp].range()[1] -
+            angScaleSeparate[iExp].range()[0]) + angScaleSeparate[iExp].range()[0];
+          console.log(angScaleSeparate[iExp].invert(newVal));
+          const newV = angScaleSeparate[iExp].invert(newVal);
+          gaugeplate.selectAll('.newvals')
+            .text((df, iii) => {
+              return iii === iExp ? formatG(newV) : isNaN(+formatG(newVals[iii])) ? '' : formatG(newVals[iii]);
+            });
         })
         .on('click', (d, iDialPart, jj) => {
           const here = d3.select(jj[iDialPart]);
@@ -1345,6 +1348,7 @@ export class UsersComponent implements OnChanges {
         .on('mouseout', (d, iDialPart, jj) => {
           const here = d3.select(jj[iDialPart]);
           const colour = here.style('fill');
+          gaugeplate.selectAll('.newvals').text((df, iii) => isNaN(+formatG(newVals[iii])) ? '' : formatG(newVals[iii]));
           here.transition().duration(2)
             .attr('class', 'dscale');
         })
