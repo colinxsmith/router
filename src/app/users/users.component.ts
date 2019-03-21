@@ -499,7 +499,7 @@ export class UsersComponent implements OnChanges {
           data1 = this.pickOutNonZeroValues(data1);
           this.RadarChart('app-users', data1, radarChartOptions);
           data1.forEach((ddd, i: number) => {
-            const idisp = data1.length === 4 ? i : this.choose2[i];
+            const idisp = data1.length === 4 || this.getType === 'factor' ? i : this.choose2[i];
             this.stockbars(ddd, i, ww, hh, 2000, 'Weights', 'Assets');
             this.simpleDisplay(ddd);
             d3.select('app-users').append('svg').attr('width', 600).attr('height', 50).append('g').append('text')
@@ -1252,8 +1252,7 @@ export class UsersComponent implements OnChanges {
       .attr('transform', (d, i) => `translate(${mx + rad / 2 + (i % numCol) * (rad + padRow)},
       ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)})`)
       .attr('d', (d, iExp) => {
-        const cc = (rad - th * 2) * Math.cos(angScaleSeparate[iExp](d.value)),
-          ss = (rad - th * 2) * Math.sin(angScaleSeparate[iExp](d.value));
+        const angle = angScaleSeparate[iExp](d.value), cc = (rad - th * 2) * Math.cos(angle), ss = (rad - th * 2) * Math.sin(angle);
         return `M${-rad / 2} 0l0 -${th}l${rad} 0l0 ${th}Z` + `M0 0l${th / 2} 0l${cc / 2} ${-ss / 2}l-${th} 0l${-cc / 2} ${ss / 2}Z`;
       }
       );
@@ -1331,8 +1330,8 @@ export class UsersComponent implements OnChanges {
                 const oldc = old.replace(/Z m.*/, 'Z').replace(/Zm.*/, 'Z');
                 console.log(old);
                 console.log(oldc);
-                const cc = (rad - th * 2) * Math.cos(angScaleSeparate[iExp](newVals[iExp])),
-                  ss = (rad - th * 2) * Math.sin(angScaleSeparate[iExp](newVals[iExp]));
+                const angle = angScaleSeparate[iExp](newVals[iExp]), cc = (rad - th * 2) * Math.cos(angle),
+                  ss = (rad - th * 2) * Math.sin(angle);
                 return oldc + `m0 0M0 0l${th1 / 2} 0l${cc / 2} ${-ss / 2}l ${th1} 0l${-cc / 2} ${ss / 2}Z`;
               } else {
                 return old;
