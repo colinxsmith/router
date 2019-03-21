@@ -108,7 +108,6 @@ rect.weightSinglePlus {
 rect.weightSingleMinus {
     fill: rgba(231, 127, 121, 1);
 }
-
 text.meters{
     font-size: 20px;
 
@@ -247,4 +246,8 @@ text.over{
 .choose{
     fill:rgb(35, 56, 177);
     stroke:orange;
+}
+path.meters{
+    stroke:cyan;
+    fill:none;
 }

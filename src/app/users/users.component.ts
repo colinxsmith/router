@@ -1249,8 +1249,6 @@ export class UsersComponent implements OnChanges {
     gaugeplate.selectAll('.meters').select('g').data(exposures).enter()
       .append('path')
       .attr('class', 'meters')
-      .style('fill', 'none')
-      .style('stroke', 'green')
       .attr('transform', (d, i) => `translate(${mx + rad / 2 + (i % numCol) * (rad + padRow)},
       ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)})`)
       .attr('d', (d, iExp) => {
