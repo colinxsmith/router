@@ -1310,9 +1310,7 @@ export class UsersComponent implements OnChanges {
           console.log(angScaleSeparate[iExp].invert(newVal));
           const newV = angScaleSeparate[iExp].invert(newVal);
           gaugeplate.selectAll('.newvals')
-            .text((df, iii) => {
-              return iii === iExp ? formatG(newV) : isNaN(+formatG(newVals[iii])) ? '' : formatG(newVals[iii]);
-            });
+            .text((df, iii) => iii === iExp ? formatG(newV) : isNaN(+formatG(newVals[iii])) ? '' : formatG(newVals[iii]));
         })
         .on('click', (d, iDialPart, jj) => {
           const here = d3.select(jj[iDialPart]);
@@ -1324,9 +1322,7 @@ export class UsersComponent implements OnChanges {
           console.log(angScaleSeparate[iExp].invert(newVal));
           newVals[iExp] = angScaleSeparate[iExp].invert(newVal);
           gaugeplate.selectAll('.newvals')
-            .text((df, iii) => {
-              return iii === iExp ? formatG(newVals[iExp]) : isNaN(+formatG(newVals[iii])) ? '' : formatG(newVals[iii]);
-            });
+            .text((df, iii) => iii === iExp ? formatG(newVals[iExp]) : isNaN(+formatG(newVals[iii])) ? '' : formatG(newVals[iii]));
           gaugeplate.selectAll('.meters')
             .attr('d', (df, iii, jjj) => {
               const here1 = d3.select(jjj[iii]);
