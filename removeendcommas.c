@@ -37,4 +37,5 @@ int main()
         }
         ungetc(in2, stdin);
     }
+    return 0;
 }

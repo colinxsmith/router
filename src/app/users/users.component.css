@@ -2,6 +2,7 @@ text.users {
     font-size: 15px;
     fill:rgb(230, 18, 18);
     stroke: rgb(16, 192, 16);
+    text-anchor: start;
 }
 rect.users {
     fill: rgb(127, 238, 201);
@@ -130,6 +131,7 @@ text.newvals{
 text.rmessage{
     font-size: 13px;
     fill: rgb(23, 47, 128);
+    text-anchor: start;
 }
 text.correlations{
     font-size: 13px;
@@ -236,6 +238,17 @@ text.newfive{
 }
 text.over{
     font-size: 35px;
+    stroke:  rgb(156, 150, 150);
+    fill:rgb(125, 231, 148);
+}
+text.rmessage.over{
+    font-size: 19px;
+    stroke:  rgb(156, 150, 150);
+    fill:rgb(125, 231, 148);
+
+}
+text.users.over{
+    font-size: 20px;
     stroke:  rgb(156, 150, 150);
     fill:rgb(125, 231, 148);
 }

@@ -507,8 +507,8 @@ export class UsersComponent implements OnChanges {
               .attr('transform', 'translate(0,30)').attr('class', 'users')
               .text(() => `Risk: ${this.displayData[idisp].risk}, Return: ${this.displayData[idisp].return},
                 gamma: ${this.displayData[idisp].gamma}`)
-                .on('mouseover', (d, ii, jj) => d3.select(jj[ii]).classed('over', true))
-                .on('mouseout', (d, ii, jj) => d3.select(jj[ii]).classed('over', false));
+              .on('mouseover', (d, ii, jj) => d3.select(jj[ii]).classed('over', true))
+              .on('mouseout', (d, ii, jj) => d3.select(jj[ii]).classed('over', false));
           });
         } else if (this.getKey === 'newData') {
           if (this.displayData.length !== undefined) {
@@ -524,7 +524,6 @@ export class UsersComponent implements OnChanges {
             .append('text')
             .attr('transform', (d, i) => `translate(0,${20 * (i + 1)})`)
             .attr('class', 'rmessage').attr('x', 0).attr('y', 0)
-            .style('text-anchor', 'start')
             .text(d => `Risk: ${d.risk} Return: ${d.return} Return status: ${d.back}`)
             .on('mouseover', (d, ii, jj) => d3.select(jj[ii]).classed('over', true))
             .on('mouseout', (d, ii, jj) => d3.select(jj[ii]).classed('over', false));
@@ -1363,6 +1362,18 @@ export class UsersComponent implements OnChanges {
       xPos = (f: number) => xPosArray[f],
       base = d3.select('app-users').append('svg').attr('width', ww).attr('height', (nDat + 1) * 21 + 30);
     // base = d3.select('app-users').append('svg').attr('viewBox', `${0} 0 ${ww} ${(nDat + 1) * 21 + 30}`);
+    base.append('rect')
+      .attr('class', 'users')
+      .attr('width', ww - off)
+      .attr('height', 24)
+      .attr('x', 5)
+      .attr('y', 3);
+    base.append('rect')
+      .attr('class', 'users')
+      .attr('width', ww - off)
+      .attr('height', nDat * 21 + 10)
+      .attr('x', 5)
+      .attr('y', 32);
     base.append('text')
       .attr('x', 5)
       .attr('y', 23)
@@ -1370,17 +1381,15 @@ export class UsersComponent implements OnChanges {
       .call((d) => d.each((dd, i, j) => {// We have to it like this with call() rather than html() to get the tspan on IE on Windows 7
         const k = d3.select(j[i]);
         let tspan = k.text(null).append('tspan').attr('x', xPos(0)).text(keys[0]);
-        for (let kk = 1; kk < keys.length; ++kk) {
+        for (let kk = 0; kk < keys.length; ++kk) {
           tspan = k.append('tspan').attr('x', xPos(kk)).text(keys[kk]);
         }
       }))
-      .attr('class', 'users');
-    base.append('rect')
       .attr('class', 'users')
-      .attr('width', ww - off)
-      .attr('height', 24)
-      .attr('x', 5)
-      .attr('y', 3);
+      .on('mouseover', (d, ii, jj) => d3.select(jj[ii]).classed('over', true))
+      .on('mouseout', (d, ii, jj) => d3.select(jj[ii]).classed('over', false))
+      ;
+
     base.selectAll('inner').data(displayData).enter().append('text')
       .attr('x', 5)
       .attr('y', 54)
@@ -1388,17 +1397,15 @@ export class UsersComponent implements OnChanges {
       .call((d) => d.each((dd, i, j) => {// We have to it like this with call() rather than html() to get the tspan on IE on Windows 7
         const k = d3.select(j[i]);
         let tspan = k.text(null).append('tspan').attr('x', xPos(0)).text(dd[keys[0]]);
-        for (let kk = 1; kk < keys.length; ++kk) {
-          tspan = k.append('tspan').attr('x', xPos(kk)).text(keys[kk] === 'axis' ? dd[keys[kk]] : d3.format('0.2g')(dd[keys[kk]]));
+        for (let kk = 0; kk < keys.length; ++kk) {
+          tspan = k.append('tspan').attr('x', xPos(kk)).text(keys[kk] === 'axis' || keys[kk] === 'id' ? dd[keys[kk]] :
+            d3.format('0.2g')(dd[keys[kk]]));
         }
       }))
-      .attr('class', 'users');
-    base.append('rect')
       .attr('class', 'users')
-      .attr('width', ww - off)
-      .attr('height', nDat * 21 + 10)
-      .attr('x', 5)
-      .attr('y', 32);
+      .on('mouseover', (d, ii, jj) => d3.select(jj[ii]).classed('over', true))
+      .on('mouseout', (d, ii, jj) => d3.select(jj[ii]).classed('over', false));
+
   }
   RadarChart(id: string, data: { axis: string; value: number; }[][], options: {
     w: number; h: number;
