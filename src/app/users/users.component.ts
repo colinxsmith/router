@@ -506,7 +506,9 @@ export class UsersComponent implements OnChanges {
             d3.select('app-users').append('svg').attr('width', 600).attr('height', 50).append('g').append('text')
               .attr('transform', 'translate(0,30)').attr('class', 'users')
               .text(() => `Risk: ${this.displayData[idisp].risk}, Return: ${this.displayData[idisp].return},
-                gamma: ${this.displayData[idisp].gamma}`);
+                gamma: ${this.displayData[idisp].gamma}`)
+                .on('mouseover', (d, ii, jj) => d3.select(jj[ii]).classed('over', true))
+                .on('mouseout', (d, ii, jj) => d3.select(jj[ii]).classed('over', false));
           });
         } else if (this.getKey === 'newData') {
           if (this.displayData.length !== undefined) {
@@ -523,7 +525,9 @@ export class UsersComponent implements OnChanges {
             .attr('transform', (d, i) => `translate(0,${20 * (i + 1)})`)
             .attr('class', 'rmessage').attr('x', 0).attr('y', 0)
             .style('text-anchor', 'start')
-            .text(d => `Risk: ${d.risk} Return: ${d.return} Return status: ${d.back}`);
+            .text(d => `Risk: ${d.risk} Return: ${d.return} Return status: ${d.back}`)
+            .on('mouseover', (d, ii, jj) => d3.select(jj[ii]).classed('over', true))
+            .on('mouseout', (d, ii, jj) => d3.select(jj[ii]).classed('over', false));
           const FC: number[] = this.displayData[0].FC;
           const factorsOff = this.displayData.length === 2 ? this.displayData[1].factors : this.displayData[0].factors;
           const svgFactorX = this.factorX(factorsOff, 200);
