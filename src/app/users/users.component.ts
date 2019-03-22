@@ -20,6 +20,7 @@ export class UsersComponent implements OnChanges {
   plotLabels = { 'Low Risk': 1, 'High Risk': 2, 'Low Medium Risk': 3, 'High Medium Risk': 4 };
   choose2 = [0, 0];
   dbKeyData = ['radarData', 'OPT', 'factorX'].reverse();
+  tooltip = d3.select('app-users').append('g').attr('class', 'toolTip');
   optType: string[];
   @Input() getType = '';
   @Input() nStocks: number;
@@ -561,8 +562,7 @@ export class UsersComponent implements OnChanges {
   matrixFLorFX(dataIndex: number, weights: { w: number, name: string }[],
     factorBetas: number[], fNames: string[], totals = 0, w = 960, h = 960, id = 'app-users') {
     const nRow = weights.length + totals, nfac = factorBetas.length / weights.length, nCol = nfac + totals,
-      margin = { top: 250, right: 10, bottom: 10, left: 100 },
-      tooltip = d3.select(id).append('g').attr('class', 'toolTip');
+      margin = { top: 250, right: 10, bottom: 10, left: 100 };
     let width = w - margin.left - margin.right,
       height = h - margin.top - margin.bottom;
     const spacer = 10, rotateAngle = -45,
@@ -619,14 +619,14 @@ export class UsersComponent implements OnChanges {
       .attr('cy', Side / 2)
       .attr('r', d => d === 0 ? 0 : radScale(Math.abs(d)))
       .on('mousemove', (d, i) => {
-        tooltip.style('left', d3.event.pageX - 50 + 'px')
+        this.tooltip.style('left', d3.event.pageX - 50 + 'px')
           .style('top', d3.event.pageY - 70 + 'px')
           .style('display', 'inline-block')
           .html(`<i class='fa fa-gears leafy'></i>${totals === 1 ? 'Exposure' : '&beta;'} of
           ${weights[Math.floor(i % weights.length)].name}<br> to
           ${fNames[Math.floor(i / weights.length)]}:<br>${d3.format('0.4f')(d)}`);
       })
-      .on('mouseout', () => tooltip.style('display', 'none'))
+      .on('mouseout', () => this.tooltip.style('display', 'none'))
       .transition().duration(2000).attrTween('transform', (d, i) => (t) => {
         const x = Math.floor(i / weights.length) * Side;
         const y = Math.floor(i % weights.length) * Side;
@@ -653,12 +653,12 @@ export class UsersComponent implements OnChanges {
         .attr('height', Side)
         .attr('width', Side)
         .on('mousemove', (d, i) => {
-          tooltip.style('left', d3.event.pageX - 50 + 'px')
+          this.tooltip.style('left', d3.event.pageX - 50 + 'px')
             .style('top', d3.event.pageY - 70 + 'px')
             .style('display', 'inline-block')
             .html(`<i class='fa fa-gears leafy'></i>Total: ${fNames[i]}<br>${d3.format('0.4f')(d)}`);
         })
-        .on('mouseout', () => tooltip.style('display', 'none'))
+        .on('mouseout', () => this.tooltip.style('display', 'none'))
         .transition().duration(2000).attrTween('transform', (d, i) => (t) =>
           `translate(${i * Side},${t * Math.floor(weights.length) * Side})`)
         ;
@@ -672,12 +672,12 @@ export class UsersComponent implements OnChanges {
         .attr('height', Side)
         .attr('width', Side)
         .on('mousemove', (d, i) => {
-          tooltip.style('left', d3.event.pageX - 50 + 'px')
+          this.tooltip.style('left', d3.event.pageX - 50 + 'px')
             .style('top', d3.event.pageY - 70 + 'px')
             .style('display', 'inline-block')
             .html(`<i class='fa fa-gears leafy'></i>Total: ${d3.format('0.4f')(sumEx)}`);
         })
-        .on('mouseout', () => tooltip.style('display', 'none'))
+        .on('mouseout', () => this.tooltip.style('display', 'none'))
         .transition().duration(2000).attrTween('transform', () => (t) =>
           `translate(${t * nfac * Side},${t * Math.floor(weights.length) * Side})`)
         ;
@@ -696,14 +696,14 @@ export class UsersComponent implements OnChanges {
       })
       .text(d => d === 0 ? '0' : d3.format('0.2f')(d))
       .on('mousemove', (d, i) => {
-        tooltip.style('left', d3.event.pageX - 50 + 'px')
+        this.tooltip.style('left', d3.event.pageX - 50 + 'px')
           .style('top', d3.event.pageY - 70 + 'px')
           .style('display', 'inline-block')
           .html(`<i class='fa fa-gears leafy'></i>${totals === 1 ? 'Exposure' : '&beta;'} of
           ${weights[Math.floor(i % weights.length)].name}<br> to
           ${fNames[Math.floor(i / weights.length)]}:<br>${d3.format('0.4f')(d)}`);
       })
-      .on('mouseout', () => tooltip.style('display', 'none'))
+      .on('mouseout', () => this.tooltip.style('display', 'none'))
       ;
     if (totals) {
       svg.selectAll('.fbetas').select('g').data(totalsCol).enter()
@@ -720,12 +720,12 @@ export class UsersComponent implements OnChanges {
         })
         .text(d => d3.format('0.2f')(d))
         .on('mousemove', (d, i) => {
-          tooltip.style('left', d3.event.pageX - 50 + 'px')
+          this.tooltip.style('left', d3.event.pageX - 50 + 'px')
             .style('top', d3.event.pageY - 70 + 'px')
             .style('display', 'inline-block')
             .html(`<i class='fa fa-gears leafy'></i>Total: ${fNames[i]}<br>${d3.format('0.4f')(d)}`);
         })
-        .on('mouseout', () => tooltip.style('display', 'none'))
+        .on('mouseout', () => this.tooltip.style('display', 'none'))
         ;
       svg.append('text')
         .attr('class', 'fbetas')
@@ -739,12 +739,12 @@ export class UsersComponent implements OnChanges {
         })
         .text(d3.format('0.2f')(sumEx))
         .on('mousemove', (d, i) => {
-          tooltip.style('left', d3.event.pageX - 50 + 'px')
+          this.tooltip.style('left', d3.event.pageX - 50 + 'px')
             .style('top', d3.event.pageY - 70 + 'px')
             .style('display', 'inline-block')
             .html(`<i class='fa fa-gears leafy'></i>Total: ${d3.format('0.4f')(sumEx)}`);
         })
-        .on('mouseout', () => tooltip.style('display', 'none'))
+        .on('mouseout', () => this.tooltip.style('display', 'none'))
         ;
 
     }
@@ -769,8 +769,7 @@ export class UsersComponent implements OnChanges {
         }
       }
     }
-    const margin = { top: 90, right: 140, bottom: 10, left: 10 },
-      tooltip = d3.select(id).append('g').attr('class', 'toolTip');
+    const margin = { top: 90, right: 140, bottom: 10, left: 10 };
     let width = w - margin.left - margin.right,
       height = h - margin.top - margin.bottom;
     const spacer = 10, rotateAngle = -45,
@@ -794,12 +793,12 @@ export class UsersComponent implements OnChanges {
       .attr('class', d => `correlations ${d.correlation > 0 ? 'pos' : 'neg'}`)
       .attr('transform', d => `translate(${d.i * Side},${d.j * Side})`)
       .attr('d', d => d.i === d.j ? `M0 0l${Side} 0l0 ${Side}Z` : `M0 0l${Side} 0l0 ${Side}l${-Side} 0Z`)
-      .on('mousemove', (d) => tooltip.style('left', d3.event.pageX - 50 + 'px')
+      .on('mousemove', (d) => this.tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px')
         .style('display', 'inline-block')
         .html(`<i class='fa fa-gears leafy'></i>${factorNames[d.i]}<br>${factorNames[d.j]}
         <br>correlation:${d3.format('0.4f')(d.correlation)}`))
-      .on('mouseout', (d) => tooltip.style('display', 'none'))
+      .on('mouseout', (d) => this.tooltip.style('display', 'none'))
       .transition().duration(2000).attrTween('transform', d => (t) =>
         `translate(${(Math.sin(5 * (1 - t)) * (d.j) + t * d.i) * Side},
         ${(Math.sin(3 * (1 - t)) * (d.i) + t * d.j) * Side}), rotate(${(1 - t) * 45 + t * 360})`)
@@ -812,12 +811,12 @@ export class UsersComponent implements OnChanges {
       .attr('transform', d => `translate(${d.i * Side + squareSide / 2},${d.j * Side + squareSide / 2}),rotate(${rotateAngle})`)
       .attr('x', spacer / 2 + (-squareSide / 2) * (Math.cos(Math.PI / 180 * rotateAngle)))
       .attr('y', spacer / 2 + (-squareSide / 2 + width / factorNames.length / 4) * (Math.sin(Math.PI / 180 * rotateAngle)))
-      .on('mousemove', (d) => tooltip.style('left', d3.event.pageX - 50 + 'px')
+      .on('mousemove', (d) => this.tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px')
         .style('display', 'inline-block')
         .html(`<i class='fa fa-gears leafy'></i>${factorNames[d.i]}<br>${factorNames[d.j]}
         <br>correlation:${d3.format('0.4f')(d.correlation)}`))
-      .on('mouseout', (d) => tooltip.style('display', 'none'));
+      .on('mouseout', (d) => this.tooltip.style('display', 'none'));
     svg.selectAll('.factorLabels').select('g').data(factorNames).enter()
       .append('text')
       .attr('transform', (d, i) => `translate(${i * Side + Side / 2}, ${-spacer}),rotate(-75)`)
@@ -963,8 +962,7 @@ export class UsersComponent implements OnChanges {
       outlierStatusType: string;
       withKE: boolean;
       total: number;
-    }[] = [],
-      tooltip = d3.select(id).append('g').attr('class', 'toolTip');
+    }[] = [];
     kevData.monitorFlagCategory.forEach(d => {
       const p: any = d;
       p.total = 0;
@@ -1086,12 +1084,12 @@ export class UsersComponent implements OnChanges {
       .on('mousemove', (dd, i, j) => {
         const here = d3.select(j[i]);
         const d = Data[i];
-        tooltip.style('left', d3.event.pageX - 5 + 'px')
+        this.tooltip.style('left', d3.event.pageX - 5 + 'px')
           .style('top', d3.event.pageY + 7 + 'px')
           .style('display', 'inline-block')
           .html(`<i class='fa fa-gears leafy'></i>${d.outlierStatusType}<br>${d.name}<br>${d.value}`);
       })
-      .on('mouseout', () => tooltip.transition().duration(2).style('display', 'none'))
+      .on('mouseout', () => this.tooltip.transition().duration(2).style('display', 'none'))
       .on('click', (d, i, j) => click(i, j))
       ;
 
@@ -1698,7 +1696,6 @@ export class UsersComponent implements OnChanges {
       , rim = 5 * scaleAll
       , width = ww - margin.left - margin.right
       , height = hh - margin.top - margin.bottom
-      , tooltip = d3.select('app-users').append('g').attr('class', 'toolTip')
       , x = d3.scaleBand().rangeRound([0, bandfiddle * width]).paddingInner(0.1)
       , xx = d3.scaleBand().rangeRound([0, width]).paddingInner(0.1)
       , y = d3.scaleLinear<number, number>().range([height, 0])
@@ -1725,11 +1722,11 @@ export class UsersComponent implements OnChanges {
       .attr('x', (d) => x(d.axis) / bandfiddle - rim)
       .attr('height', (d) => rim + (d.value <= 0 ? y(d.value) - y(0) : y(0) - y(d.value)))
       .attr('y', (d) => (d.value <= 0 ? y(0) : y(d.value) - rim))
-      .on('mousemove', (d) => tooltip.style('left', d3.event.pageX - 50 + 'px')
+      .on('mousemove', (d) => this.tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px')
         .style('display', 'inline-block')
         .html(`<i class='fa fa-gears leafy'></i>${d.axis}<br>weight:${d.value}`))
-      .on('mouseout', (d) => tooltip.style('display', 'none'));
+      .on('mouseout', (d) => this.tooltip.style('display', 'none'));
     // --------------------------------------------------------------------------------------------
     chart.selectAll('.bar').data(DATA).enter().append('rect')
       .attr('width', x.bandwidth() / bandfiddle)
@@ -1745,11 +1742,11 @@ export class UsersComponent implements OnChanges {
       .attr('class', (d) => d.value > 0 ? 'weightSinglePlus' : 'weightSingleMinus')
       .attr('picId', dataIndex)
       .style('fill-opacity', 0.35)
-      .on('mousemove', (d) => tooltip.style('left', d3.event.pageX - 50 + 'px')
+      .on('mousemove', (d) => this.tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px').style('display', 'inline-block')
         .html(`<i class='fa fa-gears leafy'></i>${d.axis}<br>weight:${d3.format('0.5f')(d.value)}<br>
         ${d.alpha === undefined ? '' : 'alpha:' + d3.format('0.5f')(d.alpha)}`))
-      .on('mouseout', (d) => tooltip.style('display', 'none'))
+      .on('mouseout', (d) => this.tooltip.style('display', 'none'))
       .transition().duration(durationtime)
       .attr('height', (d) => d.value <= 0 ? y(d.value) - y(0) : y(0) - y(d.value))
       .attr('y', (d) => d.value <= 0 ? y(0) : y(d.value));
