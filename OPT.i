@@ -50,7 +50,7 @@
 
 %};
 
-%typemap(in) double*,int*,unsigned long*,size_t*,dimen*,vector
+%typemap(javascript,in) double*,int*,unsigned long*,size_t*,dimen*,vector
 {
     $1 = 0;
     if($input->IsArray())
@@ -64,7 +64,7 @@
         }
     }
 }
-%typemap(argout) char**
+%typemap(javascript,argout) char**
 {
     if($1 && $input->IsArray()) {
         v8::Handle<v8::Array> arr= v8::Handle<v8::Array>::Cast($input);
@@ -73,7 +73,7 @@
         }
     }
 }
-%typemap(in) char**
+%typemap(javascript,in) char**
 {
     $1 = 0;
 
@@ -97,7 +97,7 @@
         }
     }
 }
-%typemap(argout) double*,vector
+%typemap(javascript,argout) double*,vector
 {
     if($1 && $input->IsArray()) {
         v8::Handle<v8::Array> arr= v8::Handle<v8::Array>::Cast($input);
@@ -106,7 +106,7 @@
         }
     }
 }
-%typemap(argout) int*,unsigned long*,size_t*,dimen*
+%typemap(javascript,argout) int*,unsigned long*,size_t*,dimen*
 {
     if($1 && $input->IsArray()) {
         v8::Handle<v8::Array> arr= v8::Handle<v8::Array>::Cast($input);
@@ -115,11 +115,11 @@
         }
     }
 }
-%typemap(freearg) double*,char*,int*,unsigned long*,vector,size_t*,dimen*
+%typemap(javascript,freearg) double*,char*,int*,unsigned long*,vector,size_t*,dimen*
 {
    if($1 && $input->IsArray()) {delete[] $1;}
 }
-%typemap(freearg) char**
+%typemap(javascript,freearg) char**
 {
     if($1 && $input->IsArray())
     {
@@ -132,7 +132,7 @@
         delete[] $1;
     }
 }
-%typemap(in,numinputs=0) char*asetup
+%typemap(javascript,in,numinputs=0) char*asetup
 {
     $1=new char[500];
 }
