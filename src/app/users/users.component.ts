@@ -564,7 +564,6 @@ export class UsersComponent implements OnChanges {
                 const kkk = d3.select(jjj[iii]);
                 if (kkk.attr('lineindex') === here.attr('lineindex')) {
                   kkk.classed('over', true);
-                  here.classed('over', true);
                 }
               });
             } else {
@@ -579,7 +578,6 @@ export class UsersComponent implements OnChanges {
                 const kkk = d3.select(jjj[iii]);
                 if (kkk.attr('lineindex') === here.attr('lineindex')) {
                   kkk.classed('over', false);
-                  here.classed('over', false);
                 }
               });
             } else {
