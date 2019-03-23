@@ -506,9 +506,7 @@ export class UsersComponent implements OnChanges {
             d3.select('app-users').append('svg').attr('width', 600).attr('height', 50).append('g').append('text')
               .attr('transform', 'translate(0,30)').attr('class', 'users')
               .text(() => `Risk: ${this.displayData[idisp].risk}, Return: ${this.displayData[idisp].return},
-                gamma: ${this.displayData[idisp].gamma}`)
-              .on('mouseover', (d, ii, jj) => d3.select(jj[ii]).classed('over', true))
-              .on('mouseout', (d, ii, jj) => d3.select(jj[ii]).classed('over', false));
+                gamma: ${this.displayData[idisp].gamma}`);
           });
         } else if (this.getKey === 'newData') {
           if (this.displayData.length !== undefined) {
@@ -557,6 +555,37 @@ export class UsersComponent implements OnChanges {
           });
           this.fiveCircles();
         }
+        d3.selectAll('text.users')
+          .on('mouseover', (d, ii, jj) => {
+            const here = d3.select(jj[ii]);
+            if (here.attr('lineindex') !== null) {
+              const test = d3.selectAll('text.users');
+              test.each((kk, iii, jjj) => {
+                const kkk = d3.select(jjj[iii]);
+                if (kkk.attr('lineindex') === here.attr('lineindex')) {
+                  kkk.classed('over', true);
+                  here.classed('over', true);
+                }
+              });
+            } else {
+              here.classed('over', true);
+            }
+          })
+          .on('mouseout', (d, ii, jj) => {
+            const here = d3.select(jj[ii]);
+            if (here.attr('lineindex') !== null) {
+              const test = d3.selectAll('text.users');
+              test.each((kk, iii, jjj) => {
+                const kkk = d3.select(jjj[iii]);
+                if (kkk.attr('lineindex') === here.attr('lineindex')) {
+                  kkk.classed('over', false);
+                  here.classed('over', false);
+                }
+              });
+            } else {
+              here.classed('over', false);
+            }
+          });
       }, res => {
         console.log(res);
       });
@@ -1386,14 +1415,13 @@ export class UsersComponent implements OnChanges {
         }
       }))
       .attr('class', 'users')
-      .on('mouseover', (d, ii, jj) => d3.select(jj[ii]).classed('over', true))
-      .on('mouseout', (d, ii, jj) => d3.select(jj[ii]).classed('over', false))
       ;
 
     base.selectAll('inner').data(displayData).enter().append('text')
       .attr('x', 5)
       .attr('y', 54)
       .attr('transform', (d, i) => `translate(${off},${i * 21})`)
+      .attr('lineindex', d => d['axis'])
       .call((d) => d.each((dd, i, j) => {// We have to it like this with call() rather than html() to get the tspan on IE on Windows 7
         const k = d3.select(j[i]);
         let tspan = k.text(null).append('tspan').attr('x', xPos(0)).text(dd[keys[0]]);
@@ -1402,9 +1430,7 @@ export class UsersComponent implements OnChanges {
             d3.format('0.2g')(dd[keys[kk]]));
         }
       }))
-      .attr('class', 'users')
-      .on('mouseover', (d, ii, jj) => d3.select(jj[ii]).classed('over', true))
-      .on('mouseout', (d, ii, jj) => d3.select(jj[ii]).classed('over', false));
+      .attr('class', 'users');
 
   }
   RadarChart(id: string, data: { axis: string; value: number; }[][], options: {
