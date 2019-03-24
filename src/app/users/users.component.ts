@@ -1405,7 +1405,7 @@ export class UsersComponent implements OnChanges {
       .attr('x', 5)
       .attr('y', 23)
       .attr('transform', `translate(${off},${0})`)
-      .call((d) => d.each((dd, i, j) => {// We have to it like this with call() rather than html() to get the tspan on IE on Windows 7
+      .call((d) => d.each((dd, i, j) => {// We have to do it like this with call() rather than html() to get the tspan on IE on Windows 7
         const k = d3.select(j[i]);
         let tspan = k.text(null).append('tspan').attr('x', xPos(0)).text(keys[0]);
         for (let kk = 0; kk < keys.length; ++kk) {
@@ -1420,7 +1420,7 @@ export class UsersComponent implements OnChanges {
       .attr('y', 54)
       .attr('transform', (d, i) => `translate(${off},${i * 21})`)
       .attr('lineindex', d => d['axis'])
-      .call((d) => d.each((dd, i, j) => {// We have to it like this with call() rather than html() to get the tspan on IE on Windows 7
+      .call((d) => d.each((dd, i, j) => {// We have to do it like this with call() rather than html() to get the tspan on IE on Windows 7
         const k = d3.select(j[i]);
         let tspan = k.text(null).append('tspan').attr('x', xPos(0)).text(dd[keys[0]]);
         for (let kk = 0; kk < keys.length; ++kk) {
@@ -1679,8 +1679,8 @@ export class UsersComponent implements OnChanges {
       .attr('class', 'tooltipRadar')
       .style('opacity', 0);
   }
-  wrapFunction = (text1, width: number, lineHeight: number) =>  // Adapted from http://bl.ocks.org/mbostock/7555321
-    text1.each((kk, i, j) => {
+  wrapFunction = (text1: any, width: number, lineHeight: number) =>  // Adapted from http://bl.ocks.org/mbostock/7555321
+    text1.each((_kk, i, j) => {
       const text = d3.select(j[i]),
         words = text.text().split(/\s+/).reverse(),
         y = text.attr('y'),
