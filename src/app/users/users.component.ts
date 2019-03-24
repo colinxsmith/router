@@ -555,11 +555,11 @@ export class UsersComponent implements OnChanges {
           });
           this.fiveCircles();
         }
-        d3.selectAll('text.users')
+        d3.select('app-users').selectAll('text.users')
           .on('mouseover', (d, ii, jj) => {
             const here = d3.select(jj[ii]);
             if (here.attr('lineindex') !== null) {
-              const test = d3.selectAll('text.users');
+              const test = d3.select('app-users').selectAll('text.users');
               test.each((kk, iii, jjj) => {
                 const kkk = d3.select(jjj[iii]);
                 if (kkk.attr('lineindex') === here.attr('lineindex')) {
@@ -573,7 +573,7 @@ export class UsersComponent implements OnChanges {
           .on('mouseout', (d, ii, jj) => {
             const here = d3.select(jj[ii]);
             if (here.attr('lineindex') !== null) {
-              const test = d3.selectAll('text.users');
+              const test = d3.select('app-users').selectAll('text.users');
               test.each((kk, iii, jjj) => {
                 const kkk = d3.select(jjj[iii]);
                 if (kkk.attr('lineindex') === here.attr('lineindex')) {
