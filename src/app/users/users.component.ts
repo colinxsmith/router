@@ -1407,9 +1407,8 @@ export class UsersComponent implements OnChanges {
       .attr('transform', `translate(${off},${0})`)
       .call((d) => d.each((dd, i, j) => {// We have to do it like this with call() rather than html() to get the tspan on IE on Windows 7
         const k = d3.select(j[i]);
-        let tspan = k.text(null).append('tspan').attr('x', xPos(0)).text(keys[0]);
         for (let kk = 0; kk < keys.length; ++kk) {
-          tspan = k.append('tspan').attr('x', xPos(kk)).text(keys[kk]);
+          k.append('tspan').attr('x', xPos(kk)).text(keys[kk]);
         }
       }))
       .attr('class', 'users')
@@ -1422,14 +1421,23 @@ export class UsersComponent implements OnChanges {
       .attr('lineindex', d => d['axis'])
       .call((d) => d.each((dd, i, j) => {// We have to do it like this with call() rather than html() to get the tspan on IE on Windows 7
         const k = d3.select(j[i]);
-        let tspan = k.text(null).append('tspan').attr('x', xPos(0)).text(dd[keys[0]]);
         for (let kk = 0; kk < keys.length; ++kk) {
-          tspan = k.append('tspan').attr('x', xPos(kk)).text(keys[kk] === 'axis' || keys[kk] === 'id' ? dd[keys[kk]] :
+          k.append('tspan').attr('x', xPos(kk)).text(keys[kk] === 'axis' || keys[kk] === 'id' ? dd[keys[kk]] :
             d3.format('0.2g')(dd[keys[kk]]));
         }
       }))
       .attr('class', 'users');
-
+    base.selectAll('tspan') // This is a crude way to change table entries
+      .on('click', (d, iii, jjj) => {
+        const here = d3.select(jjj[iii]), inputText = d3.select('app-users').insert('input')
+          .attr('type', 'text')
+          .attr('size', 4)
+          .attr('value', here.text())
+          .on('change', () => {
+            here.text(inputText.node().value);
+            inputText.remove();
+          });
+      });
   }
   RadarChart(id: string, data: { axis: string; value: number; }[][], options: {
     w: number; h: number;
