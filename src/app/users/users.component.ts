@@ -1350,47 +1350,35 @@ export class UsersComponent implements OnChanges {
           newVals[iExp] = angScaleSeparate[iExp].invert(newVal);
           const refineInput = d3.select('app-users').insert('input')
             .attr('type', 'text')
+            .attr('id', 'newhandsfield')
             .attr('value', (newVals[iExp]))
             .on('change', () => {
               newVals[iExp] = +refineInput.node().value;
               newVal = angScaleSeparate[iExp](newVals[iExp]);
-              refineInput.remove();
-              gaugeplate.selectAll('.newvals')
-                .text((df, iii) => iii === iExp ? formatG(newVals[iExp]) : isNaN(+formatG(newVals[iii])) ? '' : formatG(newVals[iii]));
-              gaugeplate.selectAll('.meters')
-                .attr('d', (df, iii, jjj) => {
-                  const here1 = d3.select(jjj[iii]);
-                  const old = here1.attr('d'), th1 = th / 10;
-                  if (iii === iExp) {
-                    const oldc = old.replace(/Z m.*/, 'Z').replace(/Zm.*/, 'Z');
-                    console.log(old);
-                    console.log(oldc);
-                    const angle = angScaleSeparate[iExp](newVals[iExp]), cc = (rad - th * 2) * Math.cos(angle),
-                      ss = (rad - th * 2) * Math.sin(angle);
-                    return oldc + `m0 0M0 0l${th1 / 2} 0l${cc / 2} ${-ss / 2}l ${th1} 0l${-cc / 2} ${ss / 2}Z`;
-                  } else {
-                    return old;
-                  }
-                });
+              d3.selectAll('#newhandsfield').remove();
+              drawWantedPart();
             })
             ;
-          gaugeplate.selectAll('.newvals')
-            .text((df, iii) => iii === iExp ? formatG(newVals[iExp]) : isNaN(+formatG(newVals[iii])) ? '' : formatG(newVals[iii]));
-          gaugeplate.selectAll('.meters')
-            .attr('d', (df, iii, jjj) => {
-              const here1 = d3.select(jjj[iii]);
-              const old = here1.attr('d'), th1 = th / 10;
-              if (iii === iExp) {
-                const oldc = old.replace(/Z m.*/, 'Z').replace(/Zm.*/, 'Z');
-                console.log(old);
-                console.log(oldc);
-                const angle = angScaleSeparate[iExp](newVals[iExp]), cc = (rad - th * 2) * Math.cos(angle),
-                  ss = (rad - th * 2) * Math.sin(angle);
-                return oldc + `m0 0M0 0l${th1 / 2} 0l${cc / 2} ${-ss / 2}l ${th1} 0l${-cc / 2} ${ss / 2}Z`;
-              } else {
-                return old;
-              }
-            });
+          const drawWantedPart = () => {
+            gaugeplate.selectAll('.newvals')
+              .text((df, iii) => iii === iExp ? formatG(newVals[iExp]) : isNaN(+formatG(newVals[iii])) ? '' : formatG(newVals[iii]));
+            gaugeplate.selectAll('.meters')
+              .attr('d', (df, iii, jjj) => {
+                const here1 = d3.select(jjj[iii]);
+                const old = here1.attr('d'), th1 = th / 10;
+                if (iii === iExp) {
+                  const oldc = old.replace(/Z m.*/, 'Z').replace(/Zm.*/, 'Z');
+                  console.log(old);
+                  console.log(oldc);
+                  const angle = angScaleSeparate[iExp](newVals[iExp]), cc = (rad - th * 2) * Math.cos(angle),
+                    ss = (rad - th * 2) * Math.sin(angle);
+                  return oldc + `m0 0M0 0l${th1 / 2} 0l${cc / 2} ${-ss / 2}l ${th1} 0l${-cc / 2} ${ss / 2}Z`;
+                } else {
+                  return old;
+                }
+              });
+          };
+          drawWantedPart();
         })
         .on('mouseout', (d, iDialPart, jj) => {
           const here = d3.select(jj[iDialPart]);
