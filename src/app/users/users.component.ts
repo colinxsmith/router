@@ -1344,10 +1344,36 @@ export class UsersComponent implements OnChanges {
           here
             .transition().duration(2)
             .attr('class', 'dscale choose');
-          const newVal = (iDialPart + 0.5) / (dialParts.length) * (angScaleSeparate[iExp].range()[1] -
+          let newVal = (iDialPart + 0.5) / (dialParts.length) * (angScaleSeparate[iExp].range()[1] -
             angScaleSeparate[iExp].range()[0]) + angScaleSeparate[iExp].range()[0];
           console.log(angScaleSeparate[iExp].invert(newVal));
           newVals[iExp] = angScaleSeparate[iExp].invert(newVal);
+          const refineInput = d3.select('app-users').insert('input')
+            .attr('type', 'text')
+            .attr('value', (newVals[iExp]))
+            .on('change', () => {
+              newVals[iExp] = +refineInput.node().value;
+              newVal = angScaleSeparate[iExp](newVals[iExp]);
+              refineInput.remove();
+              gaugeplate.selectAll('.newvals')
+                .text((df, iii) => iii === iExp ? formatG(newVals[iExp]) : isNaN(+formatG(newVals[iii])) ? '' : formatG(newVals[iii]));
+              gaugeplate.selectAll('.meters')
+                .attr('d', (df, iii, jjj) => {
+                  const here1 = d3.select(jjj[iii]);
+                  const old = here1.attr('d'), th1 = th / 10;
+                  if (iii === iExp) {
+                    const oldc = old.replace(/Z m.*/, 'Z').replace(/Zm.*/, 'Z');
+                    console.log(old);
+                    console.log(oldc);
+                    const angle = angScaleSeparate[iExp](newVals[iExp]), cc = (rad - th * 2) * Math.cos(angle),
+                      ss = (rad - th * 2) * Math.sin(angle);
+                    return oldc + `m0 0M0 0l${th1 / 2} 0l${cc / 2} ${-ss / 2}l ${th1} 0l${-cc / 2} ${ss / 2}Z`;
+                  } else {
+                    return old;
+                  }
+                });
+            })
+            ;
           gaugeplate.selectAll('.newvals')
             .text((df, iii) => iii === iExp ? formatG(newVals[iExp]) : isNaN(+formatG(newVals[iii])) ? '' : formatG(newVals[iii]));
           gaugeplate.selectAll('.meters')
@@ -1428,14 +1454,15 @@ export class UsersComponent implements OnChanges {
       }))
       .attr('class', 'users');
     base.selectAll('tspan') // This is a crude way to change table entries
-      .on('click', (d, iii, jjj) => {const forNewText = d3.select('app-users').insert('input')
-        .attr('type', 'text')
-        .attr('size', '4px')
-        .attr('value', (<SVGTSpanElement>jjj[iii]).textContent)
-        .on('change', (dk, i, j) => {
-          (<SVGTSpanElement>jjj[iii]).textContent = j[i].value;
-          forNewText.remove();
-        });
+      .on('click', (d, iii, jjj) => {
+        const forNewText = d3.select('app-users').insert('input')
+          .attr('type', 'text')
+          .attr('size', '4px')
+          .attr('value', (<SVGTSpanElement>jjj[iii]).textContent)
+          .on('change', (dk, i, j) => {
+            (<SVGTSpanElement>jjj[iii]).textContent = j[i].value;
+            forNewText.remove();
+          });
       })
       ;
   }
