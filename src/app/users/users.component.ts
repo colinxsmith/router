@@ -1428,15 +1428,15 @@ export class UsersComponent implements OnChanges {
       }))
       .attr('class', 'users');
     base.selectAll('tspan') // This is a crude way to change table entries
-      .on('click', (d, iii, jjj) => d3.select('app-users').insert('input')
+      .on('click', (d, iii, jjj) => {const forNewText = d3.select('app-users').insert('input')
         .attr('type', 'text')
         .attr('size', '4px')
         .attr('value', (<SVGTSpanElement>jjj[iii]).textContent)
         .on('change', (dk, i, j) => {
-          (<SVGTSpanElement>jjj[iii]).textContent = (j[i]).value;
-          (j[i]).remove();
-        })
-      )
+          (<SVGTSpanElement>jjj[iii]).textContent = j[i].value;
+          forNewText.remove();
+        });
+      })
       ;
   }
   RadarChart(id: string, data: { axis: string; value: number; }[][], options: {
