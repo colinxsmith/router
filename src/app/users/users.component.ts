@@ -400,7 +400,7 @@ export class UsersComponent implements OnChanges {
   }
   chooseData(dd: string, joinLinear = false) {
     d3.select('app-users').selectAll('svg').remove();
-
+    d3.selectAll('#newhandsfield').remove();
     this.getKey = dd;
     /*    this.userService.postResult().subscribe(res => {
           console.log(res);
@@ -538,7 +538,7 @@ export class UsersComponent implements OnChanges {
               levels: 4, roundStrokes: !joinLinear, colour: radarBlobColour
             };
           if (this.displayData.length === 2) {
-            svgFactorX.remove();
+          //  svgFactorX.remove();
           }
           this.RadarChart('app-users', this.pickOutNonZeroValues(this.displayData.map(d => d.factors)), options);
           this.correlationMatrix(FC, this.displayData[0].factors.map(d => d.axis), 700);
