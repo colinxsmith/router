@@ -1433,8 +1433,8 @@ export class UsersComponent implements OnChanges {
           .attr('type', 'text')
           .attr('size', 4)
           .attr('value', here.text())
-          .on('change', () => {
-            here.text(inputText.node().value);
+          .on('change', (dk, i, j) => {
+            here.text((j[i]).value);
             inputText.remove();
           });
       });
