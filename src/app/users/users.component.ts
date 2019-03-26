@@ -538,7 +538,7 @@ export class UsersComponent implements OnChanges {
               levels: 4, roundStrokes: !joinLinear, colour: radarBlobColour
             };
           if (this.displayData.length === 2) {
-          //  svgFactorX.remove();
+            //  svgFactorX.remove();
           }
           this.RadarChart('app-users', this.pickOutNonZeroValues(this.displayData.map(d => d.factors)), options);
           this.correlationMatrix(FC, this.displayData[0].factors.map(d => d.axis), 700);
@@ -1348,13 +1348,13 @@ export class UsersComponent implements OnChanges {
             angScaleSeparate[iExp].range()[0]) + angScaleSeparate[iExp].range()[0];
           console.log(angScaleSeparate[iExp].invert(newVal));
           newVals[iExp] = angScaleSeparate[iExp].invert(newVal);
-          const refineInput = d3.select('app-users').insert('input')
+          d3.select('app-users').insert('input')
             .attr('type', 'text')
             .attr('id', 'newhandsfield')
             .attr('class', 'field')
             .attr('value', (newVals[iExp]))
-            .on('change', () => {
-              newVals[iExp] = +refineInput.node().value;
+            .on('change', (dd, i, j) => {
+              newVals[iExp] = +j[i].value;
               newVal = angScaleSeparate[iExp](newVals[iExp]);
               d3.selectAll('#newhandsfield').remove();
               drawWantedPart();
