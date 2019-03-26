@@ -1351,6 +1351,7 @@ export class UsersComponent implements OnChanges {
           const refineInput = d3.select('app-users').insert('input')
             .attr('type', 'text')
             .attr('id', 'newhandsfield')
+            .attr('class', 'field')
             .attr('value', (newVals[iExp]))
             .on('change', () => {
               newVals[iExp] = +refineInput.node().value;
