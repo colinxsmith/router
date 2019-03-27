@@ -1348,10 +1348,25 @@ export class UsersComponent implements OnChanges {
             angScaleSeparate[iExp].range()[0]) + angScaleSeparate[iExp].range()[0];
           console.log(angScaleSeparate[iExp].invert(newVal));
           newVals[iExp] = angScaleSeparate[iExp].invert(newVal);
-          d3.select('app-users').insert('input')
+          console.log(here, jj, jj[iDialPart]);
+          let xx: number, yy: number, trans: string;
+          gaugeplate.selectAll('.newvals').each((dki, iii, jjj) => {
+            if (iii === iExp) {
+              const here1 = d3.select(jjj[iii]);
+              xx = +here1.attr('x') - 20;
+              yy = +here1.attr('y') - 20;
+              trans = here1.attr('transform');
+            }
+          });
+          console.log(xx, yy, trans);
+          gaugeplate.append('g')
+            .append('foreignObject').attr('width', 50).attr('height', 50).attr('transform', trans).attr('x', xx).attr('y', yy)
+            .append('xhtml').attr('xlmns', 'http://www.w3.org/1999/xhtml')
+            .append('input')
             .attr('type', 'text')
             .attr('id', 'newhandsfield')
             .attr('class', 'field')
+            .attr('size', 4)
             .attr('value', (newVals[iExp]))
             .on('change', (dd, i, j) => {
               newVals[iExp] = +j[i].value;
