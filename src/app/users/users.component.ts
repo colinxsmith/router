@@ -1353,25 +1353,27 @@ export class UsersComponent implements OnChanges {
           gaugeplate.selectAll('.newvals').each((dki, iii, jjj) => {
             if (iii === iExp) {
               const here1 = d3.select(jjj[iii]);
-              xx = +here1.attr('x') - 20;
-              yy = +here1.attr('y') - 20;
+              xx = 20;
+              yy = -120;
               trans = here1.attr('transform');
             }
           });
-          console.log(xx, yy, trans);
-          gaugeplate.append('g')
-            .append('foreignObject').attr('width', 50).attr('height', 50).attr('transform', trans).attr('x', xx).attr('y', yy)
-            .append('xhtml').attr('xlmns', 'http://www.w3.org/1999/xhtml')
+          // d3.select('app-users').insert('form')
+          gaugeplate
+            .append('foreignObject')
+            .attr('id', `FO${iExp}`)
+            .attr('width', 50).attr('height', 30)
+            .attr('transform', trans).attr('x', xx).attr('y', yy)
+            .append('xhtml:body').attr('xlmns', 'http://www.w3.org/1999/xhtml')
             .append('input')
             .attr('type', 'text')
             .attr('id', 'newhandsfield')
-            .attr('class', 'field')
-            .attr('size', 4)
+            .attr('class', 'main field').attr('size', 5)
             .attr('value', (newVals[iExp]))
             .on('change', (dd, i, j) => {
               newVals[iExp] = +j[i].value;
               newVal = angScaleSeparate[iExp](newVals[iExp]);
-              d3.selectAll('#newhandsfield').remove();
+              gaugeplate.selectAll(`#FO${iExp}`).remove(); // Remove all the input fields created for this factor!!
               drawWantedPart();
             })
             ;
