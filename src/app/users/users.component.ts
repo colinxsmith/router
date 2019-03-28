@@ -1239,7 +1239,7 @@ export class UsersComponent implements OnChanges {
   ], wh = 100, id = 'app-users') {
 
     const minmaxE = [d3.min(exposures, d => d.value), d3.max(exposures, d => d.value)];
-    const formatG = d3.format('0.3f');
+    const formatG = d3.format('0.2f');
     const newVals: number[] = Array(exposures.length);
     if (this.factorConstraintChange.length) {
       this.factorConstraintChange.forEach((d, i) => {
@@ -1258,7 +1258,7 @@ export class UsersComponent implements OnChanges {
     });
     const labPad = 5, padRow = 5, numCol = 4,
       width = wh * numCol, height = (wh + labPad * 1.5) * exposures.length / numCol, mx = 40, my = 40,
-      svg = d3.select(id).attr('class', 'main').append('svg').attr('x', 0)
+      svg = d3.select(id).append('svg')/*.attr('xmlns', 'http://www.w3.org/2000/svg')*/.attr('class', 'main').attr('x', 0)
         .attr('y', my)
         .attr('width', width + mx * 2)
         .attr('height', height + my * 2),
@@ -1347,14 +1347,14 @@ export class UsersComponent implements OnChanges {
           let newVal = (iDialPart + 0.5) / (dialParts.length) * (angScaleSeparate[iExp].range()[1] -
             angScaleSeparate[iExp].range()[0]) + angScaleSeparate[iExp].range()[0];
           console.log(angScaleSeparate[iExp].invert(newVal));
-          newVals[iExp] = angScaleSeparate[iExp].invert(newVal);
+          newVals[iExp] = +formatG(angScaleSeparate[iExp].invert(newVal));
           console.log(here, jj, jj[iDialPart]);
-          let xx: number, yy: number, trans: string;
+          let xx: string, yy: string, trans: string;
           gaugeplate.selectAll('.newvals').each((dki, iii, jjj) => {
             if (iii === iExp) {
               const here1 = d3.select(jjj[iii]);
-              xx = 20;
-              yy = -120;
+              xx = here1.attr('x');
+              yy = here1.attr('y');
               trans = here1.attr('transform');
             }
           });
@@ -1364,7 +1364,7 @@ export class UsersComponent implements OnChanges {
             .attr('id', `FO${iExp}`)
             .attr('width', 50).attr('height', 30)
             .attr('transform', trans).attr('x', xx).attr('y', yy)
-            .append('xhtml:body').attr('xlmns', 'http://www.w3.org/1999/xhtml')
+            .append('xhtml:div')// .attr('xmlns', 'http://www.w3.org/1999/xhtml')
             .append('input')
             .attr('type', 'text')
             .attr('id', 'newhandsfield')
