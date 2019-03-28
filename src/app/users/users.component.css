@@ -264,3 +264,7 @@ path.meters{
     stroke:green;
     fill:none;
 }
+input.field{
+    background-color: rgb(234,162,29);
+    color:rgb(28,33,103);
+}

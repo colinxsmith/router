@@ -400,7 +400,7 @@ export class UsersComponent implements OnChanges {
   }
   chooseData(dd: string, joinLinear = false) {
     d3.select('app-users').selectAll('svg').remove();
-
+    d3.selectAll('#newhandsfield').remove();
     this.getKey = dd;
     /*    this.userService.postResult().subscribe(res => {
           console.log(res);
@@ -506,9 +506,7 @@ export class UsersComponent implements OnChanges {
             d3.select('app-users').append('svg').attr('width', 600).attr('height', 50).append('g').append('text')
               .attr('transform', 'translate(0,30)').attr('class', 'users')
               .text(() => `Risk: ${this.displayData[idisp].risk}, Return: ${this.displayData[idisp].return},
-                gamma: ${this.displayData[idisp].gamma}`)
-              .on('mouseover', (d, ii, jj) => d3.select(jj[ii]).classed('over', true))
-              .on('mouseout', (d, ii, jj) => d3.select(jj[ii]).classed('over', false));
+                gamma: ${this.displayData[idisp].gamma}`);
           });
         } else if (this.getKey === 'newData') {
           if (this.displayData.length !== undefined) {
@@ -540,7 +538,7 @@ export class UsersComponent implements OnChanges {
               levels: 4, roundStrokes: !joinLinear, colour: radarBlobColour
             };
           if (this.displayData.length === 2) {
-            svgFactorX.remove();
+            //  svgFactorX.remove();
           }
           this.RadarChart('app-users', this.pickOutNonZeroValues(this.displayData.map(d => d.factors)), options);
           this.correlationMatrix(FC, this.displayData[0].factors.map(d => d.axis), 700);
@@ -557,6 +555,35 @@ export class UsersComponent implements OnChanges {
           });
           this.fiveCircles();
         }
+        d3.select('app-users').selectAll('text.users')
+          .on('mouseover', (d, ii, jj) => {
+            const here = d3.select(jj[ii]);
+            if (here.attr('lineindex') !== null) {
+              const test = d3.select('app-users').selectAll('text.users');
+              test.each((kk, iii, jjj) => {
+                const kkk = d3.select(jjj[iii]);
+                if (kkk.attr('lineindex') === here.attr('lineindex')) {
+                  kkk.classed('over', true);
+                }
+              });
+            } else {
+              here.classed('over', true);
+            }
+          })
+          .on('mouseout', (d, ii, jj) => {
+            const here = d3.select(jj[ii]);
+            if (here.attr('lineindex') !== null) {
+              const test = d3.select('app-users').selectAll('text.users');
+              test.each((kk, iii, jjj) => {
+                const kkk = d3.select(jjj[iii]);
+                if (kkk.attr('lineindex') === here.attr('lineindex')) {
+                  kkk.classed('over', false);
+                }
+              });
+            } else {
+              here.classed('over', false);
+            }
+          });
       }, res => {
         console.log(res);
       });
@@ -1212,7 +1239,7 @@ export class UsersComponent implements OnChanges {
   ], wh = 100, id = 'app-users') {
 
     const minmaxE = [d3.min(exposures, d => d.value), d3.max(exposures, d => d.value)];
-    const formatG = d3.format('0.3f');
+    const formatG = d3.format('0.2f');
     const newVals: number[] = Array(exposures.length);
     if (this.factorConstraintChange.length) {
       this.factorConstraintChange.forEach((d, i) => {
@@ -1231,7 +1258,7 @@ export class UsersComponent implements OnChanges {
     });
     const labPad = 5, padRow = 5, numCol = 4,
       width = wh * numCol, height = (wh + labPad * 1.5) * exposures.length / numCol, mx = 40, my = 40,
-      svg = d3.select(id).attr('class', 'main').append('svg').attr('x', 0)
+      svg = d3.select(id).append('svg')/*.attr('xmlns', 'http://www.w3.org/2000/svg')*/.attr('class', 'main').attr('x', 0)
         .attr('y', my)
         .attr('width', width + mx * 2)
         .attr('height', height + my * 2),
@@ -1317,27 +1344,59 @@ export class UsersComponent implements OnChanges {
           here
             .transition().duration(2)
             .attr('class', 'dscale choose');
-          const newVal = (iDialPart + 0.5) / (dialParts.length) * (angScaleSeparate[iExp].range()[1] -
+          let newVal = (iDialPart + 0.5) / (dialParts.length) * (angScaleSeparate[iExp].range()[1] -
             angScaleSeparate[iExp].range()[0]) + angScaleSeparate[iExp].range()[0];
           console.log(angScaleSeparate[iExp].invert(newVal));
-          newVals[iExp] = angScaleSeparate[iExp].invert(newVal);
-          gaugeplate.selectAll('.newvals')
-            .text((df, iii) => iii === iExp ? formatG(newVals[iExp]) : isNaN(+formatG(newVals[iii])) ? '' : formatG(newVals[iii]));
-          gaugeplate.selectAll('.meters')
-            .attr('d', (df, iii, jjj) => {
+          newVals[iExp] = +formatG(angScaleSeparate[iExp].invert(newVal));
+          console.log(here, jj, jj[iDialPart]);
+          let xx: string, yy: string, trans: string;
+          gaugeplate.selectAll('.newvals').each((dki, iii, jjj) => {
+            if (iii === iExp) {
               const here1 = d3.select(jjj[iii]);
-              const old = here1.attr('d'), th1 = th / 10;
-              if (iii === iExp) {
-                const oldc = old.replace(/Z m.*/, 'Z').replace(/Zm.*/, 'Z');
-                console.log(old);
-                console.log(oldc);
-                const angle = angScaleSeparate[iExp](newVals[iExp]), cc = (rad - th * 2) * Math.cos(angle),
-                  ss = (rad - th * 2) * Math.sin(angle);
-                return oldc + `m0 0M0 0l${th1 / 2} 0l${cc / 2} ${-ss / 2}l ${th1} 0l${-cc / 2} ${ss / 2}Z`;
-              } else {
-                return old;
-              }
-            });
+              xx = here1.attr('x');
+              yy = here1.attr('y');
+              trans = here1.attr('transform');
+            }
+          });
+          // d3.select('app-users').insert('form')
+          gaugeplate
+            .append('foreignObject')
+            .attr('id', `FO${iExp}`)
+            .attr('width', 50).attr('height', 30)
+            .attr('transform', trans).attr('x', xx).attr('y', yy)
+            .append('xhtml:div')// .attr('xmlns', 'http://www.w3.org/1999/xhtml')
+            .append('input')
+            .attr('type', 'text')
+            .attr('id', 'newhandsfield')
+            .attr('class', 'main field').attr('size', 5)
+            .attr('value', (newVals[iExp]))
+            .on('change', (dd, i, j) => {
+              newVals[iExp] = +j[i].value;
+              newVal = angScaleSeparate[iExp](newVals[iExp]);
+              gaugeplate.selectAll(`#FO${iExp}`).remove(); // Remove all the input fields created for this factor!!
+              drawWantedPart();
+            })
+            ;
+          const drawWantedPart = () => {
+            gaugeplate.selectAll('.newvals')
+              .text((df, iii) => iii === iExp ? formatG(newVals[iExp]) : isNaN(+formatG(newVals[iii])) ? '' : formatG(newVals[iii]));
+            gaugeplate.selectAll('.meters')
+              .attr('d', (df, iii, jjj) => {
+                const here1 = d3.select(jjj[iii]);
+                const old = here1.attr('d'), th1 = th / 10;
+                if (iii === iExp) {
+                  const oldc = old.replace(/Z m.*/, 'Z').replace(/Zm.*/, 'Z');
+                  console.log(old);
+                  console.log(oldc);
+                  const angle = angScaleSeparate[iExp](newVals[iExp]), cc = (rad - th * 2) * Math.cos(angle),
+                    ss = (rad - th * 2) * Math.sin(angle);
+                  return oldc + `m0 0M0 0l${th1 / 2} 0l${cc / 2} ${-ss / 2}l ${th1} 0l${-cc / 2} ${ss / 2}Z`;
+                } else {
+                  return old;
+                }
+              });
+          };
+          drawWantedPart();
         })
         .on('mouseout', (d, iDialPart, jj) => {
           const here = d3.select(jj[iDialPart]);
@@ -1378,34 +1437,40 @@ export class UsersComponent implements OnChanges {
       .attr('x', 5)
       .attr('y', 23)
       .attr('transform', `translate(${off},${0})`)
-      .call((d) => d.each((dd, i, j) => {// We have to it like this with call() rather than html() to get the tspan on IE on Windows 7
+      .call((d) => d.each((dd, i, j) => {// We have to do it like this with call() rather than html() to get the tspan on IE on Windows 7
         const k = d3.select(j[i]);
-        let tspan = k.text(null).append('tspan').attr('x', xPos(0)).text(keys[0]);
         for (let kk = 0; kk < keys.length; ++kk) {
-          tspan = k.append('tspan').attr('x', xPos(kk)).text(keys[kk]);
+          k.append('tspan').attr('x', xPos(kk)).text(keys[kk]);
         }
       }))
       .attr('class', 'users')
-      .on('mouseover', (d, ii, jj) => d3.select(jj[ii]).classed('over', true))
-      .on('mouseout', (d, ii, jj) => d3.select(jj[ii]).classed('over', false))
       ;
 
     base.selectAll('inner').data(displayData).enter().append('text')
       .attr('x', 5)
       .attr('y', 54)
       .attr('transform', (d, i) => `translate(${off},${i * 21})`)
-      .call((d) => d.each((dd, i, j) => {// We have to it like this with call() rather than html() to get the tspan on IE on Windows 7
+      .attr('lineindex', d => d['axis'])
+      .call((d) => d.each((dd, i, j) => {// We have to do it like this with call() rather than html() to get the tspan on IE on Windows 7
         const k = d3.select(j[i]);
-        let tspan = k.text(null).append('tspan').attr('x', xPos(0)).text(dd[keys[0]]);
         for (let kk = 0; kk < keys.length; ++kk) {
-          tspan = k.append('tspan').attr('x', xPos(kk)).text(keys[kk] === 'axis' || keys[kk] === 'id' ? dd[keys[kk]] :
+          k.append('tspan').attr('x', xPos(kk)).text(keys[kk] === 'axis' || keys[kk] === 'id' ? dd[keys[kk]] :
             d3.format('0.2g')(dd[keys[kk]]));
         }
       }))
-      .attr('class', 'users')
-      .on('mouseover', (d, ii, jj) => d3.select(jj[ii]).classed('over', true))
-      .on('mouseout', (d, ii, jj) => d3.select(jj[ii]).classed('over', false));
-
+      .attr('class', 'users');
+    base.selectAll('tspan') // This is a crude way to change table entries
+      .on('click', (d, iii, jjj) => {
+        const forNewText = d3.select('app-users').insert('input')
+          .attr('type', 'text')
+          .attr('size', '4px')
+          .attr('value', (<SVGTSpanElement>jjj[iii]).textContent)
+          .on('change', (dk, i, j) => {
+            (<SVGTSpanElement>jjj[iii]).textContent = j[i].value;
+            forNewText.remove();
+          });
+      })
+      ;
   }
   RadarChart(id: string, data: { axis: string; value: number; }[][], options: {
     w: number; h: number;
@@ -1655,8 +1720,8 @@ export class UsersComponent implements OnChanges {
       .attr('class', 'tooltipRadar')
       .style('opacity', 0);
   }
-  wrapFunction = (text1, width: number, lineHeight: number) =>  // Adapted from http://bl.ocks.org/mbostock/7555321
-    text1.each((kk, i, j) => {
+  wrapFunction = (text1: any, width: number, lineHeight: number) =>  // Adapted from http://bl.ocks.org/mbostock/7555321
+    text1.each((_kk, i, j) => {
       const text = d3.select(j[i]),
         words = text.text().split(/\s+/).reverse(),
         y = text.attr('y'),
