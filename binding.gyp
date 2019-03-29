@@ -3,9 +3,8 @@
     {
       'target_name': 'OPT',
       'sources': [ 'OPT_wrap.cxx' ],
-      'include_dirs': ['./', '../safeqp'],
-      'cflags_cc': [ '-fexceptions' ],
-      'libraries': ['-L ~/safeqp', '-lsafeqp']
+      'include_dirs': ['./'],
+      'libraries': ['c:\Users\colin\safeqp64\safeqp.lib']
     }
   ]
 }
