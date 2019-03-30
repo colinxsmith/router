@@ -1365,8 +1365,8 @@ export class UsersComponent implements OnChanges {
           gaugeplate.selectAll('.newvals').each((dki, iii, jjj) => {
             if (iii === iExp) {
               const here1 = d3.select(jjj[iii]);
-              xx = here1.attr('x');
-              yy = here1.attr('y');
+              xx = `${+here1.attr('x') - 20}`;
+              yy = `${+here1.attr('y') - 20}`;
               trans = here1.attr('transform');
             }
           });
@@ -1374,7 +1374,7 @@ export class UsersComponent implements OnChanges {
           gaugeplate
             .append('foreignObject')
             .attr('id', `FO${iExp}`)
-            .attr('width', 50).attr('height', 30)
+            .attr('width', 70).attr('height', 50)
             .attr('transform', trans).attr('x', xx).attr('y', yy)
             .append('xhtml:div')// .attr('xmlns', 'http://www.w3.org/1999/xhtml')
             .append('input')
