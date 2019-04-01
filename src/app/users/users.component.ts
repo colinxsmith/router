@@ -1088,9 +1088,22 @@ export class UsersComponent implements OnChanges {
         Datas.push(d);
       }
     });
+    svg.selectAll('circle.newfive').append('g').data(Datas).enter()
+      .append('circle')
+      .style('opacity', 0)
+      .attr('r', radiusS)
+      .attr('transform', d => {
+        const circ = Math.floor((d.id - 1) / 3),
+          back = circ === 0 ?
+            `translate(0,0)` : `translate(${radiusS * 2 * Math.cos(Math.PI / 2 * circ + extra)},
+      ${radiusS * 2 * Math.sin(Math.PI / 2 * circ + extra)})`;
+        return back;
+      })
+      .on('click', (d, i, j) => click(i, j));
     svg.selectAll('text.newfive').append('g').data(Datas).enter()
       .append('text')
       .attr('class', 'newfive')
+      .on('click', (d, i, j) => click(i, j))
       .on('mouseover', (d, i, j) => d3.select(j[i]).transition().duration(2)
         .attr('class', 'newfive over')
         .styleTween('opacity', () => t => `${t}`))
@@ -1122,7 +1135,6 @@ export class UsersComponent implements OnChanges {
       .on('mouseout', () => this.tooltip.transition().duration(2).style('display', 'none'))
       .on('click', (d, i, j) => click(i, j))
       ;
-
   }
   fiveCircles(w = 960, h = 500, displayData = ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR'], id = 'app-users') {
     const margin = { top: 10, right: 10, bottom: 10, left: 10 };
@@ -1353,8 +1365,8 @@ export class UsersComponent implements OnChanges {
           gaugeplate.selectAll('.newvals').each((dki, iii, jjj) => {
             if (iii === iExp) {
               const here1 = d3.select(jjj[iii]);
-              xx = here1.attr('x');
-              yy = here1.attr('y');
+              xx = `${+here1.attr('x') - 20}`;
+              yy = `${+here1.attr('y') - 20}`;
               trans = here1.attr('transform');
             }
           });
@@ -1362,7 +1374,7 @@ export class UsersComponent implements OnChanges {
           gaugeplate
             .append('foreignObject')
             .attr('id', `FO${iExp}`)
-            .attr('width', 50).attr('height', 30)
+            .attr('width', 70).attr('height', 50)
             .attr('transform', trans).attr('x', xx).attr('y', yy)
             .append('xhtml:div')// .attr('xmlns', 'http://www.w3.org/1999/xhtml')
             .append('input')
