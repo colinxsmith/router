@@ -461,7 +461,7 @@ export class UsersComponent implements OnChanges {
           this.RadarChart('app-users', displayData, radarChartOptions);
           displayData.forEach((ddd, id) => {
             this.stockbars(ddd, id, ww, hh, 2000, 'Factor Exposure', 'Factor');
-            this.simpleDisplay(ddd);
+            this.simpleDisplay(ddd, id);
           });
         } else if (this.getKey === 'OPT') {
           this.plotLab = Object.keys(this.plotLabels);
@@ -502,7 +502,7 @@ export class UsersComponent implements OnChanges {
           data1.forEach((ddd, i: number) => {
             const idisp = data1.length === 4 || this.getType === 'factor' ? i : this.choose2[i];
             this.stockbars(ddd, i, ww, hh, 2000, 'Weights', 'Assets');
-            this.simpleDisplay(ddd);
+            this.simpleDisplay(ddd, i);
             d3.select('app-users').append('svg').attr('width', 600).attr('height', 50).append('g').append('text')
               .attr('transform', 'translate(0,30)').attr('class', 'users')
               .text(() => `Risk: ${this.displayData[idisp].risk}, Return: ${this.displayData[idisp].return},
@@ -583,6 +583,13 @@ export class UsersComponent implements OnChanges {
             } else {
               here.classed('over', false);
             }
+          });
+        d3.select('app-users').selectAll('rect.users')
+          .on('mouseover', (d, ii, jj) => {
+            d3.select(jj[ii]).classed('over', true);
+          })
+          .on('mouseout', (d, ii, jj) => {
+            d3.select(jj[ii]).classed('over', false);
           });
       }, res => {
         console.log(res);
@@ -1337,8 +1344,8 @@ export class UsersComponent implements OnChanges {
             innerRadius: rad / 2 - th, outerRadius: rad / 2, startAngle: st - Math.PI / 2,
             endAngle: en - Math.PI / 2
           }) + d3.arc()({
-            innerRadius: rad * smallerRimScale / 2 - th, outerRadius: rad * smallerRimScale / 2, startAngle: st - Math.PI / 2,
-            endAngle: en - Math.PI / 2
+            innerRadius: rad * smallerRimScale / 2 - th, outerRadius: rad * smallerRimScale / 2, startAngle: -st + Math.PI / 2,
+            endAngle: -en + Math.PI / 2
           });
         });
       gaugeplate.selectAll(`.dials${iExp}`)
@@ -1424,7 +1431,7 @@ export class UsersComponent implements OnChanges {
     }
     return svg;
   }
-  simpleDisplay(displayData: any) {
+  simpleDisplay(displayData: any, position = 0) {
     const keys = Object.keys(displayData[0]), www = keys.length;
     const facNames: string[] = displayData.map(d => d[keys[0]]);
     const longNameLength = d3.max(facNames, d => d.length);
@@ -1440,25 +1447,29 @@ export class UsersComponent implements OnChanges {
       .attr('class', 'users')
       .attr('width', ww - off)
       .attr('height', 24)
+      .attr('picId', position)
       .attr('x', 5)
       .attr('y', 3);
     base.append('rect')
       .attr('class', 'users')
       .attr('width', ww - off)
       .attr('height', nDat * 21 + 10)
+      .attr('picId', position)
       .attr('x', 5)
       .attr('y', 32);
     base.append('text')
       .attr('x', 5)
       .attr('y', 23)
       .attr('transform', `translate(${off},${0})`)
+      .attr('class', 'users')
       .call((d) => d.each((dd, i, j) => {// We have to do it like this with call() rather than html() to get the tspan on IE on Windows 7
         const k = d3.select(j[i]);
         for (let kk = 0; kk < keys.length; ++kk) {
-          k.append('tspan').attr('x', xPos(kk)).text(keys[kk]);
+          const t = (kk + 1) / keys.length;
+          k.append('tspan').attr('x', xPos(kk)).style('stroke', () => `rgb(${200 * (1 - t)},${t / 2 * 255},${200 * t})`)
+            .text(keys[kk]);
         }
       }))
-      .attr('class', 'users')
       ;
 
     base.selectAll('inner').data(displayData).enter().append('text')
@@ -1466,14 +1477,16 @@ export class UsersComponent implements OnChanges {
       .attr('y', 54)
       .attr('transform', (d, i) => `translate(${off},${i * 21})`)
       .attr('lineindex', d => d['axis'])
+      .attr('class', 'users')
       .call((d) => d.each((dd, i, j) => {// We have to do it like this with call() rather than html() to get the tspan on IE on Windows 7
         const k = d3.select(j[i]);
         for (let kk = 0; kk < keys.length; ++kk) {
-          k.append('tspan').attr('x', xPos(kk)).text(keys[kk] === 'axis' || keys[kk] === 'id' ? dd[keys[kk]] :
-            d3.format('0.2g')(dd[keys[kk]]));
+          const t = (kk + 1) / keys.length;
+          k.append('tspan').attr('x', xPos(kk)).style('stroke', () => `rgb(${200 * (1 - t)},${t / 2 * 255},${200 * t})`)
+            .text(keys[kk] === 'axis' || keys[kk] === 'id' ? dd[keys[kk]] :
+              d3.format('0.2g')(dd[keys[kk]]));
         }
-      }))
-      .attr('class', 'users');
+      }));
     base.selectAll('tspan') // This is a crude way to change table entries
       .on('click', (d, iii, jjj) => {
         const forNewText = d3.select('app-users').insert('input')
@@ -1626,6 +1639,12 @@ export class UsersComponent implements OnChanges {
               .style('fill-opacity', 0.7);
           }
         });
+        d3.selectAll(`rect.users`).nodes().forEach(hh => {
+          const h = d3.select(hh);
+          if (+h.attr('picId') === i) {
+            h.classed('over', true);
+          }
+        });
         d3.selectAll(`.weightSingleMinus`).nodes().forEach(hh => {
           const h = d3.select(hh);
           if (+h.attr('picId') === i) {
@@ -1641,6 +1660,9 @@ export class UsersComponent implements OnChanges {
         });
       })
       .on('mouseout', () => {
+        d3.selectAll(`rect.users`).nodes().forEach(hh => {
+          d3.select(hh).classed('over', false);
+        });
         d3.selectAll('.portfolioFlower')
           .transition().duration(10)
           .style('fill-opacity', cfg.opacityArea);

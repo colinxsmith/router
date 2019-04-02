@@ -11,6 +11,13 @@ rect.users {
     opacity: 0.5;
     shape-rendering: crispEdges;
 }
+rect.users.over {
+    fill: rgb(127, 238, 201);
+    stroke: magenta;
+    stroke-width: 3px;
+    opacity: 1;
+    shape-rendering: crispEdges;
+}
 text.tooltipRadar{
     font-size: 30px;
 }
