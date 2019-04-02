@@ -1107,8 +1107,8 @@ export class UsersComponent implements OnChanges {
       .on('mouseover', (d, i, j) => d3.select(j[i]).transition().duration(2)
         .attr('class', 'newfive over')
         .styleTween('opacity', () => t => `${t}`))
-      .on('mouseout', (d, i, j) => d3.select(j[i]).transition().duration(10)
-        .attr('class', 'newfive')
+      .on('mouseout', (d, i, j) => d3.select(j[i]).transition().duration(1000)
+        .attrTween('class', () => t => t > 0.75 ? 'newfive' : 'newfive over')
         .styleTween('fill-opacity', () => t => `${-t * (1 - t) * 4 + 1}`))
       .transition().duration(2000)
       .tween('transform', (dh, i, j) => t => {
@@ -1270,11 +1270,11 @@ export class UsersComponent implements OnChanges {
     });
     const labPad = 5, padRow = 5, numCol = 4,
       width = wh * numCol, height = (wh + labPad * 1.5) * exposures.length / numCol, mx = 40, my = 40,
-      svg = d3.select(id).append('svg')/*.attr('xmlns', 'http://www.w3.org/2000/svg')*/.attr('class', 'main').attr('x', 0)
+      svg = d3.select(id).append('svg').attr('class', 'main').attr('x', 0)
         .attr('y', my)
         .attr('width', width + mx * 2)
         .attr('height', height + my * 2),
-      th = 4, rad = Math.min((width - padRow * (numCol - 1)) / numCol, height),
+      th = 4, smallerRimScale = 0.95, rad = Math.min((width - padRow * (numCol - 1)) / numCol, height),
       dialParts = [], npoints = 50;
     for (let i = 0; i < npoints; ++i) {
       dialParts.push(i);
@@ -1336,6 +1336,9 @@ export class UsersComponent implements OnChanges {
           return d3.arc()({
             innerRadius: rad / 2 - th, outerRadius: rad / 2, startAngle: st - Math.PI / 2,
             endAngle: en - Math.PI / 2
+          }) + d3.arc()({
+            innerRadius: rad * smallerRimScale / 2 - th, outerRadius: rad * smallerRimScale / 2, startAngle: st - Math.PI / 2,
+            endAngle: en - Math.PI / 2
           });
         });
       gaugeplate.selectAll(`.dials${iExp}`)
@@ -1376,7 +1379,7 @@ export class UsersComponent implements OnChanges {
             .attr('id', `FO${iExp}`)
             .attr('width', 70).attr('height', 50)
             .attr('transform', trans).attr('x', xx).attr('y', yy)
-            .append('xhtml:div')// .attr('xmlns', 'http://www.w3.org/1999/xhtml')
+            .append('xhtml:div')
             .append('input')
             .attr('type', 'text')
             .attr('id', 'newhandsfield')
@@ -1395,13 +1398,13 @@ export class UsersComponent implements OnChanges {
             gaugeplate.selectAll('.meters')
               .attr('d', (df, iii, jjj) => {
                 const here1 = d3.select(jjj[iii]);
-                const old = here1.attr('d'), th1 = th / 10;
+                const old = here1.attr('d'), th1 = th / 5;
                 if (iii === iExp) {
                   const oldc = old.replace(/Z m.*/, 'Z').replace(/Zm.*/, 'Z');
                   console.log(old);
                   console.log(oldc);
-                  const angle = angScaleSeparate[iExp](newVals[iExp]), cc = (rad - th * 2) * Math.cos(angle),
-                    ss = (rad - th * 2) * Math.sin(angle);
+                  const angle = angScaleSeparate[iExp](newVals[iExp]), cc = (rad * smallerRimScale - th * 2) * Math.cos(angle),
+                    ss = (rad * smallerRimScale - th * 2) * Math.sin(angle);
                   return oldc + `m0 0M0 0l${th1 / 2} 0l${cc / 2} ${-ss / 2}l ${th1} 0l${-cc / 2} ${ss / 2}Z`;
                 } else {
                   return old;
