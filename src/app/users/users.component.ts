@@ -1282,10 +1282,15 @@ export class UsersComponent implements OnChanges {
         .attr('width', width + mx * 2)
         .attr('height', height + my * 2),
       th = 4, smallerRimScale = 0.95, rad = Math.min((width - padRow * (numCol - 1)) / numCol, height),
-      dialParts = [], npoints = 50;
+      dialParts = [], npoints = 50, rotAng = 0;
     for (let i = 0; i < npoints; ++i) {
       dialParts.push(i);
     }
+    const gradient = svg.append('linearGradient').attr('id', 'grad')
+      .attr('x1', '0%').attr('y1', '0%').attr('x2', '50%').attr('y2', '100%');
+    gradient.append('stop').attr('offset', '0%').attr('class', 'top').attr('stop-opacity', 1);
+    gradient.append('stop').attr('offset', '100%').attr('class', 'bottom').attr('stop-opacity', 1);
+
     svg.append('rect')
       .attr('class', 'meterbackground')
       .attr('x', 0)
@@ -1297,7 +1302,7 @@ export class UsersComponent implements OnChanges {
       .append('path')
       .attr('class', 'meters')
       .attr('transform', (d, i) => `translate(${mx + rad / 2 + (i % numCol) * (rad + padRow)},
-      ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)})`)
+      ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)}) rotate(${rotAng})`)
       .attr('d', (d, iExp) => {
         const angle = angScaleSeparate[iExp](d.value), cc = (rad - th * 2) * Math.cos(angle), ss = (rad - th * 2) * Math.sin(angle);
         return `M${-rad / 2} 0l0 -${th}l${rad} 0l0 ${th}Z` + `M0 0l${th / 2} 0l${cc / 2} ${-ss / 2}l-${th} 0l${-cc / 2} ${ss / 2}Z`;
@@ -1309,7 +1314,7 @@ export class UsersComponent implements OnChanges {
       .attr('x', -rad / 2 + th * 4)
       .attr('y', -rad / 2 + th)
       .attr('transform', (d, i) => `translate(${mx + rad / 2 + (i % numCol) * (rad + padRow)},
-      ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)})`)
+      ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)}) rotate(${rotAng})`)
       .text(d => formatG(d.value));
     gaugeplate.selectAll('.meters').select('g').data(exposures).enter()
       .append('text')
@@ -1318,7 +1323,7 @@ export class UsersComponent implements OnChanges {
       .attr('y', th * 4)
       .attr('dy', '1.5em')
       .attr('transform', (d, i) => `translate(${mx + rad / 2 + (i % numCol) * (rad + padRow)},
-      ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)})`)
+      ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)}) rotate(${rotAng})`)
       .text(d => d.axis)
       .call(this.wrapFunction, 190, 1);
     gaugeplate.selectAll('.newvals').data(newVals).enter()
@@ -1327,14 +1332,14 @@ export class UsersComponent implements OnChanges {
       .attr('x', rad / 2 - th * 7)
       .attr('y', -rad / 2 + th)
       .attr('transform', (d, i) => `translate(${mx + rad / 2 + (i % numCol) * (rad + padRow)},
-      ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)})`)
+      ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)}) rotate(${rotAng})`)
       .text(d => isNaN(+formatG(d)) ? '' : formatG(d));
     for (let iExp = 0; iExp < exposures.length; ++iExp) {
       gaugeplate.append('g').selectAll('.dials').data(dialParts).enter()
         .append('path')
         .attr('class', () => `dials${iExp} dscale`)
         .attr('transform', () => `translate(${mx + rad / 2 + (iExp % numCol) * (rad + padRow)},
-        ${my + rad / 2 + Math.floor(iExp / numCol) * (rad + labPad)})`)
+        ${my + rad / 2 + Math.floor(iExp / numCol) * (rad + labPad)}) rotate(${rotAng})`)
         .attr('d', (d, iDialPart) => {
           const st = iDialPart / (dialParts.length) * (angScaleSeparate[iExp].range()[0] -
             angScaleSeparate[iExp].range()[1]) + angScaleSeparate[iExp].range()[1];
