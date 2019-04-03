@@ -1,1 +1,0 @@
-cmd_Release/obj.target/OPT.node := g++ -shared -pthread -rdynamic -m64  -Wl,-soname=OPT.node -o Release/obj.target/OPT.node -Wl,--start-group Release/obj.target/OPT/OPT_wrap.o -Wl,--end-group -L ~/safeqp -lsafeqp
