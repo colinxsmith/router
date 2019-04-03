@@ -3,9 +3,9 @@
     {
       'target_name': 'OPT',
       'sources': [ 'OPT_wrap.cxx' ],
-      'include_dirs': ['./', '../safeqp'],
-      'cflags_cc': [ '-fexceptions','-Wno-deprecated-declarations','-Wno-unused-but-set-variable' ],
-      'libraries': ['-L ~/safeqp', '-lsafeqp']
+      'defines': [ 'MYNOVIRT','BITADIRECT','__SYSNT__','__SYSNT64__','GETTINGREADYFORTHEFUTURE'],
+      'include_dirs': ['./', '../'],
+      'libraries': ['c:\\Users\\colin\\safeqp64\\safeqp.lib']
     }
   ]
 }
