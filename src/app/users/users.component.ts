@@ -400,7 +400,7 @@ export class UsersComponent implements OnChanges {
   }
   chooseData(dd: string, joinLinear = false) {
     d3.select('app-users').selectAll('svg').remove();
-    d3.selectAll('#newhandsfield').remove();
+    d3.selectAll('input.field').remove();
     this.getKey = dd;
     /*    this.userService.postResult().subscribe(res => {
           console.log(res);
@@ -989,7 +989,7 @@ export class UsersComponent implements OnChanges {
       withKE: false
     }
     ]
-  }, id = 'app-users', click = (i: number, j: d3.BaseType[] | d3.ArrayLike<d3.BaseType>) => console.log('Object', j[i]),
+  }, id = 'app-users', click = (i: number, j: d3.BaseType[] | d3.ArrayLike<d3.BaseType>) => console.log('Node clicked', j[i]),
     useSquare = true) {
     const Data: {
       id: number;
@@ -1356,7 +1356,6 @@ export class UsersComponent implements OnChanges {
             .attr('class', 'dscale choose');
           const newVal = (iDialPart + 0.5) / (dialParts.length) * (angScaleSeparate[iExp].range()[1] -
             angScaleSeparate[iExp].range()[0]) + angScaleSeparate[iExp].range()[0];
-          console.log(angScaleSeparate[iExp].invert(newVal));
           const newV = angScaleSeparate[iExp].invert(newVal);
           gaugeplate.selectAll('.newvals')
             .text((df, iii) => iii === iExp ? formatG(newV) : isNaN(+formatG(newVals[iii])) ? '' : formatG(newVals[iii]));
@@ -1368,9 +1367,7 @@ export class UsersComponent implements OnChanges {
             .attr('class', 'dscale choose');
           let newVal = (iDialPart + 0.5) / (dialParts.length) * (angScaleSeparate[iExp].range()[1] -
             angScaleSeparate[iExp].range()[0]) + angScaleSeparate[iExp].range()[0];
-          console.log(angScaleSeparate[iExp].invert(newVal));
           newVals[iExp] = +formatG(angScaleSeparate[iExp].invert(newVal));
-          console.log(here, jj, jj[iDialPart]);
           let xx: string, yy: string, trans: string;
           gaugeplate.selectAll('.newvals').each((dki, iii, jjj) => {
             if (iii === iExp) {
@@ -1380,7 +1377,6 @@ export class UsersComponent implements OnChanges {
               trans = here1.attr('transform');
             }
           });
-          // d3.select('app-users').insert('form')
           gaugeplate
             .append('foreignObject')
             .attr('id', `FO${iExp}`)
@@ -1389,13 +1385,12 @@ export class UsersComponent implements OnChanges {
             .append('xhtml:div')
             .append('input')
             .attr('type', 'text')
-            .attr('id', 'newhandsfield')
             .attr('class', 'main field').attr('size', 5)
             .attr('value', (newVals[iExp]))
             .on('change', (dd, i, j) => {
               newVals[iExp] = +j[i].value;
               newVal = angScaleSeparate[iExp](newVals[iExp]);
-              gaugeplate.selectAll(`#FO${iExp}`).remove(); // Remove all the input fields created for this factor!!
+              gaugeplate.selectAll(`#FO${iExp}`).remove(); // Remove all the foreign objects created for this factor!!
               drawWantedPart();
             })
             ;
@@ -1408,8 +1403,6 @@ export class UsersComponent implements OnChanges {
                 const old = here1.attr('d'), th1 = th / 5;
                 if (iii === iExp) {
                   const oldc = old.replace(/Z m.*/, 'Z').replace(/Zm.*/, 'Z');
-                  console.log(old);
-                  console.log(oldc);
                   const angle = angScaleSeparate[iExp](newVals[iExp]), cc = (rad * smallerRimScale - th * 2) * Math.cos(angle),
                     ss = (rad * smallerRimScale - th * 2) * Math.sin(angle);
                   return oldc + `m0 0M0 0l${th1 / 2} 0l${cc / 2} ${-ss / 2}l ${th1} 0l${-cc / 2} ${ss / 2}Z`;
@@ -1488,17 +1481,16 @@ export class UsersComponent implements OnChanges {
         }
       }));
     base.selectAll('tspan') // This is a crude way to change table entries
-      .on('click', (d, iii, jjj) => {
-        const forNewText = d3.select('app-users').insert('input')
-          .attr('type', 'text')
-          .attr('size', '4px')
-          .attr('value', (<SVGTSpanElement>jjj[iii]).textContent)
-          .on('change', (dk, i, j) => {
-            (<SVGTSpanElement>jjj[iii]).textContent = j[i].value;
-            forNewText.remove();
-          });
-      })
-      ;
+      .on('click', (d, iii, jjj) => d3.select('app-users').insert('input')
+        .attr('type', 'text')
+        .attr('size', '5')
+        .attr('class', 'main field')
+        .attr('value', (<SVGTSpanElement>jjj[iii]).textContent)
+        .on('change', (dk, i, j) => {
+          (<SVGTSpanElement>jjj[iii]).textContent = (<HTMLInputElement>j[i]).value;
+          d3.select(j[i]).remove();
+        })
+      );
   }
   RadarChart(id: string, data: { axis: string; value: number; }[][], options: {
     w: number; h: number;
