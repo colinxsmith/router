@@ -1098,7 +1098,7 @@ export class UsersComponent implements OnChanges {
     svg.selectAll('circle.newfive').append('g').data(Datas).enter()
       .append('circle')
       .style('opacity', 0)
-      .attr('r', radiusS)
+      .attr('r', radiusS * 0.9)
       .attr('transform', d => {
         const circ = Math.floor((d.id - 1) / 3),
           back = circ === 0 ?
