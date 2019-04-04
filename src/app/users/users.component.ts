@@ -1275,14 +1275,18 @@ export class UsersComponent implements OnChanges {
         .range([2 * Math.PI / 5 + Math.PI / 2, -2 * Math.PI / 5 + Math.PI / 2]);
       angScaleSeparate.push(aScale);
     });
-    const labPad = 5, padRow = 5, numCol = 4,
-      width = wh * numCol, height = (wh + labPad * 1.5) * exposures.length / numCol, mx = 40, my = 40,
-      svg = d3.select(id).append('svg').attr('class', 'main').attr('x', 0)
-        .attr('y', my)
-        .attr('width', width + mx * 2)
-        .attr('height', height + my * 2),
-      th = 4, smallerRimScale = 0.95, rad = Math.min((width - padRow * (numCol - 1)) / numCol, height),
-      dialParts = [], npoints = 50, rotAng = 0;
+    const labPad = 15, padRow = 5, numCol = 4, rotAng = 0;
+    let width = wh * numCol, height = (wh + labPad * Math.floor(exposures.length / numCol)) * exposures.length / numCol;
+    const mx = 40, my = 40,
+      rad = Math.min((width - padRow * (numCol - 1)) / numCol, height - labPad * Math.floor(exposures.length / numCol));
+    width = rad * numCol; height = (rad + (labPad + 1) * (exposures.length / numCol)) * exposures.length / numCol;
+    const svg = d3.select(id).append('svg').attr('class', 'main')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('width', width + mx * 2)
+      .attr('height', height + my * 2),
+      th = 4, smallerRimScale = 0.95,
+      dialParts = [], npoints = 50;
     for (let i = 0; i < npoints; ++i) {
       dialParts.push(i);
     }
