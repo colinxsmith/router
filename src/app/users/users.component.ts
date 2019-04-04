@@ -1284,9 +1284,7 @@ export class UsersComponent implements OnChanges {
       .attr('x', 0)
       .attr('y', 0)
       .attr('width', width + mx * 2)
-      .attr('height', height + my * 2),
-      th = 4, smallerRimScale = 0.95,
-      dialParts = [], npoints = 50;
+      .attr('height', height + my * 2), th = 4, smallerRimScale = 0.95, dialParts = [], npoints = 50;
     for (let i = 0; i < npoints; ++i) {
       dialParts.push(i);
     }
