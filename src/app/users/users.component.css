@@ -84,7 +84,7 @@ line.line {
 
 .rim {
     fill: none;
-    stroke: orangered;
+    stroke: none;
 }
 
 text.axisLabel {
@@ -233,8 +233,12 @@ stop.top {
     stop-color: rgb(160, 216, 194);
 }
 
+stop.middle {
+    stop-color: rgb(216, 160, 194);
+}
+
 stop.bottom {
-    stop-color: rgb(194, 160, 216);
+    stop-color: rgb(160, 194, 216);
 }
 
 rect.five {
