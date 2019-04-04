@@ -1275,21 +1275,35 @@ export class UsersComponent implements OnChanges {
         .range([2 * Math.PI / 5 + Math.PI / 2, -2 * Math.PI / 5 + Math.PI / 2]);
       angScaleSeparate.push(aScale);
     });
-    const labPad = 5, padRow = 5, numCol = 4,
-      width = wh * numCol, height = (wh + labPad * 1.5) * exposures.length / numCol, mx = 40, my = 40,
-      svg = d3.select(id).append('svg').attr('class', 'main').attr('x', 0)
-        .attr('y', my)
-        .attr('width', width + mx * 2)
-        .attr('height', height + my * 2),
-      th = 4, smallerRimScale = 0.95, rad = Math.min((width - padRow * (numCol - 1)) / numCol, height),
-      dialParts = [], npoints = 50, rotAng = 0;
+    const labPad = 15, padRow = 5, numCol = 4, rotAng = 0;
+    let width = wh * numCol, height = (wh + labPad * Math.floor(exposures.length / numCol)) * exposures.length / numCol;
+    const mx = 40, my = 40,
+      rad = Math.min((width - padRow * (numCol - 1)) / numCol, height - labPad * Math.floor(exposures.length / numCol));
+    width = rad * numCol; height = (rad + (labPad + 1) * (exposures.length / numCol)) * exposures.length / numCol;
+    const svg = d3.select(id).append('svg').attr('class', 'main')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('width', width + mx * 2)
+      .attr('height', height + my * 2), th = 4, smallerRimScale = 0.95, dialParts = [], npoints = 50;
     for (let i = 0; i < npoints; ++i) {
       dialParts.push(i);
     }
-    const gradient = svg.append('linearGradient').attr('id', 'grad')
-      .attr('x1', '0%').attr('y1', '0%').attr('x2', '50%').attr('y2', '100%');
-    gradient.append('stop').attr('offset', '0%').attr('class', 'top').attr('stop-opacity', 1);
-    gradient.append('stop').attr('offset', '100%').attr('class', 'bottom').attr('stop-opacity', 1);
+    const gradient = svg.append('defs').append('radialGradient').attr('id', 'grad')
+      .attr('x1', '0%').attr('y1', '0%')
+      .attr('x2', '50%').attr('y2', '100%')
+      .attr('x3', '75%').attr('y3', '100%');
+    gradient.append('stop')
+      .attr('offset', '0%')
+      .attr('class', 'top')
+      .attr('stop-opacity', 1);
+    gradient.append('stop')
+      .attr('offset', '50%')
+      .attr('class', 'middle')
+      .attr('stop-opacity', 1);
+    gradient.append('stop')
+      .attr('offset', '100%')
+      .attr('class', 'bottom')
+      .attr('stop-opacity', 1);
 
     svg.append('rect')
       .attr('class', 'meterbackground')
