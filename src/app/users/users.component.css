@@ -84,7 +84,7 @@ line.line {
 
 .rim {
     fill: none;
-    stroke: none;
+    stroke: orangered;
 }
 
 text.axisLabel {
