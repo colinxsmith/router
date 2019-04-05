@@ -57,12 +57,12 @@ const portfolio = (axis, value, alpha) => {
     return portfolio;
 };
 const factorval = (axis, value, filter = '000000sss0') => {
-    const factorval = [];
+    const factorvalh = [];
     value.forEach((d, i) => {
         if (filter !== '' && axis[i].indexOf(filter) !== 0)
-            factorval.push({ 'axis': axis[i], 'id': i + 1, 'value': d });
+            factorvalh.push({ 'axis': axis[i], 'id': i + 1, 'value': d });
     });
-    return factorval;
+    return factorvalh;
 };
 const opt = (n, optype) => {
     const output = [];

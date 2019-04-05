@@ -715,6 +715,13 @@ export class UsersComponent implements OnChanges {
             .html(`<i class='fa fa-gears leafy'></i>Total: ${d3.format('0.4f')(sumEx)}`);
         })
         .on('mouseout', () => this.tooltip.style('display', 'none'))
+        .append('animate')
+        .attr('attributeType', 'CSS')
+        .attr('attributeName', 'opacity')
+        .attr('from', '1')
+        .attr('to', '0')
+        .attr('dur', '5s')
+        .attr('repeatCount', 'indefinite')
         .transition().duration(2000).attrTween('transform', () => (t) =>
           `translate(${t * nfac * Side},${t * Math.floor(weights.length) * Side})`)
         ;
@@ -1174,7 +1181,8 @@ export class UsersComponent implements OnChanges {
     svg.append('circle')
       .attr('class', 'five')
       .attr('cx', 0)
-      .attr('cy', 0);
+      .attr('cy', 0)
+      ;
     svg.append('circle')
       .attr('class', 'five')
       .attr('cx', (circleRad + spacer) * root2 * Math.cos(Math.PI / 4))
