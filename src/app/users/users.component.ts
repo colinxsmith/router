@@ -708,9 +708,9 @@ export class UsersComponent implements OnChanges {
         .attr('y', 0)
         .attr('height', Side)
         .attr('width', Side)
-        .on('mousemove', (d, i, j) => {
+        .on('mouseenter', (d, i, j) => {
           const here = d3.select(j[i]);
-          here.insert('animate')
+          here.insert('animate') // Native SVG animation. (Works on Chrome and Firefox)
             .attr('attributeType', 'CSS')
             .attr('attributeName', 'opacity')
             .attr('from', '1')
