@@ -1288,17 +1288,22 @@ export class UsersComponent implements OnChanges {
     for (let i = 0; i < npoints; ++i) {
       dialParts.push(i);
     }
-    const gradient = svg.append('defs').append('radialGradient').attr('id', 'grad')
-      .attr('x1', '0%').attr('y1', '0%')
-      .attr('x2', '50%').attr('y2', '100%')
-      .attr('x3', '75%').attr('y3', '100%');
+    const gradient = svg.append('defs').append('linearGradient').attr('id', 'grad')
+      .attr('x1', '0%')
+      .attr('x2', '100%')
+      .attr('y1', '0%')
+      .attr('y2', '100%');
     gradient.append('stop')
       .attr('offset', '0%')
       .attr('class', 'top')
       .attr('stop-opacity', 1);
     gradient.append('stop')
-      .attr('offset', '50%')
+      .attr('offset', '10%')
       .attr('class', 'middle')
+      .attr('stop-opacity', 1);
+    gradient.append('stop')
+      .attr('offset', '90%')
+      .attr('class', 'middle1')
       .attr('stop-opacity', 1);
     gradient.append('stop')
       .attr('offset', '100%')

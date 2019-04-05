@@ -237,6 +237,10 @@ stop.middle {
     stop-color: rgb(216, 160, 194);
 }
 
+stop.middle1 {
+    stop-color: rgb(216, 194, 160);
+}
+
 stop.bottom {
     stop-color: rgb(160, 194, 216);
 }
