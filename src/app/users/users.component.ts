@@ -1174,7 +1174,15 @@ export class UsersComponent implements OnChanges {
     svg.append('circle')
       .attr('class', 'five')
       .attr('cx', 0)
-      .attr('cy', 0);
+      .attr('cy', 0)
+      .append('animate')
+      .attr('attributeType', 'CSS')
+      .attr('attributeName', 'opacity')
+      .attr('from', '1')
+      .attr('to', '0')
+      .attr('dur', '5s')
+      .attr('repeatCount', 'indefinite')
+      ;
     svg.append('circle')
       .attr('class', 'five')
       .attr('cx', (circleRad + spacer) * root2 * Math.cos(Math.PI / 4))
