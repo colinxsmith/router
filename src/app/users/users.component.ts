@@ -708,22 +708,28 @@ export class UsersComponent implements OnChanges {
         .attr('y', 0)
         .attr('height', Side)
         .attr('width', Side)
-        .on('mousemove', (d, i) => {
+        .on('mousemove', (d, i, j) => {
+          const here = d3.select(j[i]);
+          here.insert('animate')
+            .attr('attributeType', 'CSS')
+            .attr('attributeName', 'opacity')
+            .attr('from', '1')
+            .attr('to', '0')
+            .attr('dur', '5s')
+            .attr('repeatCount', 'indefinite')
+            .transition().duration(2000).attrTween('transform', () => (t) =>
+              `translate(${t * nfac * Side},${t * Math.floor(weights.length) * Side})`);
+
           this.tooltip.style('left', d3.event.pageX - 50 + 'px')
             .style('top', d3.event.pageY - 70 + 'px')
             .style('display', 'inline-block')
             .html(`<i class='fa fa-gears leafy'></i>Total: ${d3.format('0.4f')(sumEx)}`);
         })
-        .on('mouseout', () => this.tooltip.style('display', 'none'))
-        .append('animate')
-        .attr('attributeType', 'CSS')
-        .attr('attributeName', 'opacity')
-        .attr('from', '1')
-        .attr('to', '0')
-        .attr('dur', '5s')
-        .attr('repeatCount', 'indefinite')
-        .transition().duration(2000).attrTween('transform', () => (t) =>
-          `translate(${t * nfac * Side},${t * Math.floor(weights.length) * Side})`)
+        .on('mouseout', (d, i, j) => {
+          const here = d3.select(j[i]);
+          here.selectAll('animate').remove();
+          this.tooltip.style('display', 'none');
+        })
         ;
     }
     svg.selectAll('.fbetas').select('g').data(factorBetas).enter()
@@ -1334,7 +1340,10 @@ export class UsersComponent implements OnChanges {
         const angle = angScaleSeparate[iExp](d.value), cc = (rad - th * 2) * Math.cos(angle), ss = (rad - th * 2) * Math.sin(angle);
         return `M${-rad / 2} 0l0 -${th}l${rad} 0l0 ${th}Z` + `M0 0l${th / 2} 0l${cc / 2} ${-ss / 2}l-${th} 0l${-cc / 2} ${ss / 2}Z`;
       }
-      );
+      )
+      .transition().duration(2000)
+      .attrTween('transform', (d, i) => t => `translate(${mx + rad / 2 + (i % numCol) * (rad + padRow)},
+      ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)}) rotate(${t * 360 + rotAng})`);
     gaugeplate.selectAll('.meters').select('g').data(exposures).enter()
       .append('text')
       .attr('class', 'meters')
@@ -1342,7 +1351,10 @@ export class UsersComponent implements OnChanges {
       .attr('y', -rad / 2 + th)
       .attr('transform', (d, i) => `translate(${mx + rad / 2 + (i % numCol) * (rad + padRow)},
       ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)}) rotate(${rotAng})`)
-      .text(d => formatG(d.value));
+      .text(d => formatG(d.value))
+      .transition().duration(2000)
+      .attrTween('transform', (d, i) => t => `translate(${mx + rad / 2 + (i % numCol) * (rad + padRow)},
+      ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)}) rotate(${-t * 360 + rotAng})`);
     gaugeplate.selectAll('.meters').select('g').data(exposures).enter()
       .append('text')
       .attr('class', 'factorlabels')
@@ -1352,7 +1364,10 @@ export class UsersComponent implements OnChanges {
       .attr('transform', (d, i) => `translate(${mx + rad / 2 + (i % numCol) * (rad + padRow)},
       ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)}) rotate(${rotAng})`)
       .text(d => d.axis)
-      .call(this.wrapFunction, 190, 1);
+      .call(this.wrapFunction, 190, 1)
+      .transition().duration(2000)
+      .attrTween('transform', (d, i) => t => `translate(${mx + rad / 2 + (i % numCol) * (rad + padRow)},
+      ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)}) rotate(${-t * 360 + rotAng})`);
     gaugeplate.selectAll('.newvals').data(newVals).enter()
       .append('text')
       .attr('class', 'newvals')
@@ -1379,7 +1394,10 @@ export class UsersComponent implements OnChanges {
             innerRadius: rad * smallerRimScale / 2 - th, outerRadius: rad * smallerRimScale / 2, startAngle: -st + Math.PI / 2,
             endAngle: -en + Math.PI / 2
           });
-        });
+        })
+        .transition().duration(2000)
+        .attrTween('transform', () => t => `translate(${mx + rad / 2 + (iExp % numCol) * (rad + padRow)},
+      ${my + rad / 2 + Math.floor(iExp / numCol) * (rad + labPad)}) rotate(${-t * 360 + rotAng})`);
       gaugeplate.selectAll(`.dials${iExp}`)
         .on('mouseover', (d, iDialPart, jj) => {
           const here = d3.select(jj[iDialPart]);
