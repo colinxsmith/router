@@ -400,6 +400,7 @@ export class UsersComponent implements OnChanges {
   }
   chooseData(dd: string, joinLinear = false) {
     d3.select('app-users').selectAll('svg').remove();
+    d3.select('app-users').selectAll('g').remove();
     d3.selectAll('input.field').remove();
     this.getKey = dd;
     /*    this.userService.postResult().subscribe(res => {
