@@ -506,7 +506,7 @@ export class UsersComponent implements OnChanges {
             d3.select('app-users').append('svg').attr('width', 750).attr('height', 50).append('g').append('text')
               .attr('transform', 'translate(0,30)').attr('class', 'users')
               .attr('picId', i)
-              .text(() => `Risk: ${this.displayData[idisp].risk}, Return: ${this.displayData[idisp].return},
+              .text(`Risk: ${this.displayData[idisp].risk}, Return: ${this.displayData[idisp].return},
                 gamma: ${this.displayData[idisp].gamma}`);
           });
         } else if (this.getKey === 'newData') {
@@ -679,7 +679,7 @@ export class UsersComponent implements OnChanges {
         .attr('transform', (d, i) => `translate(${-spacer},${Side * weights.length + Side / 2})`)
         .attr('y', 0)
         .attr('dy', '0.35em')
-        .text(d => 'Totals')
+        .text('Totals')
         .call(this.wrapFunction, margin.left, 1.01)
         ;
       svg.selectAll('.totals').select('g').data(totalsCol).enter()
