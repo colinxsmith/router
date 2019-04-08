@@ -1,4 +1,4 @@
-<select (change)="chooseData($event.target.value,updateLabel!=='MAKE POINTED')">
+<div><select (change)="chooseData($event.target.value,updateLabel!=='MAKE POINTED')">
     <option *ngFor="let i of dbKeyData">{{i}}</option>
 </select>
 <select (change)="choosePlot1($event.target.value)">
@@ -10,4 +10,4 @@
 <button (click)="changeDat()">{{updateLabel}}</button>
 <button (click)="sendOpt()">{{sendOptLabel}}</button>
 <button (click)="resetOpt()">{{resetOptLabel}}</button>
-
+</div>

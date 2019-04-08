@@ -400,7 +400,6 @@ export class UsersComponent implements OnChanges {
   }
   chooseData(dd: string, joinLinear = false) {
     d3.select('app-users').selectAll('svg').remove();
-    d3.select('app-users').selectAll('g').remove();
     d3.selectAll('input.field').remove();
     this.getKey = dd;
     /*    this.userService.postResult().subscribe(res => {
@@ -620,7 +619,7 @@ export class UsersComponent implements OnChanges {
       totalsCol[Math.floor(i / weights.length)] += d;
       sumEx += d;
     });
-    const svgBase = d3.select(id).attr('class', 'main').append('g').append('svg')
+    const svgBase = d3.select(id).attr('class', 'main').append('svg')
       .attr('width', w).attr('height', h),
       svg = svgBase.append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`),
@@ -831,7 +830,7 @@ export class UsersComponent implements OnChanges {
     height = (squareSide + spacer) * factorNames.length;
     w = width + margin.right + margin.left;
     h = height + margin.bottom + margin.top;
-    const svgBase = d3.select(id).attr('class', 'main').append('g').append('svg')
+    const svgBase = d3.select(id).attr('class', 'main').append('svg')
       .attr('width', w).attr('height', h),
       svg = svgBase.append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
@@ -1049,7 +1048,7 @@ export class UsersComponent implements OnChanges {
     width = radiusL * 2, height = radiusL * 2,
       w = width + margin.left + margin.right;
     h = height + margin.bottom + margin.top;
-    const svgBase = d3.select(id).attr('class', 'main').append('g').append('svg');
+    const svgBase = d3.select(id).attr('class', 'main').append('svg');
     let soFar = 0;
     svgBase
       .attr('height', h)
@@ -1167,7 +1166,7 @@ export class UsersComponent implements OnChanges {
     width = squareSide, height = squareSide,
       w = width + margin.left + margin.right;
     h = height + margin.bottom + margin.top;
-    const svgBase = d3.select(id).attr('class', 'main').append('g').append('svg'), circleRad = squareSide / 6, root2 = Math.sqrt(2),
+    const svgBase = d3.select(id).attr('class', 'main').append('svg'), circleRad = squareSide / 6, root2 = Math.sqrt(2),
       spacer = (root2 * squareSide / 2 - 3 * circleRad) / 2 * root2,
       filler = d3.interpolateRgb('magenta', 'cyan');
     svgBase
@@ -1585,7 +1584,7 @@ export class UsersComponent implements OnChanges {
     const rScale = d3.scaleLinear<number, number>()
       .range([0, radius])
       .domain([pMin, pMax]);
-    const svg = d3.select(id).attr('class', 'main').append('g').append('svg'), doView = false;
+    const svg = d3.select(id).attr('class', 'main').append('svg'), doView = false;
     if (doView) {
       svg.attr('viewBox', `0 0 ${cfg.w + cfg.margin.left + cfg.margin.right} ${cfg.h + cfg.margin.top + cfg.margin.bottom}`)
         .attr('class', 'radar' + id);
