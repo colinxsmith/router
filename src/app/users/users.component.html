@@ -1,13 +1,14 @@
-<select (change)="chooseData($event.target.value,updateLabel!=='MAKE POINTED')">
+<div style="color:rgb(1,200,210);background-color:white">
+<select style="color:inherit" (change)="chooseData($event.target.value,updateLabel!=='MAKE POINTED')">
     <option *ngFor="let i of dbKeyData">{{i}}</option>
 </select>
-<select (change)="choosePlot1($event.target.value)">
+<select style="color:inherit"  (change)="choosePlot1($event.target.value)">
     <option *ngFor="let i of plotLab">{{i}}</option>
 </select>
-<select (change)="choosePlot2($event.target.value)">
+<select style="color:inherit" (change)="choosePlot2($event.target.value)">
     <option *ngFor="let i of plotLab">{{i}}</option>
 </select>
-<button (click)="changeDat()">{{updateLabel}}</button>
-<button (click)="sendOpt()">{{sendOptLabel}}</button>
-<button (click)="resetOpt()">{{resetOptLabel}}</button>
-
+<button style="color:inherit" (click)="changeDat()">{{updateLabel}}</button>
+<button style="color:inherit" (click)="sendOpt()">{{sendOptLabel}}</button>
+<button style="color:inherit" (click)="resetOpt()">{{resetOptLabel}}</button>
+</div>

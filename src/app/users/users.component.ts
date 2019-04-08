@@ -503,8 +503,9 @@ export class UsersComponent implements OnChanges {
             const idisp = data1.length === 4 || this.getType === 'factor' ? i : this.choose2[i];
             this.stockbars(ddd, i, ww, hh, 2000, 'Weights', 'Assets');
             this.simpleDisplay(ddd, i);
-            d3.select('app-users').append('svg').attr('width', 600).attr('height', 50).append('g').append('text')
+            d3.select('app-users').append('svg').attr('width', 900).attr('height', 50).append('g').append('text')
               .attr('transform', 'translate(0,30)').attr('class', 'users')
+              .attr('picId', i)
               .text(() => `Risk: ${this.displayData[idisp].risk}, Return: ${this.displayData[idisp].return},
                 gamma: ${this.displayData[idisp].gamma}`);
           });
@@ -520,6 +521,7 @@ export class UsersComponent implements OnChanges {
           const svg = d3.select('app-users').append('svg').attr('width', 950).attr('height', 100);
           svg.selectAll('.riskret').data(datahere).enter()
             .append('text')
+            .attr('picId', (d, i) => i)
             .attr('transform', (d, i) => `translate(0,${20 * (i + 1)})`)
             .attr('class', 'rmessage').attr('x', 0).attr('y', 0)
             .text(d => `Risk: ${d.risk} Return: ${d.return} Return status: ${d.back}`)
@@ -617,7 +619,7 @@ export class UsersComponent implements OnChanges {
       totalsCol[Math.floor(i / weights.length)] += d;
       sumEx += d;
     });
-    const svgBase = d3.select(id).attr('class', 'main').append('g').append('svg')
+    const svgBase = d3.select(id).attr('class', 'main').append('svg')
       .attr('width', w).attr('height', h),
       svg = svgBase.append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`),
@@ -828,7 +830,7 @@ export class UsersComponent implements OnChanges {
     height = (squareSide + spacer) * factorNames.length;
     w = width + margin.right + margin.left;
     h = height + margin.bottom + margin.top;
-    const svgBase = d3.select(id).attr('class', 'main').append('g').append('svg')
+    const svgBase = d3.select(id).attr('class', 'main').append('svg')
       .attr('width', w).attr('height', h),
       svg = svgBase.append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
@@ -1046,7 +1048,7 @@ export class UsersComponent implements OnChanges {
     width = radiusL * 2, height = radiusL * 2,
       w = width + margin.left + margin.right;
     h = height + margin.bottom + margin.top;
-    const svgBase = d3.select(id).attr('class', 'main').append('g').append('svg');
+    const svgBase = d3.select(id).attr('class', 'main').append('svg');
     let soFar = 0;
     svgBase
       .attr('height', h)
@@ -1164,7 +1166,7 @@ export class UsersComponent implements OnChanges {
     width = squareSide, height = squareSide,
       w = width + margin.left + margin.right;
     h = height + margin.bottom + margin.top;
-    const svgBase = d3.select(id).attr('class', 'main').append('g').append('svg'), circleRad = squareSide / 6, root2 = Math.sqrt(2),
+    const svgBase = d3.select(id).attr('class', 'main').append('svg'), circleRad = squareSide / 6, root2 = Math.sqrt(2),
       spacer = (root2 * squareSide / 2 - 3 * circleRad) / 2 * root2,
       filler = d3.interpolateRgb('magenta', 'cyan');
     svgBase
@@ -1582,7 +1584,7 @@ export class UsersComponent implements OnChanges {
     const rScale = d3.scaleLinear<number, number>()
       .range([0, radius])
       .domain([pMin, pMax]);
-    const svg = d3.select(id).attr('class', 'main').append('g').append('svg'), doView = false;
+    const svg = d3.select(id).attr('class', 'main').append('svg'), doView = false;
     if (doView) {
       svg.attr('viewBox', `0 0 ${cfg.w + cfg.margin.left + cfg.margin.right} ${cfg.h + cfg.margin.top + cfg.margin.bottom}`)
         .attr('class', 'radar' + id);
@@ -1681,7 +1683,13 @@ export class UsersComponent implements OnChanges {
               .style('fill-opacity', 0.7);
           }
         });
-        d3.selectAll(`rect.users`).nodes().forEach(hh => {
+        d3.selectAll(`.users`).nodes().forEach(hh => {
+          const h = d3.select(hh);
+          if (+h.attr('picId') === i) {
+            h.classed('over', true);
+          }
+        });
+        d3.selectAll(`.rmessage`).nodes().forEach(hh => {
           const h = d3.select(hh);
           if (+h.attr('picId') === i) {
             h.classed('over', true);
@@ -1702,7 +1710,10 @@ export class UsersComponent implements OnChanges {
         });
       })
       .on('mouseout', () => {
-        d3.selectAll(`rect.users`).nodes().forEach(hh => {
+        d3.selectAll(`.users`).nodes().forEach(hh => {
+          d3.select(hh).classed('over', false);
+        });
+        d3.selectAll(`.rmessage`).nodes().forEach(hh => {
           d3.select(hh).classed('over', false);
         });
         d3.selectAll('.portfolioFlower')
