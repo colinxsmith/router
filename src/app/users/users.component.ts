@@ -1785,7 +1785,7 @@ export class UsersComponent implements OnChanges {
       .transition()
       .ease(d3.easeBounce)
       .duration(2000)
-      .tween('lines', (d, i, j) => (t) => {
+      .tween('lines', (d, i, j) => t => {
         const HERE = j[i], extension = 1.13;
         HERE.setAttribute('x2', '' + rScale(pMax * extension) * Math.cos(angleScale(i) - Math.PI / 2) * t);
         HERE.setAttribute('y2', '' + rScale(pMax * extension) * Math.sin(angleScale(i) - Math.PI / 2) * t);
