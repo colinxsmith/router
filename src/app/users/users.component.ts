@@ -503,7 +503,7 @@ export class UsersComponent implements OnChanges {
             const idisp = data1.length === 4 || this.getType === 'factor' ? i : this.choose2[i];
             this.stockbars(ddd, i, ww, hh, 2000, 'Weights', 'Assets');
             this.simpleDisplay(ddd, i);
-            d3.select('app-users').append('svg').attr('width', 900).attr('height', 50).append('g').append('text')
+            d3.select('app-users').append('svg').attr('width', 750).attr('height', 50).append('g').append('text')
               .attr('transform', 'translate(0,30)').attr('class', 'users')
               .attr('picId', i)
               .text(() => `Risk: ${this.displayData[idisp].risk}, Return: ${this.displayData[idisp].return},
