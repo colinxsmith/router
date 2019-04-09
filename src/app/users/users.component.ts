@@ -1505,6 +1505,7 @@ export class UsersComponent implements OnChanges {
     base.append('text')
       .attr('x', 5)
       .attr('y', 23)
+      .attr('picId', position)
       .attr('transform', `translate(${off},${0})`)
       .attr('class', 'users')
       .call((d) => d.each((dd, i, j) => {// We have to do it like this with call() rather than html() to get the tspan on IE on Windows 7
@@ -1523,6 +1524,7 @@ export class UsersComponent implements OnChanges {
       .attr('transform', (d, i) => `translate(${off},${i * 21})`)
       .attr('lineindex', d => d['axis'])
       .attr('class', 'users')
+      .attr('picId', position)
       .call((d) => d.each((dd, i, j) => {// We have to do it like this with call() rather than html() to get the tspan on IE on Windows 7
         const k = d3.select(j[i]);
         for (let kk = 0; kk < keys.length; ++kk) {
