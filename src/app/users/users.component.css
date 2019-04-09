@@ -113,10 +113,22 @@ rect.barrim {
 
 rect.weightSinglePlus {
     fill: rgb(37, 175, 213);
+    fill-opacity: 0.35;
+}
+
+rect.weightSinglePlus.over {
+    fill: rgb(37, 175, 213);
+    fill-opacity: 1;
 }
 
 rect.weightSingleMinus {
     fill: rgba(231, 127, 121, 1);
+    fill-opacity: 0.35;
+}
+
+rect.weightSingleMinus.over {
+    fill: rgba(231, 127, 121, 1);
+    fill-opacity: 1;
 }
 
 text.meters {
