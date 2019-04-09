@@ -503,10 +503,10 @@ export class UsersComponent implements OnChanges {
             const idisp = data1.length === 4 || this.getType === 'factor' ? i : this.choose2[i];
             this.stockbars(ddd, i, ww, hh, 2000, 'Weights', 'Assets');
             this.simpleDisplay(ddd, i);
-            d3.select('app-users').append('svg').attr('width', 900).attr('height', 50).append('g').append('text')
+            d3.select('app-users').append('svg').attr('width', 750).attr('height', 50).append('g').append('text')
               .attr('transform', 'translate(0,30)').attr('class', 'users')
               .attr('picId', i)
-              .text(() => `Risk: ${this.displayData[idisp].risk}, Return: ${this.displayData[idisp].return},
+              .text(`Risk: ${this.displayData[idisp].risk}, Return: ${this.displayData[idisp].return},
                 gamma: ${this.displayData[idisp].gamma}`);
           });
         } else if (this.getKey === 'newData') {
@@ -679,7 +679,7 @@ export class UsersComponent implements OnChanges {
         .attr('transform', (d, i) => `translate(${-spacer},${Side * weights.length + Side / 2})`)
         .attr('y', 0)
         .attr('dy', '0.35em')
-        .text(d => 'Totals')
+        .text('Totals')
         .call(this.wrapFunction, margin.left, 1.01)
         ;
       svg.selectAll('.totals').select('g').data(totalsCol).enter()
@@ -1505,6 +1505,7 @@ export class UsersComponent implements OnChanges {
     base.append('text')
       .attr('x', 5)
       .attr('y', 23)
+      .attr('picId', position)
       .attr('transform', `translate(${off},${0})`)
       .attr('class', 'users')
       .call((d) => d.each((dd, i, j) => {// We have to do it like this with call() rather than html() to get the tspan on IE on Windows 7
@@ -1523,6 +1524,7 @@ export class UsersComponent implements OnChanges {
       .attr('transform', (d, i) => `translate(${off},${i * 21})`)
       .attr('lineindex', d => d['axis'])
       .attr('class', 'users')
+      .attr('picId', position)
       .call((d) => d.each((dd, i, j) => {// We have to do it like this with call() rather than html() to get the tspan on IE on Windows 7
         const k = d3.select(j[i]);
         for (let kk = 0; kk < keys.length; ++kk) {
@@ -1785,7 +1787,7 @@ export class UsersComponent implements OnChanges {
       .transition()
       .ease(d3.easeBounce)
       .duration(2000)
-      .tween('lines', (d, i, j) => (t) => {
+      .tween('lines', (d, i, j) => t => {
         const HERE = j[i], extension = 1.13;
         HERE.setAttribute('x2', '' + rScale(pMax * extension) * Math.cos(angleScale(i) - Math.PI / 2) * t);
         HERE.setAttribute('y2', '' + rScale(pMax * extension) * Math.sin(angleScale(i) - Math.PI / 2) * t);
