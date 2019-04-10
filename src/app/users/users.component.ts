@@ -1696,21 +1696,20 @@ export class UsersComponent implements OnChanges {
         d3.selectAll('.portfolioFlower')
           .transition().duration(2)
           .style('fill-opacity', 0.1);
-        d3.selectAll('.weightSinglePlus')
-          .transition().duration(2)
-          .style('fill-opacity', 0.1);
-        d3.selectAll('.weightSingleMinus')
-          .transition().duration(2)
-          .style('fill-opacity', 0.1);
         // Bring back the hovered over blob
         d3.select(jj[i])
           .transition().duration(2)
           .style('fill-opacity', 0.7);
-        d3.selectAll(`.weightSinglePlus`).nodes().forEach(hh => {
+        d3.selectAll(`rect.weightSinglePlus`).nodes().forEach(hh => {
           const h = d3.select(hh);
           if (+h.attr('picId') === i) {
-            h.transition().duration(2)
-              .style('fill-opacity', 0.7);
+            h.classed('over', true);
+          }
+        });
+        d3.selectAll(`rect.weightSingleMinus`).nodes().forEach(hh => {
+          const h = d3.select(hh);
+          if (+h.attr('picId') === i) {
+            h.classed('over', true);
           }
         });
         d3.selectAll(`.users`).nodes().forEach(hh => {
@@ -1723,13 +1722,6 @@ export class UsersComponent implements OnChanges {
           const h = d3.select(hh);
           if (+h.attr('picId') === i) {
             h.classed('over', true);
-          }
-        });
-        d3.selectAll(`.weightSingleMinus`).nodes().forEach(hh => {
-          const h = d3.select(hh);
-          if (+h.attr('picId') === i) {
-            h.transition().duration(2)
-              .style('fill-opacity', 0.7);
           }
         });
         d3.selectAll(`.totals`).nodes().forEach(hh => {
@@ -1749,12 +1741,10 @@ export class UsersComponent implements OnChanges {
         d3.selectAll('.portfolioFlower')
           .transition().duration(10)
           .style('fill-opacity', cfg.opacityArea);
-        d3.selectAll('.weightSinglePlus')
-          .transition().duration(2)
-          .style('fill-opacity', cfg.opacityArea);
-        d3.selectAll('.weightSingleMinus')
-          .transition().duration(2)
-          .style('fill-opacity', cfg.opacityArea);
+        d3.selectAll('rect.weightSinglePlus')
+          .classed('over', false);
+        d3.selectAll('rect.weightSingleMinus')
+          .classed('over', false);
         d3.selectAll('.totals').classed('over', false);
       }
       );
@@ -1939,7 +1929,7 @@ export class UsersComponent implements OnChanges {
       })
       .attr('class', (d) => d.value > 0 ? 'weightSinglePlus' : 'weightSingleMinus')
       .attr('picId', dataIndex)
-//      .style('fill-opacity', 0.35)
+      //      .style('fill-opacity', 0.35)
       .on('mousemove', (d) => this.tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px').style('display', 'inline-block')
         .html(`<i class='fa fa-gears leafy'></i>${d.axis}<br>weight:${d3.format('0.5f')(d.value)}<br>
