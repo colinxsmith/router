@@ -561,7 +561,21 @@ export class UsersComponent implements OnChanges {
           .on('mouseover', (d, ii, jj) => {
             const here = d3.select(jj[ii]);
             if (here.attr('lineindex') !== null) {
-              const test = d3.select('app-users').selectAll('text.users');
+              let test = d3.select('app-users').selectAll('text.users');
+              test.each((kk, iii, jjj) => {
+                const kkk = d3.select(jjj[iii]);
+                if (kkk.attr('lineindex') === here.attr('lineindex')) {
+                  kkk.classed('over', true);
+                }
+              });
+              test = d3.select('app-users').selectAll('rect.weightSinglePlus');
+              test.each((kk, iii, jjj) => {
+                const kkk = d3.select(jjj[iii]);
+                if (kkk.attr('lineindex') === here.attr('lineindex')) {
+                  kkk.classed('over', true);
+                }
+              });
+              test = d3.select('app-users').selectAll('rect.weightSingleMinus');
               test.each((kk, iii, jjj) => {
                 const kkk = d3.select(jjj[iii]);
                 if (kkk.attr('lineindex') === here.attr('lineindex')) {
@@ -575,7 +589,21 @@ export class UsersComponent implements OnChanges {
           .on('mouseout', (d, ii, jj) => {
             const here = d3.select(jj[ii]);
             if (here.attr('lineindex') !== null) {
-              const test = d3.select('app-users').selectAll('text.users');
+              let test = d3.select('app-users').selectAll('text.users');
+              test.each((kk, iii, jjj) => {
+                const kkk = d3.select(jjj[iii]);
+                if (kkk.attr('lineindex') === here.attr('lineindex')) {
+                  kkk.classed('over', false);
+                }
+              });
+              test = d3.select('app-users').selectAll('rect.weightSingleMinus');
+              test.each((kk, iii, jjj) => {
+                const kkk = d3.select(jjj[iii]);
+                if (kkk.attr('lineindex') === here.attr('lineindex')) {
+                  kkk.classed('over', false);
+                }
+              });
+              test = d3.select('app-users').selectAll('rect.weightSinglePlus');
               test.each((kk, iii, jjj) => {
                 const kkk = d3.select(jjj[iii]);
                 if (kkk.attr('lineindex') === here.attr('lineindex')) {
@@ -1668,21 +1696,20 @@ export class UsersComponent implements OnChanges {
         d3.selectAll('.portfolioFlower')
           .transition().duration(2)
           .style('fill-opacity', 0.1);
-        d3.selectAll('.weightSinglePlus')
-          .transition().duration(2)
-          .style('fill-opacity', 0.1);
-        d3.selectAll('.weightSingleMinus')
-          .transition().duration(2)
-          .style('fill-opacity', 0.1);
         // Bring back the hovered over blob
         d3.select(jj[i])
           .transition().duration(2)
           .style('fill-opacity', 0.7);
-        d3.selectAll(`.weightSinglePlus`).nodes().forEach(hh => {
+        d3.selectAll(`rect.weightSinglePlus`).nodes().forEach(hh => {
           const h = d3.select(hh);
           if (+h.attr('picId') === i) {
-            h.transition().duration(2)
-              .style('fill-opacity', 0.7);
+            h.classed('over', true);
+          }
+        });
+        d3.selectAll(`rect.weightSingleMinus`).nodes().forEach(hh => {
+          const h = d3.select(hh);
+          if (+h.attr('picId') === i) {
+            h.classed('over', true);
           }
         });
         d3.selectAll(`.users`).nodes().forEach(hh => {
@@ -1695,13 +1722,6 @@ export class UsersComponent implements OnChanges {
           const h = d3.select(hh);
           if (+h.attr('picId') === i) {
             h.classed('over', true);
-          }
-        });
-        d3.selectAll(`.weightSingleMinus`).nodes().forEach(hh => {
-          const h = d3.select(hh);
-          if (+h.attr('picId') === i) {
-            h.transition().duration(2)
-              .style('fill-opacity', 0.7);
           }
         });
         d3.selectAll(`.totals`).nodes().forEach(hh => {
@@ -1721,12 +1741,10 @@ export class UsersComponent implements OnChanges {
         d3.selectAll('.portfolioFlower')
           .transition().duration(10)
           .style('fill-opacity', cfg.opacityArea);
-        d3.selectAll('.weightSinglePlus')
-          .transition().duration(2)
-          .style('fill-opacity', cfg.opacityArea);
-        d3.selectAll('.weightSingleMinus')
-          .transition().duration(2)
-          .style('fill-opacity', cfg.opacityArea);
+        d3.selectAll('rect.weightSinglePlus')
+          .classed('over', false);
+        d3.selectAll('rect.weightSingleMinus')
+          .classed('over', false);
         d3.selectAll('.totals').classed('over', false);
       }
       );
@@ -1888,6 +1906,7 @@ export class UsersComponent implements OnChanges {
     chart.selectAll('.bar').data(DATA).enter().append('rect').attr('class', 'barrim')
       .attr('width', x.bandwidth() / bandfiddle + 2 * rim)
       .attr('x', (d) => x(d.axis) / bandfiddle - rim)
+      .attr('lineindex', d => d.axis)
       .attr('height', (d) => rim + (d.value <= 0 ? y(d.value) - y(0) : y(0) - y(d.value)))
       .attr('y', (d) => (d.value <= 0 ? y(0) : y(d.value) - rim))
       .on('mousemove', (d) => this.tooltip.style('left', d3.event.pageX - 50 + 'px')
@@ -1899,6 +1918,7 @@ export class UsersComponent implements OnChanges {
     chart.selectAll('.bar').data(DATA).enter().append('rect')
       .attr('width', x.bandwidth() / bandfiddle)
       .attr('x', (d) => x(d.axis) / bandfiddle)
+      .attr('lineindex', d => d.axis)
       .attr('height', (d) => {
         const deviation = 0;
         return deviation <= 0 ? y(deviation) - y(0) : y(0) - y(deviation);
@@ -1909,7 +1929,7 @@ export class UsersComponent implements OnChanges {
       })
       .attr('class', (d) => d.value > 0 ? 'weightSinglePlus' : 'weightSingleMinus')
       .attr('picId', dataIndex)
-      .style('fill-opacity', 0.35)
+      //      .style('fill-opacity', 0.35)
       .on('mousemove', (d) => this.tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px').style('display', 'inline-block')
         .html(`<i class='fa fa-gears leafy'></i>${d.axis}<br>weight:${d3.format('0.5f')(d.value)}<br>

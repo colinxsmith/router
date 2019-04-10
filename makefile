@@ -29,3 +29,6 @@ $(INTERFACE)_wrap.o:	$(INTERFACE)_wrap.cxx
 	$(CXX) $(CFLAGS) $(CXXFLAGS) -c $< -o $@
 test:	$(INTERFACE).node
 	export LD_LIBRARY_PATH=/home/colin/safeqp && sed "s|/build/Release||" runme.js | node_modules/.bin/node 
+server:	$(INTERFACE).node
+	cp $(INTERFACE).node build/Release
+	export LD_LIBRARY_PATH=/home/colin/safeqp && cat server.js | node_modules/.bin/node 
