@@ -30,4 +30,5 @@ $(INTERFACE)_wrap.o:	$(INTERFACE)_wrap.cxx
 test:	$(INTERFACE).node
 	export LD_LIBRARY_PATH=/home/colin/safeqp && sed "s|/build/Release||" runme.js | node_modules/.bin/node 
 server:	$(INTERFACE).node
-	export LD_LIBRARY_PATH=/home/colin/safeqp && sed "s|/build/Release||" server.js | node_modules/.bin/node 
+	cp $(INTERFACE).node build/Release
+	export LD_LIBRARY_PATH=/home/colin/safeqp && cat server.js | node_modules/.bin/node 
