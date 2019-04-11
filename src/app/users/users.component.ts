@@ -1695,7 +1695,7 @@ export class UsersComponent implements OnChanges {
         // Dim all blobs
         d3.selectAll('.portfolioFlower')
           .transition().duration(2)
-          .style('fill-opacity', 0.1);
+          .style('fill-opacity', 0.05);
         // Bring back the hovered over blob
         d3.select(jj[i])
           .transition().duration(2)
