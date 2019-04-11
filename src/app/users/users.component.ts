@@ -1588,7 +1588,6 @@ export class UsersComponent implements OnChanges {
       labelFactor: 1.25, 	// How much farther than the radius of the outer circle should the labels be placed
       wrapWidth: 60, 		// The number of pixels after which a label needs to be given a new line
       lineHeight: 1.4, 		// Height for wrapped lines
-      opacityArea: 0.35, 	// The opacity of the area of the blob
       dotRadius: 3, 			// The size of the coloured circles of each blog
       opacityCircles: 0.1, 	// The opacity of the circles of each blob
       strokeWidth: 2, 		// The width of the stroke around each blob
@@ -1690,16 +1689,15 @@ export class UsersComponent implements OnChanges {
       .attr('class', 'portfolioFlower')
       .attr('d', (d, i) => (pMin < 0 ? radarLine(d) + radarLineZ(d) : radarLine(d)) + blobChooser(i))
       .style('fill', (d, i) => cfg.colour(i))
-      .style('fill-opacity', cfg.opacityArea)
       .on('mouseover', (d, i, jj) => {
         // Dim all blobs
         d3.selectAll('.portfolioFlower')
           .transition().duration(2)
-          .style('fill-opacity', 0.05);
+          .attr('class', 'portfolioFlower dim');
         // Bring back the hovered over blob
         d3.select(jj[i])
           .transition().duration(2)
-          .style('fill-opacity', 0.7);
+          .attr('class', 'portfolioFlower over');
         d3.selectAll(`rect.weightSinglePlus`).nodes().forEach(hh => {
           const h = d3.select(hh);
           if (+h.attr('picId') === i) {
@@ -1740,7 +1738,7 @@ export class UsersComponent implements OnChanges {
         });
         d3.selectAll('.portfolioFlower')
           .transition().duration(10)
-          .style('fill-opacity', cfg.opacityArea);
+          .attr('class', 'portfolioFlower');
         d3.selectAll('rect.weightSinglePlus')
           .classed('over', false);
         d3.selectAll('rect.weightSingleMinus')

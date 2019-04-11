@@ -340,3 +340,15 @@ input.field {
     color: rgb(28, 33, 103);
     font-size: 20px;
 }
+
+.portfolioFlower {
+    fill-opacity: 0.35;
+}
+
+.portfolioFlower.over {
+    fill-opacity: 0.75;
+}
+
+.portfolioFlower.dim {
+    fill-opacity: 0.05;
+}
