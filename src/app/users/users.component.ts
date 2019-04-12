@@ -1162,20 +1162,18 @@ export class UsersComponent implements OnChanges {
         .styleTween('fill-opacity', () => t => `${-t * (1 - t) * 4 + 1}`))
       .transition().duration(2000)
       .tween('transform', (dh, i, j) => t => {
-        const here = d3.select(j[i]), down = 8;
+        const here = (j[i]), down = 8;
         const circ = Math.floor((dh.id - 1) / 3);
         const back = circ === 0 ?
           `translate(0,${down * t}) rotate(${-180 * (1 - t)})` : `translate(${radiusS * 2 * Math.cos(Math.PI / 2 * circ + extra)},
       ${radiusS * 2 * Math.sin(Math.PI / 2 * circ + extra) + down * t}) rotate(${180 * (1 - t)})`;
-        here
-          .attr('transform', back)
-          .style('fill-opacity', (-t * (1 - t) * 4 + 1))
-          .text(dh.outlierStatusType);
+        here.setAttribute('transform', back);
+        here.style['fill-opacity'] = -t * (1 - t) * 4 + 1;
+        here.textContent = (dh.outlierStatusType);
       })
       ;
     svg.selectAll('path.newfive')
-      .on('mousemove', (dd, i, j) => {
-        const here = d3.select(j[i]);
+      .on('mousemove', (dd, i) => {
         const d = Data[i];
         this.tooltip.style('left', d3.event.pageX - 5 + 'px')
           .style('top', d3.event.pageY + 7 + 'px')
@@ -1569,7 +1567,7 @@ export class UsersComponent implements OnChanges {
         .attr('class', 'main field')
         .attr('value', (<SVGTSpanElement>jjj[iii]).textContent)
         .on('change', (dk, i, j) => {
-          (<SVGTSpanElement>jjj[iii]).textContent = (<HTMLInputElement>j[i]).value;
+          (<SVGTSpanElement>jjj[iii]).textContent = (j[i]).value;
           d3.select(j[i]).remove();
         })
       );
@@ -1781,8 +1779,8 @@ export class UsersComponent implements OnChanges {
       .style('fill', (d, i, j) => cfg.colour(+d3.select(<HTMLSelectElement>(j[i]).parentNode).attr('data-index')))
       .style('pointer-events', 'all')
       .on('mouseover', (d, i, j) => localTiptool
-        .attr('x', parseFloat((d3.select(j[i])).attr('cx')) - 10)
-        .attr('y', parseFloat((d3.select(j[i])).attr('cy')) - 10)
+        .attr('x', parseFloat((j[i]).getAttribute('cx')) - 10)
+        .attr('y', parseFloat((j[i]).getAttribute('cy')) - 10)
         .style('fill', 'none')
         .style('opacity', 1)
         .text(percentFormat(+d.value))
