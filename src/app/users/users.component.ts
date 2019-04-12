@@ -1162,14 +1162,14 @@ export class UsersComponent implements OnChanges {
         .styleTween('fill-opacity', () => t => `${-t * (1 - t) * 4 + 1}`))
       .transition().duration(2000)
       .tween('transform', (dh, i, j) => t => {
-        const here = (j[i]), down = 8;
+        const here = j[i], down = 8;
         const circ = Math.floor((dh.id - 1) / 3);
         const back = circ === 0 ?
           `translate(0,${down * t}) rotate(${-180 * (1 - t)})` : `translate(${radiusS * 2 * Math.cos(Math.PI / 2 * circ + extra)},
       ${radiusS * 2 * Math.sin(Math.PI / 2 * circ + extra) + down * t}) rotate(${180 * (1 - t)})`;
         here.setAttribute('transform', back);
         here.style['fill-opacity'] = -t * (1 - t) * 4 + 1;
-        here.textContent = (dh.outlierStatusType);
+        here.textContent = dh.outlierStatusType;
       })
       ;
     svg.selectAll('path.newfive')
@@ -1803,9 +1803,9 @@ export class UsersComponent implements OnChanges {
       .ease(d3.easeBounce)
       .duration(2000)
       .tween('lines', (d, i, j) => t => {
-        const HERE = j[i], extension = 1.13;
-        HERE.setAttribute('x2', '' + rScale(pMax * extension) * Math.cos(angleScale(i) - Math.PI / 2) * t);
-        HERE.setAttribute('y2', '' + rScale(pMax * extension) * Math.sin(angleScale(i) - Math.PI / 2) * t);
+        const extension = 1.13;
+        j[i].setAttribute('x2', '' + rScale(pMax * extension) * Math.cos(angleScale(i) - Math.PI / 2) * t);
+        j[i].setAttribute('y2', '' + rScale(pMax * extension) * Math.sin(angleScale(i) - Math.PI / 2) * t);
       })
       .attr('class', 'line');
     axis.append('text')
