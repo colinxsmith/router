@@ -1623,14 +1623,14 @@ export class UsersComponent implements OnChanges {
         .attr('y', 0)
         .attr('class', 'radar' + id);
     }
-    const g = svg.append('g')
+    const baseSvg = svg.append('g')
       .attr('transform', 'translate(' + (cfg.w / 2 + cfg.margin.left) + ',' + (cfg.h / 2 + cfg.margin.top) + ')'),
-      filter = g.append('defs').append('filter').attr('id', 'glow'),
+      filter = baseSvg.append('defs').append('filter').attr('id', 'glow'),
       feGaussianBlur = filter.append('feGaussianBlur').attr('stdDeviation', '2.5').attr('result', 'colouredBlur'),
       feMerge = filter.append('feMerge'),
       feMergeNode_1 = feMerge.append('feMergeNode').attr('in', 'colouredBlur'),
       feMergeNode_2 = feMerge.append('feMergeNode').attr('in', 'SourceGraphic'),
-      axisGrid = g.append('g').attr('class', 'axisWrapper');
+      axisGrid = baseSvg.append('g').attr('class', 'axisWrapper');
 
     const circScale = d3.scaleLinear<number, number>().domain([pMin < 0 ? -cfg.levels : 0, cfg.levels]).range([0, radius]);
     const circVal = d3.scaleLinear<number, number>().domain([pMin < 0 ? -cfg.levels : 0, cfg.levels])
@@ -1677,7 +1677,7 @@ export class UsersComponent implements OnChanges {
     const blobChooser = (k: number) =>
       // tslint:disable-next-line:max-line-length
       `M${cfg.margin.right / 2 + radius} ${-cfg.margin.right / 2 - radius + k * radius / 10}l${radius / 10} 0l0 ${radius / 10}l-${radius / 10} 0z`;
-    const blobWrapper = g.selectAll('.radarWrapper')
+    const blobWrapper = baseSvg.selectAll('.radarWrapper')
       .data(data)
       .enter().append('g')
       .attr('data-index', (d, i) => i)
@@ -1764,11 +1764,11 @@ export class UsersComponent implements OnChanges {
       .attr('cy', (d, i) => rScale(d.value) * Math.sin(angleScale(i) - Math.PI / 2))
       .style('fill', (d, i, j) => cfg.colour(+d3.select(<HTMLSelectElement>(j[i]).parentNode).attr('data-index')))
       .style('fill-opacity', 0.8);
-    const blobCircleWrapper = g.selectAll('.radarCircleWrapper')
+    const blobCircleWrapper = baseSvg.selectAll('.radarCircleWrapper')
       .data(data)
-      .enter().append('g')
       .attr('data-index', (d, i) => i)
-      .attr('class', 'radarCircleWrapper');
+      .attr('class', 'radarCircleWrapper')
+      .enter();
     blobCircleWrapper.selectAll('.radarInvisibleCircle')
       .data((d) => d)
       .enter().append('circle')
@@ -1822,7 +1822,7 @@ export class UsersComponent implements OnChanges {
       .attr('y', (d) => -circScale(d))
       .attr('dy', '0.4em')
       .text((d, i) => percentFormat(circVal(d)));
-    const localTiptool = g.append('text')
+    const localTiptool = baseSvg.append('text')
       .attr('class', 'tooltipRadar')
       .style('opacity', 0);
   }
