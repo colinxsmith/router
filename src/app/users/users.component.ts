@@ -1586,7 +1586,7 @@ export class UsersComponent implements OnChanges {
       labelFactor: 1.25, 	// How much farther than the radius of the outer circle should the labels be placed
       wrapWidth: 60, 		// The number of pixels after which a label needs to be given a new line
       lineHeight: 1.4, 		// Height for wrapped lines
-      dotRadius: 3, 			// The size of the coloured circles of each blog
+      dotRadius: 4, 			// The size of the coloured circles of each blog
       opacityCircles: 0.1, 	// The opacity of the circles of each blob
       strokeWidth: 2, 		// The width of the stroke around each blob
       roundStrokes: false,	// If true the area and stroke will follow a round path (cardinal-closed)
@@ -1766,9 +1766,9 @@ export class UsersComponent implements OnChanges {
       .style('fill-opacity', 0.8);
     const blobCircleWrapper = baseSvg.selectAll('.radarCircleWrapper')
       .data(data)
+      .enter().append('g')
       .attr('data-index', (d, i) => i)
-      .attr('class', 'radarCircleWrapper')
-      .enter();
+      .attr('class', 'radarCircleWrapper');
     blobCircleWrapper.selectAll('.radarInvisibleCircle')
       .data((d) => d)
       .enter().append('circle')
@@ -1777,6 +1777,7 @@ export class UsersComponent implements OnChanges {
       .attr('cx', (d, i) => rScale(d.value) * Math.cos(angleScale(i) - Math.PI / 2))
       .attr('cy', (d, i) => rScale(d.value) * Math.sin(angleScale(i) - Math.PI / 2))
       .style('fill', (d, i, j) => cfg.colour(+d3.select(<HTMLSelectElement>(j[i]).parentNode).attr('data-index')))
+      .style('fill-opacity', 0)
       .style('pointer-events', 'all')
       .on('mouseover', (d, i, j) => localTiptool
         .attr('x', parseFloat((j[i]).getAttribute('cx')) - 10)
