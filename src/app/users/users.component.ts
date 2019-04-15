@@ -1396,6 +1396,7 @@ export class UsersComponent implements OnChanges {
       .transition().duration(2000)
       .attrTween('transform', (d, i) => t => `translate(${mx + rad / 2 + (i % numCol) * (rad + padRow)},
       ${my + rad / 2 + Math.floor(i / numCol) * (rad + labPad)}) rotate(${-t * 360 + rotAng})`);
+    let newValsFontSize = 0;
     gaugeplate.selectAll('.newvals').data(newVals).enter()
       .append('text')
       .attr('class', 'newvals')
@@ -1450,20 +1451,22 @@ export class UsersComponent implements OnChanges {
           gaugeplate.selectAll('.newvals').each((dki, iii, jjj) => {
             if (iii === iExp) {
               const here1 = d3.select(jjj[iii]);
-              xx = `${+here1.attr('x') - 20}`;
-              yy = `${+here1.attr('y') - 20}`;
+              newValsFontSize = +here1.style('font-size').replace('px', '');
+              xx = `${+here1.attr('x') - newValsFontSize}`;
+              yy = `${+here1.attr('y') - newValsFontSize}`;
               trans = here1.attr('transform');
             }
           });
           gaugeplate
             .append('foreignObject')
             .attr('id', `FO${iExp}`)
-            .attr('width', 70).attr('height', 50)
+            .attr('width', `${newValsFontSize * 3}px`).attr('height', '50px')
             .attr('transform', trans).attr('x', xx).attr('y', yy)
             .append('xhtml:div')
             .append('input')
             .attr('type', 'text')
             .attr('class', 'main field').attr('size', 5)
+            .style('font-size', `${newValsFontSize}px`)
             .attr('value', (newVals[iExp]))
             .on('change', (dd, i, j) => {
               newVals[iExp] = +j[i].value;
