@@ -557,63 +557,66 @@ export class UsersComponent implements OnChanges {
           });
           this.fiveCircles();
         }
-        d3.select('app-users').selectAll('text.users')
-          .on('mouseover', (d, ii, jj) => {
-            const here = d3.select(jj[ii]);
-            if (here.attr('lineindex') !== null) {
-              let test = d3.select('app-users').selectAll('text.users');
-              test.each((kk, iii, jjj) => {
-                const kkk = d3.select(jjj[iii]);
-                if (kkk.attr('lineindex') === here.attr('lineindex')) {
-                  kkk.classed('over', true);
-                }
-              });
-              test = d3.select('app-users').selectAll('rect.weightSinglePlus');
-              test.each((kk, iii, jjj) => {
-                const kkk = d3.select(jjj[iii]);
-                if (kkk.attr('lineindex') === here.attr('lineindex')) {
-                  kkk.classed('over', true);
-                }
-              });
-              test = d3.select('app-users').selectAll('rect.weightSingleMinus');
-              test.each((kk, iii, jjj) => {
-                const kkk = d3.select(jjj[iii]);
-                if (kkk.attr('lineindex') === here.attr('lineindex')) {
-                  kkk.classed('over', true);
-                }
-              });
-            } else {
-              here.classed('over', true);
-            }
-          })
-          .on('mouseout', (d, ii, jj) => {
-            const here = d3.select(jj[ii]);
-            if (here.attr('lineindex') !== null) {
-              let test = d3.select('app-users').selectAll('text.users');
-              test.each((kk, iii, jjj) => {
-                const kkk = d3.select(jjj[iii]);
-                if (kkk.attr('lineindex') === here.attr('lineindex')) {
-                  kkk.classed('over', false);
-                }
-              });
-              test = d3.select('app-users').selectAll('rect.weightSingleMinus');
-              test.each((kk, iii, jjj) => {
-                const kkk = d3.select(jjj[iii]);
-                if (kkk.attr('lineindex') === here.attr('lineindex')) {
-                  kkk.classed('over', false);
-                }
-              });
-              test = d3.select('app-users').selectAll('rect.weightSinglePlus');
-              test.each((kk, iii, jjj) => {
-                const kkk = d3.select(jjj[iii]);
-                if (kkk.attr('lineindex') === here.attr('lineindex')) {
-                  kkk.classed('over', false);
-                }
-              });
-            } else {
-              here.classed('over', false);
-            }
-          });
+        const selectHere = ['text.users', 'rect.weightSinglePlus', 'rect.weightSingleMinus'];
+        selectHere.forEach(ss => {
+          d3.select('app-users').selectAll(ss)
+            .on('mouseover', (d, ii, jj) => {
+              const here = d3.select(jj[ii]);
+              if (here.attr('lineindex') !== null) {
+                let test = d3.select('app-users').selectAll('text.users');
+                test.each((kk, iii, jjj) => {
+                  const kkk = d3.select(jjj[iii]);
+                  if (kkk.attr('lineindex') === here.attr('lineindex')) {
+                    kkk.classed('over', true);
+                  }
+                });
+                test = d3.select('app-users').selectAll('rect.weightSinglePlus');
+                test.each((kk, iii, jjj) => {
+                  const kkk = d3.select(jjj[iii]);
+                  if (kkk.attr('lineindex') === here.attr('lineindex')) {
+                    kkk.classed('over', true);
+                  }
+                });
+                test = d3.select('app-users').selectAll('rect.weightSingleMinus');
+                test.each((kk, iii, jjj) => {
+                  const kkk = d3.select(jjj[iii]);
+                  if (kkk.attr('lineindex') === here.attr('lineindex')) {
+                    kkk.classed('over', true);
+                  }
+                });
+              } else {
+                here.classed('over', true);
+              }
+            })
+            .on('mouseout', (d, ii, jj) => {
+              const here = d3.select(jj[ii]);
+              if (here.attr('lineindex') !== null) {
+                let test = d3.select('app-users').selectAll('text.users');
+                test.each((kk, iii, jjj) => {
+                  const kkk = d3.select(jjj[iii]);
+                  if (kkk.attr('lineindex') === here.attr('lineindex')) {
+                    kkk.classed('over', false);
+                  }
+                });
+                test = d3.select('app-users').selectAll('rect.weightSingleMinus');
+                test.each((kk, iii, jjj) => {
+                  const kkk = d3.select(jjj[iii]);
+                  if (kkk.attr('lineindex') === here.attr('lineindex')) {
+                    kkk.classed('over', false);
+                  }
+                });
+                test = d3.select('app-users').selectAll('rect.weightSinglePlus');
+                test.each((kk, iii, jjj) => {
+                  const kkk = d3.select(jjj[iii]);
+                  if (kkk.attr('lineindex') === here.attr('lineindex')) {
+                    kkk.classed('over', false);
+                  }
+                });
+              } else {
+                here.classed('over', false);
+              }
+            });
+        });
         d3.select('app-users').selectAll('rect.users')
           .on('mouseover', (d, ii, jj) => {
             d3.select(jj[ii]).classed('over', true);
@@ -1933,11 +1936,11 @@ export class UsersComponent implements OnChanges {
       .attr('class', (d) => d.value > 0 ? 'weightSinglePlus' : 'weightSingleMinus')
       .attr('picId', dataIndex)
       //      .style('fill-opacity', 0.35)
-      .on('mousemove', (d) => this.tooltip.style('left', d3.event.pageX - 50 + 'px')
+      .on('mousemove', d => this.tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px').style('display', 'inline-block')
         .html(`<i class='fa fa-gears leafy'></i>${d.axis}<br>weight:${d3.format('0.5f')(d.value)}<br>
         ${d.alpha === undefined ? '' : 'alpha:' + d3.format('0.5f')(d.alpha)}`))
-      .on('mouseout', (d) => this.tooltip.style('display', 'none'))
+      .on('mouseout', d => this.tooltip.style('display', 'none'))
       .transition().duration(durationtime)
       .attr('height', (d) => d.value <= 0 ? y(d.value) - y(0) : y(0) - y(d.value))
       .attr('y', (d) => d.value <= 0 ? y(0) : y(d.value));
