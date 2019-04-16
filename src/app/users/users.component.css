@@ -37,6 +37,11 @@ text.legendRadar.right {
     fill: rgb(51, 51, 51);
     text-anchor: end;
     text-align: left;
+}text.legendRadar {
+    font-size: 10px;
+    fill: rgb(51, 51, 51);
+    text-anchor:middle;
+    text-align: center;
 }
 
 text.axisRadar {
