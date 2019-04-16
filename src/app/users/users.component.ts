@@ -1917,7 +1917,7 @@ export class UsersComponent implements OnChanges {
         .style('top', d3.event.pageY - 70 + 'px')
         .style('display', 'inline-block')
         .html(`<i class='fa fa-gears leafy'></i>${d.axis}<br>weight:${d.value}`))
-      .on('mouseout', () => this.tooltip.style('display', 'none'));
+      .on('mouseleave', () => this.tooltip.style('display', 'none'));
     // --------------------------------------------------------------------------------------------
     chart.selectAll('.bar').data(DATA).enter().append('rect')
       .attr('width', x.bandwidth() / bandfiddle)
@@ -1938,7 +1938,7 @@ export class UsersComponent implements OnChanges {
         .style('top', d3.event.pageY - 70 + 'px').style('display', 'inline-block')
         .html(`<i class='fa fa-gears leafy'></i>${d.axis}<br>weight:${d3.format('0.5f')(d.value)}<br>
         ${d.alpha === undefined ? '' : 'alpha:' + d3.format('0.5f')(d.alpha)}`))
-      .on('mouseout', () => this.tooltip.style('display', 'none'))
+      .on('mouseleave', () => this.tooltip.style('display', 'none'))
       .transition().duration(durationtime)
       .attr('height', d => d.value <= 0 ? y(d.value) - y(0) : y(0) - y(d.value))
       .attr('y', d => d.value <= 0 ? y(0) : y(d.value));
