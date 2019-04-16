@@ -25,11 +25,23 @@ text.tooltipRadar {
     font-size: 30px;
 }
 
-text.legendRadar {
+text.legendRadar.left {
     font-size: 10px;
     fill: rgb(51, 51, 51);
-    text-anchor: middle;
+    text-anchor: start;
+    text-align: right;
+}
+
+text.legendRadar.right {
+    font-size: 10px;
+    fill: rgb(51, 51, 51);
+    text-anchor: end;
     text-align: left;
+}text.legendRadar {
+    font-size: 10px;
+    fill: rgb(51, 51, 51);
+    text-anchor:middle;
+    text-align: center;
 }
 
 text.axisRadar {

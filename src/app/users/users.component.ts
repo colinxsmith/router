@@ -449,7 +449,7 @@ export class UsersComponent implements OnChanges {
               }
             });
           }
-          const margin = { top: 40, right: 40, bottom: 40, left: 40 }, ww = 400, hh = 400,
+          const ww = 500, hh = 500, margin = { top: hh / 8, right: ww / 8, bottom: hh / 8, left: ww / 8 },
             width = ww - margin.left - margin.right,
             height = hh - margin.top - margin.bottom,
             radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)',
@@ -472,7 +472,7 @@ export class UsersComponent implements OnChanges {
               }
             });
           }
-          const margin = { top: 40, right: 40, bottom: 40, left: 40 }, ww = 400, hh = 400,
+          const ww = 500, hh = 500, margin = { top: hh / 8, right: ww / 8, bottom: hh / 8, left: ww / 8 },
             width = ww - margin.left - margin.right,
             height = hh - margin.top - margin.bottom,
             radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)',
@@ -1812,7 +1812,10 @@ export class UsersComponent implements OnChanges {
       })
       .attr('class', 'line');
     axis.append('text')
-      .attr('class', 'legendRadar')
+      .attr('class', (d, i) => {
+        const x = rScale(pMax * cfg.labelFactor) * Math.cos(angleScale(i) - Math.PI / 2);
+        return Math.abs(x) <= 1e-6 ? 'legendRadar' : x > 0 ? 'legendRadar right' : 'legendRadar left';
+      })
       .attr('dy', '0.35em')
       .attr('x', (d, i) => rScale(pMax * cfg.labelFactor) * Math.cos(angleScale(i) - Math.PI / 2))
       .attr('y', (d, i) => rScale(pMax * cfg.labelFactor) * Math.sin(angleScale(i) - Math.PI / 2))
