@@ -820,12 +820,11 @@ export class UsersComponent implements OnChanges {
           return Side / 2 + font / 4;
         })
         .text(d3.format('0.2f')(sumEx))
-        .on('mousemove', (d, i) => {
-          this.tooltip.style('left', d3.event.pageX - 50 + 'px')
-            .style('top', d3.event.pageY - 70 + 'px')
-            .style('display', 'inline-block')
-            .html(`<i class='fa fa-gears leafy'></i>Total: ${d3.format('0.4f')(sumEx)}`);
-        })
+        .on('mousemove', () => this.tooltip.style('left', d3.event.pageX - 50 + 'px')
+          .style('top', d3.event.pageY - 70 + 'px')
+          .style('display', 'inline-block')
+          .html(`<i class='fa fa-gears leafy'></i>Total: ${d3.format('0.4f')(sumEx)}`)
+        )
         .on('mouseout', () => this.tooltip.style('display', 'none'))
         ;
 
@@ -880,7 +879,7 @@ export class UsersComponent implements OnChanges {
         .style('display', 'inline-block')
         .html(`<i class='fa fa-gears leafy'></i>${factorNames[d.i]}<br>${factorNames[d.j]}
         <br>correlation:${d3.format('0.4f')(d.correlation)}`))
-      .on('mouseout', d => this.tooltip.style('display', 'none'))
+      .on('mouseout', () => this.tooltip.style('display', 'none'))
       .transition().duration(2000).attrTween('transform', d => (t) =>
         `translate(${(Math.sin(5 * (1 - t)) * (d.j) + t * d.i) * Side},
         ${(Math.sin(3 * (1 - t)) * (d.i) + t * d.j) * Side}), rotate(${(1 - t) * 45 + t * 360})`)
@@ -898,7 +897,7 @@ export class UsersComponent implements OnChanges {
         .style('display', 'inline-block')
         .html(`<i class='fa fa-gears leafy'></i>${factorNames[d.i]}<br>${factorNames[d.j]}
         <br>correlation:${d3.format('0.4f')(d.correlation)}`))
-      .on('mouseout', d => this.tooltip.style('display', 'none'));
+      .on('mouseout', () => this.tooltip.style('display', 'none'));
     svg.selectAll('.factorLabels').select('g').data(factorNames).enter()
       .append('text')
       .attr('transform', (d, i) => `translate(${i * Side + Side / 2}, ${-spacer}),rotate(-75)`)
@@ -1918,7 +1917,7 @@ export class UsersComponent implements OnChanges {
         .style('top', d3.event.pageY - 70 + 'px')
         .style('display', 'inline-block')
         .html(`<i class='fa fa-gears leafy'></i>${d.axis}<br>weight:${d.value}`))
-      .on('mouseout', d => this.tooltip.style('display', 'none'));
+      .on('mouseout', () => this.tooltip.style('display', 'none'));
     // --------------------------------------------------------------------------------------------
     chart.selectAll('.bar').data(DATA).enter().append('rect')
       .attr('width', x.bandwidth() / bandfiddle)
@@ -1939,7 +1938,7 @@ export class UsersComponent implements OnChanges {
         .style('top', d3.event.pageY - 70 + 'px').style('display', 'inline-block')
         .html(`<i class='fa fa-gears leafy'></i>${d.axis}<br>weight:${d3.format('0.5f')(d.value)}<br>
         ${d.alpha === undefined ? '' : 'alpha:' + d3.format('0.5f')(d.alpha)}`))
-      .on('mouseout', d => this.tooltip.style('display', 'none'))
+      .on('mouseout', () => this.tooltip.style('display', 'none'))
       .transition().duration(durationtime)
       .attr('height', d => d.value <= 0 ? y(d.value) - y(0) : y(0) - y(d.value))
       .attr('y', d => d.value <= 0 ? y(0) : y(d.value));
