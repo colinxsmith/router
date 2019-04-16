@@ -557,8 +557,7 @@ export class UsersComponent implements OnChanges {
           });
           this.fiveCircles();
         }
-        const selectHere = ['text.users', 'rect.weightSinglePlus', 'rect.weightSingleMinus'];
-        selectHere.forEach(ss => {
+        ['text.users', 'rect.weightSinglePlus', 'rect.weightSingleMinus'].forEach(ss => {
           d3.select('app-users').selectAll(ss)
             .on('mouseover', (d, ii, jj) => {
               const here = d3.select(jj[ii]);
