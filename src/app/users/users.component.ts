@@ -875,12 +875,12 @@ export class UsersComponent implements OnChanges {
       .attr('class', d => `correlations ${d.correlation > 0 ? 'pos' : 'neg'}`)
       .attr('transform', d => `translate(${d.i * Side},${d.j * Side})`)
       .attr('d', d => d.i === d.j ? `M0 0l${Side} 0l0 ${Side}Z` : `M0 0l${Side} 0l0 ${Side}l${-Side} 0Z`)
-      .on('mousemove', (d) => this.tooltip.style('left', d3.event.pageX - 50 + 'px')
+      .on('mousemove', d => this.tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px')
         .style('display', 'inline-block')
         .html(`<i class='fa fa-gears leafy'></i>${factorNames[d.i]}<br>${factorNames[d.j]}
         <br>correlation:${d3.format('0.4f')(d.correlation)}`))
-      .on('mouseout', (d) => this.tooltip.style('display', 'none'))
+      .on('mouseout', d => this.tooltip.style('display', 'none'))
       .transition().duration(2000).attrTween('transform', d => (t) =>
         `translate(${(Math.sin(5 * (1 - t)) * (d.j) + t * d.i) * Side},
         ${(Math.sin(3 * (1 - t)) * (d.i) + t * d.j) * Side}), rotate(${(1 - t) * 45 + t * 360})`)
@@ -893,12 +893,12 @@ export class UsersComponent implements OnChanges {
       .attr('transform', d => `translate(${d.i * Side + squareSide / 2},${d.j * Side + squareSide / 2}),rotate(${rotateAngle})`)
       .attr('x', spacer / 2 + (-squareSide / 2) * (Math.cos(Math.PI / 180 * rotateAngle)))
       .attr('y', spacer / 2 + (-squareSide / 2 + width / factorNames.length / 4) * (Math.sin(Math.PI / 180 * rotateAngle)))
-      .on('mousemove', (d) => this.tooltip.style('left', d3.event.pageX - 50 + 'px')
+      .on('mousemove', d => this.tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px')
         .style('display', 'inline-block')
         .html(`<i class='fa fa-gears leafy'></i>${factorNames[d.i]}<br>${factorNames[d.j]}
         <br>correlation:${d3.format('0.4f')(d.correlation)}`))
-      .on('mouseout', (d) => this.tooltip.style('display', 'none'));
+      .on('mouseout', d => this.tooltip.style('display', 'none'));
     svg.selectAll('.factorLabels').select('g').data(factorNames).enter()
       .append('text')
       .attr('transform', (d, i) => `translate(${i * Side + Side / 2}, ${-spacer}),rotate(-75)`)
@@ -1539,7 +1539,7 @@ export class UsersComponent implements OnChanges {
       .attr('picId', position)
       .attr('transform', `translate(${off},${0})`)
       .attr('class', 'users')
-      .call((d) => d.each((dd, i, j) => {// We have to do it like this with call() rather than html() to get the tspan on IE on Windows 7
+      .call(d => d.each((dd, i, j) => {// We have to do it like this with call() rather than html() to get the tspan on IE on Windows 7
         const k = d3.select(j[i]);
         for (let kk = 0; kk < keys.length; ++kk) {
           const t = (kk + 1) / keys.length;
@@ -1556,7 +1556,7 @@ export class UsersComponent implements OnChanges {
       .attr('lineindex', d => d['axis'])
       .attr('class', 'users')
       .attr('picId', position)
-      .call((d) => d.each((dd, i, j) => {// We have to do it like this with call() rather than html() to get the tspan on IE on Windows 7
+      .call(d => d.each((dd, i, j) => {// We have to do it like this with call() rather than html() to get the tspan on IE on Windows 7
         const k = d3.select(j[i]);
         for (let kk = 0; kk < keys.length; ++kk) {
           const t = (kk + 1) / keys.length;
@@ -1646,7 +1646,7 @@ export class UsersComponent implements OnChanges {
       .enter()
       .append('circle')
       .attr('class', 'gridCircle')
-      .attr('r', (d) => circScale(d))
+      .attr('r', d => circScale(d))
       .style('fill-opacity', cfg.opacityCircles)
       .style('stroke-opacity', cfg.opacityCircles)
       .style('filter', 'url(#glow)');
@@ -1669,11 +1669,11 @@ export class UsersComponent implements OnChanges {
     }
     const radarLine = d3.lineRadial<{ axis: string, value: number }>()
       .curve(d3.curveLinearClosed)
-      .radius((d) => rScale(d.value))
+      .radius(d => rScale(d.value))
       .angle((d, i) => angleScale(i));
     const radarLineZ = d3.lineRadial<{ axis: string, value: number }>()
       .curve(d3.curveLinearClosed)
-      .radius((d) => rScale(0))
+      .radius(d => rScale(0))
       .angle((d, i) => angleScale(-i)); // Minus is important to get the shading correct!
     if (cfg.roundStrokes) {
       radarLine.curve(d3.curveCatmullRomClosed);
@@ -1756,12 +1756,12 @@ export class UsersComponent implements OnChanges {
       .transition()
       .ease(d3.easeBounce)
       .duration(2000)
-      .attr('d', (d) => radarLine(d))
+      .attr('d', d => radarLine(d))
       .style('stroke', (d, i) => cfg.colour(i))
       .style('fill', 'none')
       .style('filter', 'url(#glow)');
     blobWrapper.selectAll('.radarCircle')
-      .data((d) => d)
+      .data(d => d)
       .enter().append('circle')
       .attr('class', 'radarCircle')
       .attr('r', cfg.dotRadius)
@@ -1775,7 +1775,7 @@ export class UsersComponent implements OnChanges {
       .attr('data-index', (d, i) => i)
       .attr('class', 'radarCircleWrapper');
     blobCircleWrapper.selectAll('.radarInvisibleCircle')
-      .data((d) => d)
+      .data(d => d)
       .enter().append('circle')
       .attr('class', 'radarInvisibleCircle')
       .attr('r', cfg.dotRadius * 1.1)
@@ -1821,14 +1821,14 @@ export class UsersComponent implements OnChanges {
       .attr('dy', '0.35em')
       .attr('x', (d, i) => rScale(pMax * cfg.labelFactor) * Math.cos(angleScale(i) - Math.PI / 2))
       .attr('y', (d, i) => rScale(pMax * cfg.labelFactor) * Math.sin(angleScale(i) - Math.PI / 2))
-      .text((d) => d)
+      .text(d => d)
       .call(this.wrapFunction, cfg.wrapWidth, cfg.lineHeight);
     axisGrid.selectAll('.axisLabel')
       .data(d3.range(pMin < 0 ? -cfg.levels : 0, (cfg.levels + 1)).reverse())
       .enter().append('text')
       .attr('class', 'axisRadar')
       .attr('x', -12)
-      .attr('y', (d) => -circScale(d))
+      .attr('y', d => -circScale(d))
       .attr('dy', '0.4em')
       .text((d, i) => percentFormat(circVal(d)));
     const localTiptool = baseSvg.append('text')
@@ -1890,11 +1890,11 @@ export class UsersComponent implements OnChanges {
       , x = d3.scaleBand().rangeRound([0, bandfiddle * width]).paddingInner(0.1)
       , xx = d3.scaleBand().rangeRound([0, width]).paddingInner(0.1)
       , y = d3.scaleLinear<number, number>().range([height, 0])
-        .domain([Math.min(0, d3.min(DATA, (d) => d.value)),
-        d3.max(DATA, (d) => d.value)]);
+        .domain([Math.min(0, d3.min(DATA, d => d.value)),
+        d3.max(DATA, d => d.value)]);
     svg.attr('transform', `translate(${margin.left}, ${margin.top})`);
-    x.domain(DATA.map((d) => d.axis)).padding(0.1);
-    xx.domain(DATA.map((d) => d.axis)).padding(0.1);
+    x.domain(DATA.map(d => d.axis)).padding(0.1);
+    xx.domain(DATA.map(d => d.axis)).padding(0.1);
     const yAxis = d3.axisLeft(y).ticks(2)
       , svgX = svg.append('g').attr('transform', `translate(0, ${height})`).attr('class', 'axis').call(customXAxis)
       , svgY = svg.append('g').attr('transform', 'translate(0,0)').attr('class', 'axis').call(yAxis)
@@ -1910,29 +1910,29 @@ export class UsersComponent implements OnChanges {
     // -----------------------------------------------Rim Outline-----------------------------------
     chart.selectAll('.bar').data(DATA).enter().append('rect').attr('class', 'barrim')
       .attr('width', x.bandwidth() / bandfiddle + 2 * rim)
-      .attr('x', (d) => x(d.axis) / bandfiddle - rim)
+      .attr('x', d => x(d.axis) / bandfiddle - rim)
       .attr('lineindex', d => d.axis)
-      .attr('height', (d) => rim + (d.value <= 0 ? y(d.value) - y(0) : y(0) - y(d.value)))
-      .attr('y', (d) => (d.value <= 0 ? y(0) : y(d.value) - rim))
-      .on('mousemove', (d) => this.tooltip.style('left', d3.event.pageX - 50 + 'px')
+      .attr('height', d => rim + (d.value <= 0 ? y(d.value) - y(0) : y(0) - y(d.value)))
+      .attr('y', d => (d.value <= 0 ? y(0) : y(d.value) - rim))
+      .on('mousemove', d => this.tooltip.style('left', d3.event.pageX - 50 + 'px')
         .style('top', d3.event.pageY - 70 + 'px')
         .style('display', 'inline-block')
         .html(`<i class='fa fa-gears leafy'></i>${d.axis}<br>weight:${d.value}`))
-      .on('mouseout', (d) => this.tooltip.style('display', 'none'));
+      .on('mouseout', d => this.tooltip.style('display', 'none'));
     // --------------------------------------------------------------------------------------------
     chart.selectAll('.bar').data(DATA).enter().append('rect')
       .attr('width', x.bandwidth() / bandfiddle)
-      .attr('x', (d) => x(d.axis) / bandfiddle)
+      .attr('x', d => x(d.axis) / bandfiddle)
       .attr('lineindex', d => d.axis)
-      .attr('height', (d) => {
+      .attr('height', d => {
         const deviation = 0;
         return deviation <= 0 ? y(deviation) - y(0) : y(0) - y(deviation);
       })
-      .attr('y', (d) => {
+      .attr('y', d => {
         const deviation = 0;
         return deviation <= 0 ? y(0) : y(deviation);
       })
-      .attr('class', (d) => d.value > 0 ? 'weightSinglePlus' : 'weightSingleMinus')
+      .attr('class', d => d.value > 0 ? 'weightSinglePlus' : 'weightSingleMinus')
       .attr('picId', dataIndex)
       //      .style('fill-opacity', 0.35)
       .on('mousemove', d => this.tooltip.style('left', d3.event.pageX - 50 + 'px')
@@ -1941,8 +1941,8 @@ export class UsersComponent implements OnChanges {
         ${d.alpha === undefined ? '' : 'alpha:' + d3.format('0.5f')(d.alpha)}`))
       .on('mouseout', d => this.tooltip.style('display', 'none'))
       .transition().duration(durationtime)
-      .attr('height', (d) => d.value <= 0 ? y(d.value) - y(0) : y(0) - y(d.value))
-      .attr('y', (d) => d.value <= 0 ? y(0) : y(d.value));
+      .attr('height', d => d.value <= 0 ? y(d.value) - y(0) : y(0) - y(d.value))
+      .attr('y', d => d.value <= 0 ? y(0) : y(d.value));
     if (scaleAll < 1) {
       chart.style('stroke-width', +chart.style('stroke-width').replace('px', '') * scaleAll);
       titleX.style('font-size', (+titleX.style('font-size').replace('px', '') * scaleAll) + 'px');
