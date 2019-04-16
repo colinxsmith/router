@@ -1812,9 +1812,10 @@ export class UsersComponent implements OnChanges {
       })
       .attr('class', 'line');
     axis.append('text')
-      .attr('class', (d, i) => Math.abs(rScale(pMax * cfg.labelFactor) * Math.cos(angleScale(i) - Math.PI / 2)) <= 1e-6
-        ? 'legendRadar' :
-        rScale(pMax * cfg.labelFactor) * Math.cos(angleScale(i) - Math.PI / 2) > 0 ? 'legendRadar right' : 'legendRadar left')
+      .attr('class', (d, i) => {
+        const x = rScale(pMax * cfg.labelFactor) * Math.cos(angleScale(i) - Math.PI / 2);
+        return Math.abs(x) <= 1e-6 ? 'legendRadar' : x > 0 ? 'legendRadar right' : 'legendRadar left';
+      })
       .attr('dy', '0.35em')
       .attr('x', (d, i) => rScale(pMax * cfg.labelFactor) * Math.cos(angleScale(i) - Math.PI / 2))
       .attr('y', (d, i) => rScale(pMax * cfg.labelFactor) * Math.sin(angleScale(i) - Math.PI / 2))
