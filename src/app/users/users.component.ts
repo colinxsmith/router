@@ -3,6 +3,7 @@ import { AppComponent } from '../app.component';
 import { UserService } from './user.service';
 import * as d3 from 'd3';
 import { map } from 'rxjs/operators';
+import { headersToString } from 'selenium-webdriver/http';
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
@@ -557,6 +558,7 @@ export class UsersComponent implements OnChanges {
           });
           this.fiveCircles();
         }
+
         ['text.users', 'rect.weightSinglePlus', 'rect.weightSingleMinus'].forEach(ss => {
           d3.select('app-users').selectAll(ss)
             .on('mouseover', (d, ii, jj) => {
@@ -590,8 +592,22 @@ export class UsersComponent implements OnChanges {
                     (d3.select((<HTMLSelectElement>jjj[iii]).parentNode).attr('data-index') === here.attr('picId'))) {
                     console.log('index', iii, 'set fill', (<SVGCircleElement>(jjj[iii])).style['fill']);
                     kkk.dispatch(
-                      'mouseover',              // detail is the correct parameter to use with event for this
-                      <d3.CustomEventParameters>({ detail: { parms: [kk, iii, jjj] } })
+                      'mouseover' /* After working all this out, it seems it doesn't do anything
+                      ,              // detail is the correct parameter to use with event for this
+                      <d3.CustomEventParameters>({ detail: { parms: [kk, iii, jjj] } }) */
+                    );
+                  }
+                });
+                test = d3.select('app-users').selectAll('.fbetas');
+                test.each((kk, iii, jjj) => {
+                  const kkk = d3.select(jjj[iii]);
+                  if (kkk.attr('lineindex') === here.attr('lineindex') &&
+                    (d3.select((<HTMLSelectElement>jjj[iii]).parentNode).attr('data-index') === here.attr('picId'))) {
+                    console.log('index', iii, 'set fill', (<SVGCircleElement>(jjj[iii])).style['fill']);
+                    kkk.dispatch(
+                      'mouseover' /* After working all this out, it seems it doesn't do anything
+                      ,              // detail is the correct parameter to use with event for this
+                      <d3.CustomEventParameters>({ detail: { parms: [kk, iii, jjj] } }) */
                     );
                   }
                 });
@@ -820,13 +836,13 @@ export class UsersComponent implements OnChanges {
           return Side / 2 + font / 4;
         })
         .text(d => d3.format('0.2f')(d))
-        .on('mousemove', (d, i) => {
+        .on('mouseover', (d, i) => {
           this.tooltip.style('left', d3.event.pageX - 50 + 'px')
             .style('top', d3.event.pageY - 70 + 'px')
             .style('display', 'inline-block')
             .html(`<i class='fa fa-gears leafy'></i>Total: ${fNames[i]}<br>${d3.format('0.4f')(d)}`);
         })
-        .on('mouseout', () => this.tooltip.style('display', 'none'))
+        .on('mouseleave', () => this.tooltip.style('display', 'none'))
         ;
       svg.append('text')
         .attr('class', 'fbetas')
@@ -1804,12 +1820,20 @@ export class UsersComponent implements OnChanges {
       .style('fill-opacity', 0)
       .style('pointer-events', 'all')
       .on('mouseover', (d, i, j) => {
-        const params = d3.event.detail; // detail is the correct parameter to use with event for this
-        if (params) {// params will be non-zero if mouseover was dispatched externally.
-          d = params.parms[0];
-          i = params.parms[1];
-          j = params.parms[2];
-        }
+        const here = d3.select(j[i]);
+        d3.select('app-users').selectAll('.totals').each((tt, ii, jj) => {
+          const hereTot = d3.select(jj[ii]);
+          if (this.displayData[0].factors.map(dk => dk.axis)[ii] === d['axis'] && hereTot.attr('picId') ===
+            d3.select(<HTMLSelectElement>(j[i]).parentNode).attr('data-index')) {
+            hereTot.classed('select', true);
+          }
+        });
+        /*   Seems this does nothing     const params = d3.event.detail; // detail is the correct parameter to use with event for this
+                if (Object(params).size > 0) {// params will have size if mouseover was dispatched externally.
+                  d = params.parms[0];
+                  i = params.parms[1];
+                  j = params.parms[2];
+                } */
         localTiptool
           .attr('x', parseFloat((j[i]).getAttribute('cx')) - 10)
           .attr('y', parseFloat((j[i]).getAttribute('cy')) - 10)
@@ -1819,7 +1843,18 @@ export class UsersComponent implements OnChanges {
           .transition().duration(200)
           .style('fill', (j[i]).style['fill']);
       })
-      .on('mouseout', () => localTiptool.transition().duration(200).style('fill', 'none'));
+      .on('mouseout', (d, i, j) => {
+        const here = d3.select(j[i]);
+        d3.select('app-users').selectAll('.totals').each((tt, ii, jj) => {
+          const hereTot = d3.select(jj[ii]);
+          if (this.displayData[0].factors.map(dk => dk.axis)[ii] === d['axis'] && hereTot.attr('picId') ===
+            d3.select(<HTMLSelectElement>(j[i]).parentNode).attr('data-index')) {
+            hereTot.classed('select', false);
+          }
+        });
+        localTiptool.transition().duration(200).style('fill', 'none');
+      }
+      );
 
     const axis = axisGrid.selectAll('.axis')
       .data(allAxis)
