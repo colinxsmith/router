@@ -583,6 +583,18 @@ export class UsersComponent implements OnChanges {
                     kkk.classed('over', true);
                   }
                 });
+                test = d3.select('app-users').selectAll('.radarInvisibleCircle');
+                test.each((kk, iii, jjj) => {
+                  const kkk = d3.select(jjj[iii]);
+                  if (kkk.attr('lineindex') === here.attr('lineindex') &&
+                    (d3.select((<HTMLSelectElement>jjj[iii]).parentNode).attr('data-index') === here.attr('picId'))) {
+                    console.log('index', iii, 'set fill', (<SVGCircleElement>(jjj[iii])).style['fill']);
+                    kkk.dispatch(
+                      'mouseover',              // detail is the correct parameter to use with event for this
+                      <d3.CustomEventParameters>({ detail: { parms: [kk, iii, jjj] } })
+                    );
+                  }
+                });
               } else {
                 here.classed('over', true);
               }
@@ -609,6 +621,13 @@ export class UsersComponent implements OnChanges {
                   const kkk = d3.select(jjj[iii]);
                   if (kkk.attr('lineindex') === here.attr('lineindex')) {
                     kkk.classed('over', false);
+                  }
+                });
+                test = d3.select('app-users').selectAll('.radarInvisibleCircle');
+                test.each((kk, iii, jjj) => {
+                  const kkk = d3.select(jjj[iii]);
+                  if (kkk.attr('lineindex') === here.attr('lineindex')) {
+                    kkk.dispatch('mouseout');
                   }
                 });
               } else {
@@ -1778,19 +1797,28 @@ export class UsersComponent implements OnChanges {
       .enter().append('circle')
       .attr('class', 'radarInvisibleCircle')
       .attr('r', cfg.dotRadius * 1.1)
+      .attr('lineindex', d => d.axis)
       .attr('cx', (d, i) => rScale(d.value) * Math.cos(angleScale(i) - Math.PI / 2))
       .attr('cy', (d, i) => rScale(d.value) * Math.sin(angleScale(i) - Math.PI / 2))
       .style('fill', (d, i, j) => cfg.colour(+d3.select(<HTMLSelectElement>(j[i]).parentNode).attr('data-index')))
       .style('fill-opacity', 0)
       .style('pointer-events', 'all')
-      .on('mouseover', (d, i, j) => localTiptool
-        .attr('x', parseFloat((j[i]).getAttribute('cx')) - 10)
-        .attr('y', parseFloat((j[i]).getAttribute('cy')) - 10)
-        .style('fill', 'none')
-        .style('opacity', 1)
-        .text(percentFormat(+d.value))
-        .transition().duration(200)
-        .style('fill', (j[i]).style['fill']))
+      .on('mouseover', (d, i, j) => {
+        const params = d3.event.detail; // detail is the correct parameter to use with event for this
+        if (params) {// params will be non-zero if mouseover was dispatched externally.
+          d = params.parms[0];
+          i = params.parms[1];
+          j = params.parms[2];
+        }
+        localTiptool
+          .attr('x', parseFloat((j[i]).getAttribute('cx')) - 10)
+          .attr('y', parseFloat((j[i]).getAttribute('cy')) - 10)
+          .style('fill', 'none')
+          .style('opacity', 1)
+          .text(percentFormat(+d.value))
+          .transition().duration(200)
+          .style('fill', (j[i]).style['fill']);
+      })
       .on('mouseout', () => localTiptool.transition().duration(200).style('fill', 'none'));
 
     const axis = axisGrid.selectAll('.axis')
