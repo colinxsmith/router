@@ -1821,17 +1821,13 @@ export class UsersComponent implements OnChanges {
       .style('pointer-events', 'all')
       .on('mouseover', (d, i, j) => {
         const here = d3.select(j[i]);
-        d3.select('app-users').selectAll('.totals').each((tt, ii, jj) => {
+        d3.select('app-users').selectAll('rect.totals').each((tt, ii, jj) => {
           const hereTot = d3.select(jj[ii]);
           const there = d3.select(<HTMLSelectElement>(j[i]).parentNode);
-          console.log(hereTot.attr('picId'), there.attr('data-index')
-          );
-          if (this.displayData[0].factors.map(dk => dk.axis)[ii] === d.axis
-            //            && hereTot.attr('picId') === there.attr('data-index')
-          ) {
-            console.log(hereTot.attr('picId'),
-              d3.select(<HTMLSelectElement>(j[i]).parentNode).attr('data-index')
-            ); hereTot.classed('select', true);
+          const facId =
+            this.displayData[0].factors.map(dk => dk.axis)[ii % this.displayData[0].factors.length];
+          if (facId === d.axis && hereTot.attr('picId') === there.attr('data-index')) {
+            hereTot.classed('select', true);
           }
         });
         /*   Seems this does nothing     const params = d3.event.detail; // detail is the correct parameter to use with event for this
@@ -1851,11 +1847,12 @@ export class UsersComponent implements OnChanges {
       })
       .on('mouseout', (d, i, j) => {
         const here = d3.select(j[i]);
-        d3.select('app-users').selectAll('.totals').each((tt, ii, jj) => {
+        d3.select('app-users').selectAll('rect.totals').each((tt, ii, jj) => {
           const hereTot = d3.select(jj[ii]);
-          if (this.displayData[0].factors.map(dk => dk.axis)[ii] === d['axis']
-            //   && hereTot.attr('picId') === d3.select(<HTMLSelectElement>(j[i]).parentNode).attr('data-index')
-          ) {
+          const there = d3.select(<HTMLSelectElement>(j[i]).parentNode);
+          const facId =
+            this.displayData[0].factors.map(dk => dk.axis)[ii % this.displayData[0].factors.length];
+          if (facId === d.axis && hereTot.attr('picId') === there.attr('data-index')) {
             hereTot.classed('select', false);
           }
         });

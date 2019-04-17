@@ -236,12 +236,12 @@ text.stockLabels {
 }
 
 .totals.neg.select {
-    fill:orange;
+    fill:rgb(219, 109, 6);
     fill-opacity: 1;
 }
 
 .totals.pos.select {
-    fill:cyan;
+    fill:rgb(6, 97, 150);
     fill-opacity: 1;
 }
 
