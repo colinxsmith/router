@@ -3,6 +3,7 @@ import { AppComponent } from '../app.component';
 import { UserService } from './user.service';
 import * as d3 from 'd3';
 import { map } from 'rxjs/operators';
+import { headersToString } from 'selenium-webdriver/http';
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
@@ -557,6 +558,7 @@ export class UsersComponent implements OnChanges {
           });
           this.fiveCircles();
         }
+
         ['text.users', 'rect.weightSinglePlus', 'rect.weightSingleMinus'].forEach(ss => {
           d3.select('app-users').selectAll(ss)
             .on('mouseover', (d, ii, jj) => {
@@ -581,6 +583,24 @@ export class UsersComponent implements OnChanges {
                   const kkk = d3.select(jjj[iii]);
                   if (kkk.attr('lineindex') === here.attr('lineindex')) {
                     kkk.classed('over', true);
+                  }
+                });
+                test = d3.select('app-users').selectAll('.radarInvisibleCircle');
+                test.each((kk, iii, jjj) => {
+                  const kkk = d3.select(jjj[iii]);
+                  if (kkk.attr('lineindex') === here.attr('lineindex') &&
+                    (d3.select((<HTMLSelectElement>jjj[iii]).parentNode).attr('data-index') === here.attr('picId'))) {
+//                    console.log('index', iii, 'set fill', (<SVGCircleElement>(jjj[iii])).style['fill']);
+                    kkk.dispatch('mouseover');
+                  }
+                });
+                test = d3.select('app-users').selectAll('.fbetas');
+                test.each((kk, iii, jjj) => {
+                  const kkk = d3.select(jjj[iii]);
+                  if (kkk.attr('lineindex') === here.attr('lineindex') &&
+                    (d3.select((<HTMLSelectElement>jjj[iii]).parentNode).attr('data-index') === here.attr('picId'))) {
+                    console.log('index', iii, 'set fill', (<SVGCircleElement>(jjj[iii])).style['fill']);
+                    kkk.dispatch('mouseover');
                   }
                 });
               } else {
@@ -609,6 +629,13 @@ export class UsersComponent implements OnChanges {
                   const kkk = d3.select(jjj[iii]);
                   if (kkk.attr('lineindex') === here.attr('lineindex')) {
                     kkk.classed('over', false);
+                  }
+                });
+                test = d3.select('app-users').selectAll('.radarInvisibleCircle');
+                test.each((kk, iii, jjj) => {
+                  const kkk = d3.select(jjj[iii]);
+                  if (kkk.attr('lineindex') === here.attr('lineindex')) {
+                    kkk.dispatch('mouseout');
                   }
                 });
               } else {
@@ -721,6 +748,10 @@ export class UsersComponent implements OnChanges {
         .attr('y', 0)
         .attr('height', Side)
         .attr('width', Side)
+        .on('myselect', (d, i, j) => {
+          const ppp: d3.CustomEventParameters = d3.event;
+          console.log(d, j[i].getAttribute('picId'), ppp.detail.factorName, ppp.detail.dataIndex, fNames[i]);
+        })
         .on('mousemove', (d, i) => {
           this.tooltip.style('left', d3.event.pageX - 50 + 'px')
             .style('top', d3.event.pageY - 70 + 'px')
@@ -801,13 +832,13 @@ export class UsersComponent implements OnChanges {
           return Side / 2 + font / 4;
         })
         .text(d => d3.format('0.2f')(d))
-        .on('mousemove', (d, i) => {
+        .on('mouseover', (d, i) => {
           this.tooltip.style('left', d3.event.pageX - 50 + 'px')
             .style('top', d3.event.pageY - 70 + 'px')
             .style('display', 'inline-block')
             .html(`<i class='fa fa-gears leafy'></i>Total: ${fNames[i]}<br>${d3.format('0.4f')(d)}`);
         })
-        .on('mouseout', () => this.tooltip.style('display', 'none'))
+        .on('mouseleave', () => this.tooltip.style('display', 'none'))
         ;
       svg.append('text')
         .attr('class', 'fbetas')
@@ -1778,20 +1809,52 @@ export class UsersComponent implements OnChanges {
       .enter().append('circle')
       .attr('class', 'radarInvisibleCircle')
       .attr('r', cfg.dotRadius * 1.1)
+      .attr('lineindex', d => d.axis)
       .attr('cx', (d, i) => rScale(d.value) * Math.cos(angleScale(i) - Math.PI / 2))
       .attr('cy', (d, i) => rScale(d.value) * Math.sin(angleScale(i) - Math.PI / 2))
       .style('fill', (d, i, j) => cfg.colour(+d3.select(<HTMLSelectElement>(j[i]).parentNode).attr('data-index')))
       .style('fill-opacity', 0)
       .style('pointer-events', 'all')
-      .on('mouseover', (d, i, j) => localTiptool
-        .attr('x', parseFloat((j[i]).getAttribute('cx')) - 10)
-        .attr('y', parseFloat((j[i]).getAttribute('cy')) - 10)
-        .style('fill', 'none')
-        .style('opacity', 1)
-        .text(percentFormat(+d.value))
-        .transition().duration(200)
-        .style('fill', (j[i]).style['fill']))
-      .on('mouseout', () => localTiptool.transition().duration(200).style('fill', 'none'));
+      .on('mouseover', (d, i, j) => {
+        const here = d3.select(j[i]);
+        d3.select('app-users').selectAll('rect.totals').each((tt, ii, jj) => {
+          const hereTot = d3.select(jj[ii]);
+          const there = d3.select(<HTMLSelectElement>(j[i]).parentNode);
+          const facId =
+            this.displayData[0].factors.map(dk => dk.axis)[ii % this.displayData[0].factors.length];
+          if (facId === d.axis && hereTot.attr('picId') === there.attr('data-index')) {
+            hereTot.classed('select', true);
+            // Testing passing arguments to dispatch
+            const pass: d3.CustomEventParameters = {
+              bubbles: true, cancelable: true, detail: { factorName: facId, dataIndex: hereTot.attr('picId') }
+            };
+            hereTot.dispatch('myselect', pass);
+          }
+        });
+
+        localTiptool
+          .attr('x', parseFloat((j[i]).getAttribute('cx')) - 10)
+          .attr('y', parseFloat((j[i]).getAttribute('cy')) - 10)
+          .style('fill', 'none')
+          .style('opacity', 1)
+          .text(percentFormat(+d.value))
+          .transition().duration(200)
+          .style('fill', (j[i]).style['fill']);
+      })
+      .on('mouseout', (d, i, j) => {
+        const here = d3.select(j[i]);
+        d3.select('app-users').selectAll('rect.totals').each((tt, ii, jj) => {
+          const hereTot = d3.select(jj[ii]);
+          const there = d3.select(<HTMLSelectElement>(j[i]).parentNode);
+          const facId =
+            this.displayData[0].factors.map(dk => dk.axis)[ii % this.displayData[0].factors.length];
+          if (facId === d.axis && hereTot.attr('picId') === there.attr('data-index')) {
+            hereTot.classed('select', false);
+          }
+        });
+        localTiptool.transition().duration(200).style('fill', 'none');
+      }
+      );
 
     const axis = axisGrid.selectAll('.axis')
       .data(allAxis)
