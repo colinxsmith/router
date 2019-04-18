@@ -1817,23 +1817,23 @@ export class UsersComponent implements OnChanges {
       .style('pointer-events', 'all')
       .on('mouseover', (d, i, j) => {
         const here = d3.select(j[i]);
-        d3.select('app-users').selectAll('rect.totals').each((tt, ii, jj) => {
-          const hereTot = d3.select(jj[ii]);
+        d3.select('app-users').selectAll('rect.totals').each((tt, ii, jj: SVGRectElement[] | d3.ArrayLike<SVGRectElement>) => {
+          const hereTot = jj[ii]; // Show how to use DOM since we know we've got a rect element.
           const there = d3.select(<HTMLSelectElement>(j[i]).parentNode);
           const facId =
             this.displayData[0].factors.map(dk => dk.axis)[ii % this.displayData[0].factors.length];
-          if (facId === d.axis && hereTot.attr('picId') === there.attr('data-index')) {
-            hereTot.classed('select', true);
+          if (facId === d.axis && hereTot.getAttribute('picId') === there.attr('data-index')) {
+            hereTot.setAttribute('class', hereTot.getAttribute('class') + ' select');
             // Testing passing arguments to dispatch
-            const pass: d3.CustomEventParameters = {
+            const passArgs: d3.CustomEventParameters = {
               bubbles: true,    // If true, the event is dispatched to ancestors in reverse tree order
               cancelable: true, // If true, event.preventDefault is allowed
               detail: {
                 factorName: facId,
-                dataIndex: hereTot.attr('picId')
+                dataIndex: hereTot.getAttribute('picId')
               }
             };
-            hereTot.dispatch('myselect', pass);
+            d3.select(hereTot).dispatch('myselect', passArgs);
           }
         });
 
