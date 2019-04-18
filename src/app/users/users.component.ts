@@ -590,12 +590,8 @@ export class UsersComponent implements OnChanges {
                   const kkk = d3.select(jjj[iii]);
                   if (kkk.attr('lineindex') === here.attr('lineindex') &&
                     (d3.select((<HTMLSelectElement>jjj[iii]).parentNode).attr('data-index') === here.attr('picId'))) {
-                    console.log('index', iii, 'set fill', (<SVGCircleElement>(jjj[iii])).style['fill']);
-                    kkk.dispatch(
-                      'mouseover' /* After working all this out, it seems it doesn't do anything
-                      ,              // detail is the correct parameter to use with event for this
-                      <d3.CustomEventParameters>({ detail: { parms: [kk, iii, jjj] } }) */
-                    );
+//                    console.log('index', iii, 'set fill', (<SVGCircleElement>(jjj[iii])).style['fill']);
+                    kkk.dispatch('mouseover');
                   }
                 });
                 test = d3.select('app-users').selectAll('.fbetas');
@@ -604,11 +600,7 @@ export class UsersComponent implements OnChanges {
                   if (kkk.attr('lineindex') === here.attr('lineindex') &&
                     (d3.select((<HTMLSelectElement>jjj[iii]).parentNode).attr('data-index') === here.attr('picId'))) {
                     console.log('index', iii, 'set fill', (<SVGCircleElement>(jjj[iii])).style['fill']);
-                    kkk.dispatch(
-                      'mouseover' /* After working all this out, it seems it doesn't do anything
-                      ,              // detail is the correct parameter to use with event for this
-                      <d3.CustomEventParameters>({ detail: { parms: [kk, iii, jjj] } }) */
-                    );
+                    kkk.dispatch('mouseover');
                   }
                 });
               } else {
@@ -756,6 +748,10 @@ export class UsersComponent implements OnChanges {
         .attr('y', 0)
         .attr('height', Side)
         .attr('width', Side)
+        .on('myselect', (d, i, j) => {
+          const ppp: d3.CustomEventParameters = d3.event;
+          console.log(d, j[i].getAttribute('picId'), ppp.detail.factorName, ppp.detail.dataIndex, fNames[i]);
+        })
         .on('mousemove', (d, i) => {
           this.tooltip.style('left', d3.event.pageX - 50 + 'px')
             .style('top', d3.event.pageY - 70 + 'px')
@@ -1828,14 +1824,14 @@ export class UsersComponent implements OnChanges {
             this.displayData[0].factors.map(dk => dk.axis)[ii % this.displayData[0].factors.length];
           if (facId === d.axis && hereTot.attr('picId') === there.attr('data-index')) {
             hereTot.classed('select', true);
+            // Testing passing arguments to dispatch
+            const pass: d3.CustomEventParameters = {
+              bubbles: true, cancelable: true, detail: { factorName: facId, dataIndex: hereTot.attr('picId') }
+            };
+            hereTot.dispatch('myselect', pass);
           }
         });
-        /*   Seems this does nothing     const params = d3.event.detail; // detail is the correct parameter to use with event for this
-                if (Object(params).size > 0) {// params will have size if mouseover was dispatched externally.
-                  d = params.parms[0];
-                  i = params.parms[1];
-                  j = params.parms[2];
-                } */
+
         localTiptool
           .attr('x', parseFloat((j[i]).getAttribute('cx')) - 10)
           .attr('y', parseFloat((j[i]).getAttribute('cy')) - 10)
