@@ -590,7 +590,7 @@ export class UsersComponent implements OnChanges {
                   const kkk = d3.select(jjj[iii]);
                   if (kkk.attr('lineindex') === here.attr('lineindex') &&
                     (d3.select((<HTMLSelectElement>jjj[iii]).parentNode).attr('data-index') === here.attr('picId'))) {
-//                    console.log('index', iii, 'set fill', (<SVGCircleElement>(jjj[iii])).style['fill']);
+                    //                    console.log('index', iii, 'set fill', (<SVGCircleElement>(jjj[iii])).style['fill']);
                     kkk.dispatch('mouseover');
                   }
                 });
@@ -1826,7 +1826,12 @@ export class UsersComponent implements OnChanges {
             hereTot.classed('select', true);
             // Testing passing arguments to dispatch
             const pass: d3.CustomEventParameters = {
-              bubbles: true, cancelable: true, detail: { factorName: facId, dataIndex: hereTot.attr('picId') }
+              bubbles: true,    // If true, the event is dispatched to ancestors in reverse tree order
+              cancelable: true, // If true, event.preventDefault is allowed
+              detail: {
+                factorName: facId,
+                dataIndex: hereTot.attr('picId')
+              }
             };
             hereTot.dispatch('myselect', pass);
           }
