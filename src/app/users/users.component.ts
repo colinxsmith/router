@@ -1817,7 +1817,8 @@ export class UsersComponent implements OnChanges {
       .style('pointer-events', 'all')
       .on('mouseover', (d, i, j) => {
         const here = d3.select(j[i]);
-        d3.select('app-users').selectAll('rect.totals').each((tt, ii, jj: SVGRectElement[] | d3.ArrayLike<SVGRectElement>) => {
+        d3.select('app-users').selectAll('rect.totals').each((tt, ii,
+          jj: SVGRectElement[] | d3.ArrayLike<SVGRectElement>) => {
           const hereTot = jj[ii]; // Show how to use DOM since we know we've got a rect element.
           const there = d3.select(<HTMLSelectElement>(j[i]).parentNode);
           const facId =
