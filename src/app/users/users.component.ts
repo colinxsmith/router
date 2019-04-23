@@ -589,7 +589,8 @@ export class UsersComponent implements OnChanges {
                 test.each((kk, iii, jjj) => {
                   const kkk = d3.select(jjj[iii]);
                   if (kkk.attr('lineindex') === here.attr('lineindex') &&
-                    (d3.select((<HTMLSelectElement>jjj[iii]).parentNode).attr('data-index') === here.attr('picId'))) {
+                    (<SVGGElement>(<SVGCircleElement>jjj[iii]).parentNode).getAttribute('data-index')
+                    === here.attr('picId')) {
                     //                    console.log('index', iii, 'set fill', (<SVGCircleElement>(jjj[iii])).style['fill']);
                     kkk.dispatch('mouseover');
                   }
@@ -597,8 +598,9 @@ export class UsersComponent implements OnChanges {
                 test = d3.select('app-users').selectAll('.fbetas');
                 test.each((kk, iii, jjj) => {
                   const kkk = d3.select(jjj[iii]);
-                  if (kkk.attr('lineindex') === here.attr('lineindex') &&
-                    (d3.select((<HTMLSelectElement>jjj[iii]).parentNode).attr('data-index') === here.attr('picId'))) {
+                  if (kkk.attr('lineindex') === here.attr('lineindex')
+                    && (<SVGGElement>(<SVGCircleElement>jjj[iii]).parentNode).getAttribute('data-index')
+                    === here.attr('picId')) {
                     console.log('index', iii, 'set fill', (<SVGCircleElement>(jjj[iii])).style['fill']);
                     kkk.dispatch('mouseover');
                   }
@@ -753,14 +755,14 @@ export class UsersComponent implements OnChanges {
           console.log(d, j[i].getAttribute('picId'), ppp.detail.factorName, ppp.detail.dataIndex, fNames[i]);
         })
         .on('mousemove', (d, i, j) => {
-          d3.select(j[i]).classed('select', true);
+          j[i].setAttribute('class', j[i].getAttribute('class').replace(/ select/g, '') + ' select');
           this.tooltip.style('left', d3.event.pageX - 50 + 'px')
             .style('top', d3.event.pageY - 70 + 'px')
             .style('display', 'inline-block')
             .html(`<i class='fa fa-gears leafy'></i>Total: ${fNames[i]}<br>${d3.format('0.4f')(d)}`);
         })
         .on('mouseout', (d, i, j) => {
-          d3.select(j[i]).classed('select', false);
+          j[i].setAttribute('class', j[i].getAttribute('class').replace(/ select/g, ''));
           this.tooltip.style('display', 'none');
         })
         .transition().duration(2000).attrTween('transform', (d, i) => (t) =>
@@ -1801,7 +1803,7 @@ export class UsersComponent implements OnChanges {
       .attr('r', cfg.dotRadius)
       .attr('cx', (d, i) => rScale(d.value) * Math.cos(angleScale(i) - Math.PI / 2))
       .attr('cy', (d, i) => rScale(d.value) * Math.sin(angleScale(i) - Math.PI / 2))
-      .style('fill', (d, i, j) => cfg.colour(+d3.select(<HTMLSelectElement>(j[i]).parentNode).attr('data-index')))
+      .style('fill', (d, i, j) => cfg.colour(+(<SVGGElement>(j[i].parentNode)).getAttribute('data-index')))
       .style('fill-opacity', 0.8);
     const blobCircleWrapper = baseSvg.selectAll('.radarCircleWrapper')
       .data(data)
@@ -1816,7 +1818,7 @@ export class UsersComponent implements OnChanges {
       .attr('lineindex', d => d.axis)
       .attr('cx', (d, i) => rScale(d.value) * Math.cos(angleScale(i) - Math.PI / 2))
       .attr('cy', (d, i) => rScale(d.value) * Math.sin(angleScale(i) - Math.PI / 2))
-      .style('fill', (d, i, j) => cfg.colour(+d3.select(<HTMLSelectElement>(j[i]).parentNode).attr('data-index')))
+      .style('fill', (d, i, j) => cfg.colour(+(<SVGGElement>(j[i].parentNode)).getAttribute('data-index')))
       .style('fill-opacity', 0)
       .style('pointer-events', 'all')
       .on('mouseover', (d, i, j) => {
@@ -1824,10 +1826,11 @@ export class UsersComponent implements OnChanges {
         d3.select('app-users').selectAll('rect.totals').each((tt, ii,
           jj: SVGRectElement[] | d3.ArrayLike<SVGRectElement>) => {
           const hereTot = jj[ii]; // Show how to use DOM since we know we've got a rect element.
-          const there = d3.select(<HTMLSelectElement>(j[i]).parentNode);
-          const facId =
-            this.displayData[0].factors.map(dk => dk.axis)[ii % this.displayData[0].factors.length];
-          if (facId === d.axis && hereTot.getAttribute('picId') === there.attr('data-index')) {
+          const there = <SVGGElement>((j[i]).parentNode);
+          const facId: string =
+            this.displayData[0].factors.map(
+              (dk: { axis: string; value: number; }) => dk.axis)[ii % this.displayData[0].factors.length];
+          if (facId === d.axis && hereTot.getAttribute('picId') === there.getAttribute('data-index')) {
             hereTot.setAttribute('class', hereTot.getAttribute('class') + ' select');
             // Testing passing arguments to dispatch
             const passArgs: d3.CustomEventParameters = {
@@ -1855,10 +1858,10 @@ export class UsersComponent implements OnChanges {
         const here = d3.select(j[i]);
         d3.select('app-users').selectAll('rect.totals').each((tt, ii, jj) => {
           const hereTot = d3.select(jj[ii]);
-          const there = d3.select(<HTMLSelectElement>(j[i]).parentNode);
+          const there = <SVGGElement>j[i].parentNode;
           const facId =
             this.displayData[0].factors.map(dk => dk.axis)[ii % this.displayData[0].factors.length];
-          if (facId === d.axis && hereTot.attr('picId') === there.attr('data-index')) {
+          if (facId === d.axis && hereTot.attr('picId') === there.getAttribute('data-index')) {
             hereTot.classed('select', false);
           }
         });
