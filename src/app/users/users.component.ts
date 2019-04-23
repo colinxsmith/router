@@ -752,13 +752,17 @@ export class UsersComponent implements OnChanges {
           const ppp: d3.CustomEventParameters = d3.event;
           console.log(d, j[i].getAttribute('picId'), ppp.detail.factorName, ppp.detail.dataIndex, fNames[i]);
         })
-        .on('mousemove', (d, i) => {
+        .on('mousemove', (d, i, j) => {
+          d3.select(j[i]).classed('select', true);
           this.tooltip.style('left', d3.event.pageX - 50 + 'px')
             .style('top', d3.event.pageY - 70 + 'px')
             .style('display', 'inline-block')
             .html(`<i class='fa fa-gears leafy'></i>Total: ${fNames[i]}<br>${d3.format('0.4f')(d)}`);
         })
-        .on('mouseout', () => this.tooltip.style('display', 'none'))
+        .on('mouseout', (d, i, j) => {
+          d3.select(j[i]).classed('select', false);
+          this.tooltip.style('display', 'none');
+        })
         .transition().duration(2000).attrTween('transform', (d, i) => (t) =>
           `translate(${i * Side},${t * Math.floor(weights.length) * Side})`)
         ;
