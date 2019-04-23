@@ -562,86 +562,52 @@ export class UsersComponent implements OnChanges {
         ['text.users', 'rect.weightSinglePlus', 'rect.weightSingleMinus'].forEach(ss => {
           d3.select('app-users').selectAll(ss)
             .on('mouseover', (d, ii, jj) => {
-              const here = d3.select(jj[ii]);
-              if (here.attr('lineindex') !== null) {
-                let test = d3.select('app-users').selectAll('text.users');
-                test.each((kk, iii, jjj) => {
-                  const kkk = d3.select(jjj[iii]);
-                  if (kkk.attr('lineindex') === here.attr('lineindex')) {
-                    kkk.classed('over', true);
+              const lineIndex = (<SVGTextElement|SVGRectElement>jj[ii]).getAttribute('lineindex');
+              const picId = (<SVGTextElement|SVGRectElement>jj[ii]).getAttribute('picId');
+              if (lineIndex !== null) {
+                ['text.users', 'rect.weightSinglePlus', 'rect.weightSingleMinus'].forEach(sss => {
+                const testU = d3.select('app-users').selectAll(sss);
+                testU.each((kk, iii, jjj) => {
+                  const lineIndexS = (<SVGTextElement|SVGRectElement>jjj[iii]).getAttribute('lineindex');
+                  if (lineIndexS === lineIndex) {
+                    d3.select(jjj[iii]).classed('over', true);
                   }
                 });
-                test = d3.select('app-users').selectAll('rect.weightSinglePlus');
+              });
+                const test = d3.select('app-users').selectAll('.radarInvisibleCircle');
                 test.each((kk, iii, jjj) => {
                   const kkk = d3.select(jjj[iii]);
-                  if (kkk.attr('lineindex') === here.attr('lineindex')) {
-                    kkk.classed('over', true);
-                  }
-                });
-                test = d3.select('app-users').selectAll('rect.weightSingleMinus');
-                test.each((kk, iii, jjj) => {
-                  const kkk = d3.select(jjj[iii]);
-                  if (kkk.attr('lineindex') === here.attr('lineindex')) {
-                    kkk.classed('over', true);
-                  }
-                });
-                test = d3.select('app-users').selectAll('.radarInvisibleCircle');
-                test.each((kk, iii, jjj) => {
-                  const kkk = d3.select(jjj[iii]);
-                  if (kkk.attr('lineindex') === here.attr('lineindex') &&
+                  if (kkk.attr('lineindex') === lineIndex &&
                     (<SVGGElement>(<SVGCircleElement>jjj[iii]).parentNode).getAttribute('data-index')
-                    === here.attr('picId')) {
-                    //                    console.log('index', iii, 'set fill', (<SVGCircleElement>(jjj[iii])).style['fill']);
-                    kkk.dispatch('mouseover');
-                  }
-                });
-                test = d3.select('app-users').selectAll('.fbetas');
-                test.each((kk, iii, jjj) => {
-                  const kkk = d3.select(jjj[iii]);
-                  if (kkk.attr('lineindex') === here.attr('lineindex')
-                    && (<SVGGElement>(<SVGCircleElement>jjj[iii]).parentNode).getAttribute('data-index')
-                    === here.attr('picId')) {
-                    console.log('index', iii, 'set fill', (<SVGCircleElement>(jjj[iii])).style['fill']);
-                    kkk.dispatch('mouseover');
+                    === picId) {
+                      kkk.dispatch('mouseover');
                   }
                 });
               } else {
-                here.classed('over', true);
+                d3.select(jj[ii]).classed('over', true);
               }
             })
             .on('mouseout', (d, ii, jj) => {
-              const here = d3.select(jj[ii]);
-              if (here.attr('lineindex') !== null) {
-                let test = d3.select('app-users').selectAll('text.users');
-                test.each((kk, iii, jjj) => {
-                  const kkk = d3.select(jjj[iii]);
-                  if (kkk.attr('lineindex') === here.attr('lineindex')) {
-                    kkk.classed('over', false);
+              const lineIndex = (<SVGTextElement|SVGRectElement>jj[ii]).getAttribute('lineindex');
+              if (lineIndex !== null) {
+                ['text.users', 'rect.weightSinglePlus', 'rect.weightSingleMinus'].forEach(sss => {
+                const testU = d3.select('app-users').selectAll(sss);
+                testU.each((kk, iii, jjj) => {
+                  const lineIndexK = (<SVGTextElement|SVGRectElement>jjj[iii]).getAttribute('lineindex');
+                  if (lineIndexK === lineIndex) {
+                    d3.select(jjj[iii]).classed('over', false);
                   }
                 });
-                test = d3.select('app-users').selectAll('rect.weightSingleMinus');
+              });
+                const test = d3.select('app-users').selectAll('.radarInvisibleCircle');
                 test.each((kk, iii, jjj) => {
                   const kkk = d3.select(jjj[iii]);
-                  if (kkk.attr('lineindex') === here.attr('lineindex')) {
-                    kkk.classed('over', false);
-                  }
-                });
-                test = d3.select('app-users').selectAll('rect.weightSinglePlus');
-                test.each((kk, iii, jjj) => {
-                  const kkk = d3.select(jjj[iii]);
-                  if (kkk.attr('lineindex') === here.attr('lineindex')) {
-                    kkk.classed('over', false);
-                  }
-                });
-                test = d3.select('app-users').selectAll('.radarInvisibleCircle');
-                test.each((kk, iii, jjj) => {
-                  const kkk = d3.select(jjj[iii]);
-                  if (kkk.attr('lineindex') === here.attr('lineindex')) {
+                  if (kkk.attr('lineindex') === lineIndex) {
                     kkk.dispatch('mouseout');
                   }
                 });
               } else {
-                here.classed('over', false);
+                d3.select(jj[ii]).classed('over', false);
               }
             });
         });
