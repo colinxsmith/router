@@ -4,6 +4,7 @@ import { UserService } from './user.service';
 import * as d3 from 'd3';
 import { map } from 'rxjs/operators';
 import { headersToString } from 'selenium-webdriver/http';
+import { isNumber, isObject } from 'util';
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
@@ -562,25 +563,25 @@ export class UsersComponent implements OnChanges {
         ['text.users', 'rect.weightSinglePlus', 'rect.weightSingleMinus'].forEach(ss => {
           d3.select('app-users').selectAll(ss)
             .on('mouseover', (d, ii, jj) => {
-              const lineIndex = (<SVGTextElement|SVGRectElement>jj[ii]).getAttribute('lineindex');
-              const picId = (<SVGTextElement|SVGRectElement>jj[ii]).getAttribute('picId');
+              const lineIndex = (<SVGTextElement | SVGRectElement>jj[ii]).getAttribute('lineindex');
+              const picId = (<SVGTextElement | SVGRectElement>jj[ii]).getAttribute('picId');
               if (lineIndex !== null) {
                 ['text.users', 'rect.weightSinglePlus', 'rect.weightSingleMinus'].forEach(sss => {
-                const testU = d3.select('app-users').selectAll(sss);
-                testU.each((kk, iii, jjj) => {
-                  const lineIndexS = (<SVGTextElement|SVGRectElement>jjj[iii]).getAttribute('lineindex');
-                  if (lineIndexS === lineIndex) {
-                    d3.select(jjj[iii]).classed('over', true);
-                  }
+                  const testU = d3.select('app-users').selectAll(sss);
+                  testU.each((kk, iii, jjj) => {
+                    const lineIndexS = (<SVGTextElement | SVGRectElement>jjj[iii]).getAttribute('lineindex');
+                    if (lineIndexS === lineIndex) {
+                      d3.select(jjj[iii]).classed('over', true);
+                    }
+                  });
                 });
-              });
                 const test = d3.select('app-users').selectAll('.radarInvisibleCircle');
                 test.each((kk, iii, jjj) => {
                   const kkk = d3.select(jjj[iii]);
                   if (kkk.attr('lineindex') === lineIndex &&
                     (<SVGGElement>(<SVGCircleElement>jjj[iii]).parentNode).getAttribute('data-index')
                     === picId) {
-                      kkk.dispatch('mouseover');
+                    kkk.dispatch('mouseover');
                   }
                 });
               } else {
@@ -588,17 +589,17 @@ export class UsersComponent implements OnChanges {
               }
             })
             .on('mouseout', (d, ii, jj) => {
-              const lineIndex = (<SVGTextElement|SVGRectElement>jj[ii]).getAttribute('lineindex');
+              const lineIndex = (<SVGTextElement | SVGRectElement>jj[ii]).getAttribute('lineindex');
               if (lineIndex !== null) {
                 ['text.users', 'rect.weightSinglePlus', 'rect.weightSingleMinus'].forEach(sss => {
-                const testU = d3.select('app-users').selectAll(sss);
-                testU.each((kk, iii, jjj) => {
-                  const lineIndexK = (<SVGTextElement|SVGRectElement>jjj[iii]).getAttribute('lineindex');
-                  if (lineIndexK === lineIndex) {
-                    d3.select(jjj[iii]).classed('over', false);
-                  }
+                  const testU = d3.select('app-users').selectAll(sss);
+                  testU.each((kk, iii, jjj) => {
+                    const lineIndexK = (<SVGTextElement | SVGRectElement>jjj[iii]).getAttribute('lineindex');
+                    if (lineIndexK === lineIndex) {
+                      d3.select(jjj[iii]).classed('over', false);
+                    }
+                  });
                 });
-              });
                 const test = d3.select('app-users').selectAll('.radarInvisibleCircle');
                 test.each((kk, iii, jjj) => {
                   const kkk = d3.select(jjj[iii]);
@@ -722,6 +723,15 @@ export class UsersComponent implements OnChanges {
         })
         .on('mousemove', (d, i, j) => {
           j[i].setAttribute('class', j[i].getAttribute('class').replace(/ select/g, '') + ' select');
+          d3.selectAll('.radarInvisibleCircle').each((df, ii, jj) => {
+            const dIndex = (<SVGGElement>(<SVGCircleElement>jj[ii]).parentNode).getAttribute('data-index');
+            const axis = (<SVGCircleElement>jj[ii]).getAttribute('lineindex');
+            if (+dIndex === dataIndex && axis === fNames[i]) {
+              const passing = <d3.CustomEventParameters>{};
+              passing.detail = { from: 'totals' };
+              d3.select(jj[ii]).dispatch('mouseover', passing);
+            }
+          });
           this.tooltip.style('left', d3.event.pageX - 50 + 'px')
             .style('top', d3.event.pageY - 70 + 'px')
             .style('display', 'inline-block')
@@ -729,6 +739,13 @@ export class UsersComponent implements OnChanges {
         })
         .on('mouseout', (d, i, j) => {
           j[i].setAttribute('class', j[i].getAttribute('class').replace(/ select/g, ''));
+          d3.selectAll('.radarInvisibleCircle').each((df, ii, jj) => {
+            const dIndex = +(<SVGGElement>(<SVGCircleElement>jj[ii]).parentNode).getAttribute('data-index');
+            const axis = (<SVGCircleElement>jj[ii]).getAttribute('lineindex');
+            if (dIndex === dataIndex && axis === fNames[i]) {
+              d3.select(jj[ii]).dispatch('mouseout');
+            }
+          });
           this.tooltip.style('display', 'none');
         })
         .transition().duration(2000).attrTween('transform', (d, i) => (t) =>
@@ -1788,28 +1805,31 @@ export class UsersComponent implements OnChanges {
       .style('fill-opacity', 0)
       .style('pointer-events', 'all')
       .on('mouseover', (d, i, j) => {
-        const here = d3.select(j[i]);
-        d3.select('app-users').selectAll('rect.totals').each((tt, ii,
-          jj: SVGRectElement[] | d3.ArrayLike<SVGRectElement>) => {
-          const hereTot = jj[ii]; // Show how to use DOM since we know we've got a rect element.
-          const there = <SVGGElement>((j[i]).parentNode);
-          const facId: string =
-            this.displayData[0].factors.map(
-              (dk: { axis: string; value: number; }) => dk.axis)[ii % this.displayData[0].factors.length];
-          if (facId === d.axis && hereTot.getAttribute('picId') === there.getAttribute('data-index')) {
-            hereTot.setAttribute('class', hereTot.getAttribute('class') + ' select');
-            // Testing passing arguments to dispatch
-            const passArgs: d3.CustomEventParameters = {
-              bubbles: true,    // If true, the event is dispatched to ancestors in reverse tree order
-              cancelable: true, // If true, event.preventDefault is allowed
-              detail: {
-                factorName: facId,
-                dataIndex: hereTot.getAttribute('picId')
-              }
-            };
-            d3.select(hereTot).dispatch('myselect', passArgs);
-          }
-        });
+        const ppp: d3.CustomEventParameters = d3.event;
+        console.log(isObject(ppp.detail), ppp);
+        if (!isObject(ppp.detail)) {
+          d3.select('app-users').selectAll('rect.totals').each((tt, ii,
+            jj: SVGRectElement[] | d3.ArrayLike<SVGRectElement>) => {
+            const hereTot = jj[ii]; // Show how to use DOM since we know we've got a rect element.
+            const there = <SVGGElement>((j[i]).parentNode);
+            const facId: string =
+              this.displayData[0].factors.map(
+                (dk: { axis: string; value: number; }) => dk.axis)[ii % this.displayData[0].factors.length];
+            if (facId === d.axis && hereTot.getAttribute('picId') === there.getAttribute('data-index')) {
+              hereTot.setAttribute('class', hereTot.getAttribute('class') + ' select');
+              // Testing passing arguments to dispatch
+              const passArgs: d3.CustomEventParameters = {
+                bubbles: true,    // If true, the event is dispatched to ancestors in reverse tree order
+                cancelable: true, // If true, event.preventDefault is allowed
+                detail: {
+                  factorName: facId,
+                  dataIndex: hereTot.getAttribute('picId')
+                }
+              };
+              d3.select(hereTot).dispatch('myselect', passArgs);
+            }
+          });
+        }
 
         localTiptool
           .attr('x', parseFloat((j[i]).getAttribute('cx')) - 10)
