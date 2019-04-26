@@ -575,9 +575,9 @@ export class UsersComponent implements OnChanges {
                 const test = d3.select('app-users').selectAll('.radarInvisibleCircle');
                 test.each((kk, iii, jjj) => {
                   const kkk = d3.select(jjj[iii]);
-                  if (kkk.attr('lineindex') === lineIndex &&
-                    (<SVGGElement>(<SVGCircleElement>jjj[iii]).parentNode).getAttribute('data-index')
-                    === picId) {
+                  if (kkk.attr('lineindex') === lineIndex
+                    && (<SVGGElement>(<SVGCircleElement>jjj[iii]).parentNode).getAttribute('data-index') === picId
+                  ) {
                     kkk.dispatch('mouseover', <d3.CustomEventParameters>{ detail: { send: 'just send something in an object' } });
                   }
                 });
@@ -1797,7 +1797,7 @@ export class UsersComponent implements OnChanges {
       .style('fill-opacity', 0)
       .style('pointer-events', 'all')
       .on('mouseover', (d, i, j) => {
-        const ppp: d3.CustomEventParameters = d3.event;
+        const ppp: d3.CustomEventParameters | MouseEvent = d3.event;
         const dataId = (<SVGGElement>(j[i]).parentNode).getAttribute('data-index');
         console.log(isObject(ppp.detail), ppp);
         if (!isObject(ppp.detail)) {
