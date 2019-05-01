@@ -1,10 +1,9 @@
 import { Component, ViewEncapsulation, OnChanges, SimpleChanges, Input } from '@angular/core';
 import { AppComponent } from '../app.component';
-import { UserService } from './user.service';
+import { UserService } from '../user.service';
 import * as d3 from 'd3';
 import { map } from 'rxjs/operators';
-import { headersToString } from 'selenium-webdriver/http';
-import { isNumber, isObject } from 'util';
+import { isObject } from 'util';
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
