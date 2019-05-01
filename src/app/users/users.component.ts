@@ -1,10 +1,9 @@
 import { Component, ViewEncapsulation, OnChanges, SimpleChanges, Input } from '@angular/core';
 import { AppComponent } from '../app.component';
-import { UserService } from './user.service';
+import { UserService } from '../user.service';
 import * as d3 from 'd3';
 import { map } from 'rxjs/operators';
-import { headersToString } from 'selenium-webdriver/http';
-import { isNumber, isObject } from 'util';
+import { isObject } from 'util';
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
@@ -563,22 +562,22 @@ export class UsersComponent implements OnChanges {
         ['text.users', 'rect.weightSinglePlus', 'rect.weightSingleMinus'].forEach(ss => {
           d3.select('app-users').selectAll(ss)
             .on('mouseover', (d, ii, jj) => {
-              const lineIndex = (<SVGTextElement | SVGRectElement>jj[ii]).getAttribute('lineindex');
-              const picId = (<SVGTextElement | SVGRectElement>jj[ii]).getAttribute('picId');
+              const lineIndex = (jj[ii] as SVGTextElement | SVGRectElement).getAttribute('lineindex');
+              const picId = (jj[ii] as SVGTextElement | SVGRectElement).getAttribute('picId');
               if (lineIndex !== null) {
                 ['text.users', 'rect.weightSinglePlus', 'rect.weightSingleMinus'].forEach(sss => {
                   d3.select('app-users').selectAll(sss)
                     .classed('over', (kk, iii, jjj) =>
-                      (<SVGTextElement | SVGRectElement>jjj[iii]).getAttribute('lineindex') === lineIndex ? true : false
+                      (jjj[iii] as SVGTextElement | SVGRectElement).getAttribute('lineindex') === lineIndex ? true : false
                     );
                 });
                 const test = d3.select('app-users').selectAll('.radarInvisibleCircle');
                 test.each((kk, iii, jjj) => {
                   const kkk = d3.select(jjj[iii]);
                   if (kkk.attr('lineindex') === lineIndex
-                    && (<SVGGElement>(<SVGCircleElement>jjj[iii]).parentNode).getAttribute('data-index') === picId
+                    && ((jjj[iii] as SVGCircleElement).parentNode as SVGGElement).getAttribute('data-index') === picId
                   ) {
-                    kkk.dispatch('mouseover', <d3.CustomEventParameters>{ detail: { send: 'just send something in an object' } });
+                    kkk.dispatch('mouseover', { detail: { send: 'just send something in an object' } } as d3.CustomEventParameters);
                   }
                 });
               } else {
@@ -586,7 +585,7 @@ export class UsersComponent implements OnChanges {
               }
             })
             .on('mouseout', (d, ii, jj) => {
-              const lineIndex = (<SVGTextElement | SVGRectElement>jj[ii]).getAttribute('lineindex');
+              const lineIndex = (jj[ii] as SVGTextElement | SVGRectElement).getAttribute('lineindex');
               if (lineIndex !== null) {
                 ['text.users', 'rect.weightSinglePlus', 'rect.weightSingleMinus'].forEach(sss => {
                   d3.select('app-users').selectAll(sss)
@@ -716,10 +715,10 @@ export class UsersComponent implements OnChanges {
         .on('mousemove', (d, i, j) => {
           j[i].setAttribute('class', j[i].getAttribute('class').replace(/ select/g, '') + ' select');
           d3.selectAll('.radarInvisibleCircle').each((df, ii, jj) => {
-            const dIndex = (<SVGGElement>(<SVGCircleElement>jj[ii]).parentNode).getAttribute('data-index');
-            const axis = (<SVGCircleElement>jj[ii]).getAttribute('lineindex');
+            const dIndex = ((jj[ii] as SVGCircleElement).parentNode as SVGGElement).getAttribute('data-index');
+            const axis = (jj[ii] as SVGCircleElement).getAttribute('lineindex');
             if (+dIndex === dataIndex && axis === fNames[i]) {
-              const passing = <d3.CustomEventParameters>{};
+              const passing = {} as d3.CustomEventParameters;
               passing.detail = { from: 'totals' };
               d3.select(jj[ii]).dispatch('mouseover', passing);
             }
@@ -732,8 +731,8 @@ export class UsersComponent implements OnChanges {
         .on('mouseout', (d, i, j) => {
           j[i].setAttribute('class', j[i].getAttribute('class').replace(/ select/g, ''));
           d3.selectAll('.radarInvisibleCircle').each((df, ii, jj) => {
-            const dIndex = +(<SVGGElement>(<SVGCircleElement>jj[ii]).parentNode).getAttribute('data-index');
-            const axis = (<SVGCircleElement>jj[ii]).getAttribute('lineindex');
+            const dIndex = +((jj[ii] as SVGCircleElement).parentNode as SVGGElement).getAttribute('data-index');
+            const axis = (jj[ii] as SVGCircleElement).getAttribute('lineindex');
             if (dIndex === dataIndex && axis === fNames[i]) {
               d3.select(jj[ii]).dispatch('mouseout');
             }
@@ -1581,9 +1580,9 @@ export class UsersComponent implements OnChanges {
         .attr('type', 'text')
         .attr('size', '5')
         .attr('class', 'main field')
-        .attr('value', (<SVGTSpanElement>jjj[iii]).textContent)
+        .attr('value', (jjj[iii] as SVGTSpanElement).textContent)
         .on('change', (dk, i, j) => {
-          (<SVGTSpanElement>jjj[iii]).textContent = (j[i]).value;
+          (jjj[iii] as SVGTSpanElement).textContent = (j[i]).value;
           d3.select(j[i]).remove();
         })
       );
@@ -1778,7 +1777,7 @@ export class UsersComponent implements OnChanges {
       .attr('r', cfg.dotRadius)
       .attr('cx', (d, i) => rScale(d.value) * Math.cos(angleScale(i) - Math.PI / 2))
       .attr('cy', (d, i) => rScale(d.value) * Math.sin(angleScale(i) - Math.PI / 2))
-      .style('fill', (d, i, j) => cfg.colour(+(<SVGGElement>(j[i].parentNode)).getAttribute('data-index')))
+      .style('fill', (d, i, j) => cfg.colour(+((j[i].parentNode) as SVGGElement).getAttribute('data-index')))
       .style('fill-opacity', 0.8);
     const blobCircleWrapper = baseSvg.selectAll('.radarCircleWrapper')
       .data(data)
@@ -1793,12 +1792,12 @@ export class UsersComponent implements OnChanges {
       .attr('lineindex', d => d.axis)
       .attr('cx', (d, i) => rScale(d.value) * Math.cos(angleScale(i) - Math.PI / 2))
       .attr('cy', (d, i) => rScale(d.value) * Math.sin(angleScale(i) - Math.PI / 2))
-      .style('fill', (d, i, j) => cfg.colour(+(<SVGGElement>(j[i].parentNode)).getAttribute('data-index')))
+      .style('fill', (d, i, j) => cfg.colour(+((j[i].parentNode) as SVGGElement).getAttribute('data-index')))
       .style('fill-opacity', 0)
       .style('pointer-events', 'all')
       .on('mouseover', (d, i, j) => {
         const ppp: d3.CustomEventParameters | MouseEvent = d3.event;
-        const dataId = (<SVGGElement>(j[i]).parentNode).getAttribute('data-index');
+        const dataId = ((j[i]).parentNode as SVGGElement).getAttribute('data-index');
         console.log(isObject(ppp.detail), ppp);
         if (!isObject(ppp.detail)) {
           d3.select('app-users').selectAll('rect.totals').each((tt, ii,
@@ -1900,7 +1899,7 @@ export class UsersComponent implements OnChanges {
       while (word = words.pop()) {
         line.push(word);
         tspan.text(line.join(' '));
-        if ((<SVGTSpanElement>tspan.node()).getComputedTextLength() > width) {
+        if ((tspan.node() as SVGTSpanElement).getComputedTextLength() > width) {
           line.pop();
           tspan.text(line.join(' '));
           line = [word];
