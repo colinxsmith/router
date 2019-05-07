@@ -17,6 +17,7 @@
     "node": "node -v",
     "testOpt": "export LD_LIBRARY_PATH=/home/colin/safeqp && node runme.js",
     "startOpt": "./swigstep.sh && export LD_LIBRARY_PATH=/home/colin/safeqp && node-gyp configure build && node runme.js",
+    "installOptt": "./swigstep.sh  && bash make_12.1.sed && node-gyp rebuild && npm run testOpt",
     "installOpt": "./swigstep.sh && patch -i patch_12.1 OPT_wrap.cxx && node-gyp rebuild && npm run testOpt"
   },
   "private": true,
