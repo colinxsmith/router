@@ -517,17 +517,7 @@ export class UsersComponent implements OnChanges {
             this.simpleDisplay([this.displayData]);
           }
         } else if (this.getKey === 'factorX') {
-          this.fiveArcs();
           const datahere: { risk: number, return: number, back: string }[] = this.displayData;
-          const svg = d3.select('app-users').append('svg').attr('width', 950).attr('height', 100);
-          svg.selectAll('.riskret').data(datahere).enter()
-            .append('text')
-            .attr('picId', (d, i) => i)
-            .attr('transform', (d, i) => `translate(0,${20 * (i + 1)})`)
-            .attr('class', 'rmessage').attr('x', 0).attr('y', 0)
-            .text(d => `Risk: ${d.risk} Return: ${d.return} Return status: ${d.back}`)
-            .on('mouseover', (d, ii, jj) => d3.select(jj[ii]).classed('over', true))
-            .on('mouseout', (d, ii, jj) => d3.select(jj[ii]).classed('over', false));
           const FC: number[] = this.displayData[0].FC;
           const factorsOff = this.displayData.length === 2 ? this.displayData[1].factors : this.displayData[0].factors;
           const svgFactorX = this.factorX(factorsOff, 200);
@@ -545,17 +535,29 @@ export class UsersComponent implements OnChanges {
           }
           this.RadarChart('app-users', this.pickOutNonZeroValues(this.displayData.map(d => d.factors)), options);
           this.correlationMatrix(FC, this.displayData[0].factors.map(d => d.axis), 700);
+
+          const svg = d3.select('app-users').append('svg').attr('width', 950).attr('height', 100);
+          svg.selectAll('.riskret').data(datahere).enter()
+            .append('text')
+            .attr('picId', (d, i) => i)
+            .attr('transform', (d, i) => `translate(0,${20 * (i + 1)})`)
+            .attr('class', 'rmessage').attr('x', 0).attr('y', 0)
+            .text(d => `Risk: ${d.risk} Return: ${d.return} Return status: ${d.back}`)
+            .on('mouseover', (d, ii, jj) => d3.select(jj[ii]).classed('over', true))
+            .on('mouseout', (d, ii, jj) => d3.select(jj[ii]).classed('over', false));
+
           this.displayData.forEach((DATA, ii: number) => {
             const usedweight = DATA.w;
             const factorBetas = DATA.FL;
-            this.matrixFLorFX(ii, usedweight, factorBetas, this.displayData[0].factors.map(d => d.axis), 0, 700);
             const factorExp: number[] = [];
             factorBetas.forEach((d, i) => {
               const iw = i % usedweight.length;
               factorExp.push(d * usedweight[iw].w);
             });
             this.matrixFLorFX(ii, usedweight, factorExp, this.displayData[0].factors.map(d => d.axis), 1);
+            this.matrixFLorFX(ii, usedweight, factorBetas, this.displayData[0].factors.map(d => d.axis), 0, 700);
           });
+          this.fiveArcs();
           this.fiveCircles();
         }
 
