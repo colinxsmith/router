@@ -10,3 +10,4 @@
  sed -i "s/exports_obj->Set(/exports_obj->Set(SWIGV8_CURRENT_CONTEXT(),/g" $file
  sed -i "/exports_obj->Set/s/);/).FromMaybe(bool());/g" $file
  sed -i "/SetHiddenPrototype/s|_exports|// _exports|"  $file
+ sed -i "/handle.MarkIndependent(/s|cdata|// cdata|" $file
