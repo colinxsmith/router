@@ -16,8 +16,8 @@
         "express": "node server.js",
         "node": "node -v",
         "testOpt": "node runme.js",
-        "startOpt": "\\cygwin\\bin\\bash mkWrapCxx.sh && node-gyp configure build && node runme.js",
-        "installOpt": "\\cygwin\\bin\\bash mkWrapCxx.sh && node-gyp rebuild && npm run testOpt"
+        "startOpt": "\\cygwin\\bin\\bash -c \"PATH=$PATH:/usr/bin;dos2unix mkWrapCxx.sh\" && \\cygwin\\bin\\bash mkWrapCxx.sh && node-gyp configure build && node runme.js",
+        "installOpt": "\\cygwin\\bin\\bash -c \"PATH=$PATH:/usr/bin;dos2unix mkWrapCxx.sh\" && \\cygwin\\bin\\bash mkWrapCxx.sh && node-gyp rebuild && npm run testOpt"
     },
     "private": true,
     "dependencies": {
