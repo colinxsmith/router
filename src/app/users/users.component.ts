@@ -453,8 +453,8 @@ export class UsersComponent implements OnChanges {
           const ww = 500, hh = 500, margin = { top: hh / 8, right: ww / 8, bottom: hh / 8, left: ww / 8 },
             width = ww - margin.left - margin.right,
             height = hh - margin.top - margin.bottom,
-            radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)',
-              'rgb(255,255,50)', 'rgb(50,255,255)']),
+            radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(200,50,50)', 'rgb(50,200,50)',
+              'rgb(244,244,50)', 'rgb(50,244,244)']),
             radarChartOptions = {
               w: width, h: height, margin: margin, maxValue: 0,
               levels: 3, roundStrokes: !joinLinear, colour: radarBlobColour
@@ -476,8 +476,8 @@ export class UsersComponent implements OnChanges {
           const ww = 500, hh = 500, margin = { top: hh / 8, right: ww / 8, bottom: hh / 8, left: ww / 8 },
             width = ww - margin.left - margin.right,
             height = hh - margin.top - margin.bottom,
-            radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)',
-              'rgb(255,255,50)', 'rgb(50,255,255)']),
+            radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(200,50,50)', 'rgb(50,200,50)',
+              'rgb(244,244,50)', 'rgb(50,244,244)']),
             radarChartOptions = {
               w: width, h: height, margin: margin, maxValue: 0,
               levels: 4, roundStrokes: !joinLinear, colour: radarBlobColour
@@ -524,8 +524,8 @@ export class UsersComponent implements OnChanges {
           const margin = { top: 40, right: 40, bottom: 40, left: 40 }, ww = 400, hh = 400,
             width = ww - margin.left - margin.right,
             height = hh - margin.top - margin.bottom,
-            radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(255,50,50)', 'rgb(50,255,50)',
-              'rgb(255,255,50)', 'rgb(50,255,255)']),
+            radarBlobColour = d3.scaleOrdinal<number, string>().range(['rgb(200,50,50)', 'rgb(50,200,50)',
+              'rgb(244,244,50)', 'rgb(50,244,244)']),
             options = {
               w: width, h: height, margin: margin, maxValue: 0,
               levels: 4, roundStrokes: !joinLinear, colour: radarBlobColour
