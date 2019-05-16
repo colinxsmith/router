@@ -623,7 +623,7 @@ export class UsersComponent implements OnChanges {
       margin = { top: 250, right: 10, bottom: 10, left: 100 };
     let width = w - margin.left - margin.right,
       height = h - margin.top - margin.bottom;
-    const spacer = 10, rotateAngle = -45,
+    const spacer = 10, rotateAngle = 0,
       squareSide = Math.min(width / nCol, height / nRow) - spacer, Side = squareSide + spacer;
     height = (squareSide + spacer) * nRow;
     h = height + margin.top + margin.bottom;
@@ -641,7 +641,7 @@ export class UsersComponent implements OnChanges {
     const svgBase = d3.select(id).attr('class', 'main').append('svg')
       .attr('width', w).attr('height', h),
       svg = svgBase.append('g')
-        .attr('transform', `translate(${margin.left},${margin.top})`),
+        .attr('transform', `translate(${margin.left},${margin.top}) rotate(${rotateAngle})`),
       radScale = d3.scaleLinear().range([0, Side / 2]).domain([d3.min(factorBetas.map(d => Math.abs(d))),
       d3.max(factorBetas.map(d => Math.abs(d)))]);
     svg.append('rect')
@@ -652,7 +652,7 @@ export class UsersComponent implements OnChanges {
       .attr('height', height);
     svg.selectAll('.factorLabels').select('g').data(fNames).enter()
       .append('text')
-      .attr('transform', (d, i) => `translate(${i * Side + Side / 2}, ${-spacer}),rotate(-75)`)
+      .attr('transform', (d, i) => `translate(${i * Side + Side / 2}, ${-spacer}),rotate(${rotateAngle - 75})`)
       .attr('class', 'factorLabels')
       .attr('x', 0)
       .attr('y', 0)
