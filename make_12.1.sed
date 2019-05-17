@@ -7,9 +7,9 @@
  sed -i "s/Utf8(v8::Isolate::GetCurrent(), cstr, v8::String::kNormalString, len)/Utf8(v8::Isolate::GetCurrent(), cstr, (v8::NewStringType) v8::String::kNormalString, len).ToLocalChecked()/g" $file
  sed -i "s/Utf8(v8::Isolate::GetCurrent(), sym)/Utf8(v8::Isolate::GetCurrent(), sym,(v8::NewStringType) v8::String::kNormalString).ToLocalChecked()/g" $file
  sed -i "s/Utf8(v8::Isolate::GetCurrent(), str)/Utf8(v8::Isolate::GetCurrent(), str,(v8::NewStringType) v8::String::kNormalString).ToLocalChecked()/g" $file
- sed -i "s/->IntegerValue(SWIGV8_CURRENT_CONTEXT()).ToChecked()/->IntegerValue(SWIGV8_CURRENT_CONTEXT()).FromMaybe(0)/g" $file
+ sed -i "s/->IntegerValue(SWIGV8_CURRENT_CONTEXT()).ToChecked()/->IntegerValue(SWIGV8_CURRENT_CONTEXT()).FromJust()/g" $file
  sed -i "s/->BooleanValue(SWIGV8_CURRENT_CONTEXT()).ToChecked()/->BooleanValue(v8::Isolate::GetCurrent())/g" $file
- sed -i "s/->NumberValue(SWIGV8_CURRENT_CONTEXT()).ToChecked()/->NumberValue(SWIGV8_CURRENT_CONTEXT()).FromMaybe(0)/g" $file
+ sed -i "s/->NumberValue(SWIGV8_CURRENT_CONTEXT()).ToChecked()/->NumberValue(SWIGV8_CURRENT_CONTEXT()).FromJust()/g" $file
  sed -i "s/arr->Set(arr->Length(), obj)/arr->Set(SWIGV8_CURRENT_CONTEXT(),arr->Length(), obj).FromJust()/g" $file
  sed -i "s/exports_obj->Set(/exports_obj->Set(SWIGV8_CURRENT_CONTEXT(),/g" $file
  sed -i "/exports_obj->Set/s/);/).FromJust();/g" $file
