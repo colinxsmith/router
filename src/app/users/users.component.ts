@@ -3,7 +3,7 @@ import { AppComponent } from '../app.component';
 import { UserService } from '../user.service';
 import * as d3 from 'd3';
 import { map } from 'rxjs/operators';
-import { isObject } from 'util';
+import { isObject, isNumber } from 'util';
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
@@ -14,6 +14,7 @@ export class UsersComponent implements OnChanges {
   displayData: any;
   sendOptLabel = 'SEND';
   resetOptLabel = 'RESET';
+  shockLabel = 'SHOCK';
   updateLabel = 'MAKE POINTED';
   dataChangedDueToAnotherSessionOptimising = false;
   getKey = '';
@@ -37,6 +38,42 @@ export class UsersComponent implements OnChanges {
     this.factorConstraintChange = [];
     console.log(this.factorConstraintChange);
     this.changeLs(this.getType, this.updateLabel !== 'MAKE POINTED');
+  }
+  shock() {
+    const shockedW = this.factorShock(this.factorConstraintChange, this.displayData[0].FL, this.displayData[0].w.map(d => d.w));
+    console.log(this.factorConstraintChange);
+    console.log(this.displayData[0].w.map(d => d.w));
+    console.log(shockedW);
+    const ww = 100, hh = 100;
+    const xPos = d3.scaleLinear().domain([0, shockedW.length]).range([0, ww * shockedW.length]);
+    const yPos = d3.scaleLinear().domain([0, 5]).range([0, hh]);
+    d3.select('app-users').select('#shocks').selectAll('div').remove();
+    const shockSvg = d3.select('app-users').select('#shocks').append('div')
+      .style('overflow-x', 'auto')
+      .style('overflow-y', 'hidden')
+      .style('width', '1000px')
+      .style('height', '100px')
+      .insert('svg').attr('width', ww * shockedW.length).attr('height', hh);
+    const title = Array(shockedW.length);
+    title[0] = 'Shocks';
+    shockSvg
+      .selectAll('shocks')
+      .attr('class', 'shocks')
+      .data([title, this.displayData[0].w.map(d => d.name), this.displayData[0].w.map(d => d.w), shockedW]).enter()
+      .append('text')
+      .attr('transform', `translate(${xPos(1)},${yPos(1)})`)
+      .call(d => d.each((dd, i, j) => {
+        const here = d3.select(j[i]);
+        for (let kk = 0; kk < shockedW.length; ++kk) {
+          const t = (kk + 1) / shockedW.length;
+          here.append('tspan')
+            .attr('x', xPos(kk))
+            .attr('y', yPos(i))
+            .attr('class', 'spacer')
+            .style('fill', `${d3.rgb(200 * (1 - t), t / 2 * 255, 200 * t)}`)
+            .text(isNumber(dd[kk]) ? d3.format('0.4f')(dd[kk]) : dd[kk]);
+        }
+      }));
   }
   ngOnChanges(changed: SimpleChanges) {
     console.log('ngOnChanges '); console.log(changed);
@@ -1909,6 +1946,20 @@ export class UsersComponent implements OnChanges {
         }
       }
     })
+
+  factorShock = (shocks: number[], FL: number[], w: number[]) => {
+    const ww: number[] = [];
+    w.forEach(d => {
+      ww.push(d);
+    });
+    FL.forEach((d, i) => {
+      if (isNumber(shocks[Math.floor(i / w.length)])) {
+        const iw = i % w.length;
+        ww[iw] = (1 + (1 - shocks[Math.floor(i / w.length)]) * d) * ww[iw];
+      }
+    });
+    return ww;
+  }
   stockbars = (DATA: { axis: string, value: number, alpha: number }[], dataIndex: number, ww: number, hh: number,
     durationtime: number, xText = 'Weight', yText = 'Class') => {
     const svg = d3.select('app-users').append('svg')
@@ -2005,3 +2056,4 @@ export class UsersComponent implements OnChanges {
     }
   }
 }
+
