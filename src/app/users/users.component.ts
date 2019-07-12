@@ -41,11 +41,8 @@ export class UsersComponent implements OnChanges {
   }
   shock() {
     const shockedW = this.factorShock(this.factorConstraintChange, this.displayData[0].FL, this.displayData[0].w.map(d => d.w));
-    console.log(this.factorConstraintChange);
-    console.log(this.displayData[0].w.map(d => d.w));
-    console.log(shockedW);
     const ww = 100, hh = 100;
-    const xPos = d3.scaleLinear().domain([0, shockedW.length]).range([0, ww * shockedW.length]);
+    const xPos = d3.scaleLinear().domain([0, shockedW[0].length]).range([0, ww * shockedW[0].length]);
     const yPos = d3.scaleLinear().domain([0, 5]).range([0, hh]);
     d3.select('app-users').select('#shocks').selectAll('div').remove();
     const shockSvg = d3.select('app-users').select('#shocks').append('div')
@@ -53,19 +50,22 @@ export class UsersComponent implements OnChanges {
       .style('overflow-y', 'hidden')
       .style('width', '1000px')
       .style('height', '100px')
-      .insert('svg').attr('width', ww * shockedW.length).attr('height', hh);
-    const title = Array(shockedW.length);
+      .insert('svg').attr('width', ww * shockedW[0].length).attr('height', hh);
+    const title = Array(shockedW[0].length);
     title[0] = 'Shocks';
+    shockedW[1].forEach((d, i) => {
+      title[(i + 1) * 2] = this.displayData[0].factors.map(d => d.axis)[d];
+    });
     shockSvg
       .selectAll('shocks')
       .attr('class', 'shocks')
-      .data([title, this.displayData[0].w.map(d => d.name), this.displayData[0].w.map(d => d.w), shockedW]).enter()
+      .data([title, this.displayData[0].w.map(d => d.name), this.displayData[0].w.map(d => d.w), shockedW[0]]).enter()
       .append('text')
       .attr('transform', `translate(${xPos(1)},${yPos(1)})`)
       .call(d => d.each((dd, i, j) => {
         const here = d3.select(j[i]);
-        for (let kk = 0; kk < shockedW.length; ++kk) {
-          const t = (kk + 1) / shockedW.length;
+        for (let kk = 0; kk < shockedW[0].length; ++kk) {
+          const t = (kk + 1) / shockedW[0].length;
           here.append('tspan')
             .attr('x', xPos(kk))
             .attr('y', yPos(i))
@@ -1952,13 +1952,17 @@ export class UsersComponent implements OnChanges {
     w.forEach(d => {
       ww.push(d);
     });
+    const facId: number[] = [];
     FL.forEach((d, i) => {
       if (isNumber(shocks[Math.floor(i / w.length)])) {
         const iw = i % w.length;
+        if (iw === 0) {
+          facId.push(Math.floor(i / w.length));
+        }
         ww[iw] = (1 + (1 - shocks[Math.floor(i / w.length)]) * d) * ww[iw];
       }
     });
-    return ww;
+    return [ww, facId];
   }
   stockbars = (DATA: { axis: string, value: number, alpha: number }[], dataIndex: number, ww: number, hh: number,
     durationtime: number, xText = 'Weight', yText = 'Class') => {
