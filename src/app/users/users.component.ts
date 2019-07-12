@@ -50,11 +50,12 @@ export class UsersComponent implements OnChanges {
       .style('overflow-y', 'hidden')
       .style('width', '1000px')
       .style('height', '100px')
-      .insert('svg').attr('width', ww * shockedW[0].length).attr('height', hh);
+      .insert('svg').attr('width', ww * (shockedW[0].length + 1)).attr('height', hh);
     const title = Array(shockedW[0].length);
+    console.log(shockedW[0]);
     title[0] = 'Shocks';
     shockedW[1].forEach((d, i) => {
-      title[(i + 1) * 2] = this.displayData[0].factors.map(d => d.axis)[d];
+      title[(i + 1) * 2] = this.displayData[0].factors.map(dd => dd.axis)[d];
     });
     shockSvg
       .selectAll('shocks')
@@ -1962,6 +1963,8 @@ export class UsersComponent implements OnChanges {
         ww[iw] = (1 + (1 - shocks[Math.floor(i / w.length)]) * d) * ww[iw];
       }
     });
+    console.log(w);
+    console.log(ww);
     return [ww, facId];
   }
   stockbars = (DATA: { axis: string, value: number, alpha: number }[], dataIndex: number, ww: number, hh: number,
