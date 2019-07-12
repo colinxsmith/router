@@ -1909,6 +1909,18 @@ export class UsersComponent implements OnChanges {
         }
       }
     })
+
+  factorShock = (shocks: number[], FL: number[], w: number[]) => {
+    const ww = [];
+    w.forEach(d => {
+      ww.push(w);
+    });
+    FL.forEach((d, i) => {
+      const iw = i % w.length;
+      ww[iw] = shocks[Math.floor(i / w.length)] * d * ww[iw];
+    });
+    return ww;
+  }
   stockbars = (DATA: { axis: string, value: number, alpha: number }[], dataIndex: number, ww: number, hh: number,
     durationtime: number, xText = 'Weight', yText = 'Class') => {
     const svg = d3.select('app-users').append('svg')
@@ -2005,3 +2017,4 @@ export class UsersComponent implements OnChanges {
     }
   }
 }
+
