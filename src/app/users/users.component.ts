@@ -49,8 +49,9 @@ export class UsersComponent implements OnChanges {
       .style('overflow-x', 'auto')
       .style('overflow-y', 'hidden')
       .style('width', '1000px')
+      .style('width', '1000px')
       .style('height', '100px')
-      .insert('svg').attr('width', ww * (shockedW[0].length + 1)).attr('height', hh);
+      .insert('svg').attr('width', ww * (shockedW[0].length + 1)).attr('height', hh).style('background-color','bisque');
     const title = Array(shockedW[0].length);
     console.log(shockedW[0]);
     title[0] = 'Shocks';
