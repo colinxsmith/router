@@ -376,3 +376,7 @@ input.field {
 .portfolioFlower.dim {
     fill-opacity: 0.05;
 }
+
+svg.shocks {
+    background-color: bisque;
+}
