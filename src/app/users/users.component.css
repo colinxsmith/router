@@ -236,12 +236,12 @@ text.stockLabels {
 }
 
 .totals.neg.select {
-    fill:rgb(252, 40, 3);
+    fill: rgb(252, 40, 3);
     fill-opacity: 1;
 }
 
 .totals.pos.select {
-    fill:rgb(6, 97, 150);
+    fill: rgb(6, 97, 150);
     fill-opacity: 1;
 }
 
@@ -375,4 +375,8 @@ input.field {
 
 .portfolioFlower.dim {
     fill-opacity: 0.05;
+}
+
+svg.shocks {
+    background-color: bisque;
 }

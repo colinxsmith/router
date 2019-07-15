@@ -40,42 +40,56 @@ export class UsersComponent implements OnChanges {
     this.changeLs(this.getType, this.updateLabel !== 'MAKE POINTED');
   }
   shock() {
-    const shockedW = this.factorShock(this.factorConstraintChange, this.displayData[0].FL, this.displayData[0].w.map(d => d.w));
-    const ww = 100, hh = 100;
-    const xPos = d3.scaleLinear().domain([0, shockedW[0].length]).range([0, ww * shockedW[0].length]);
-    const yPos = d3.scaleLinear().domain([0, 5]).range([0, hh]);
     d3.select('app-users').select('#shocks').selectAll('div').remove();
-    const shockSvg = d3.select('app-users').select('#shocks').append('div')
-      .style('overflow-x', 'auto')
-      .style('overflow-y', 'hidden')
-      .style('width', '1000px')
-      .style('width', '1000px')
-      .style('height', '100px')
-      .insert('svg').attr('width', ww * (shockedW[0].length + 1)).attr('height', hh).style('background-color','bisque');
-    const title = Array(shockedW[0].length);
-    console.log(shockedW[0]);
-    title[0] = 'Shocks';
-    shockedW[1].forEach((d, i) => {
-      title[(i + 1) * 2] = this.displayData[0].factors.map(dd => dd.axis)[d];
+    let doit = false;
+    const valsHere = [];
+    this.factorConstraintChange.forEach(d => {
+      if (isNumber(d)) {
+        doit = true;
+        valsHere.push(d);
+      }
     });
-    shockSvg
-      .selectAll('shocks')
-      .attr('class', 'shocks')
-      .data([title, this.displayData[0].w.map(d => d.name), this.displayData[0].w.map(d => d.w), shockedW[0]]).enter()
-      .append('text')
-      .attr('transform', `translate(${xPos(1)},${yPos(1)})`)
-      .call(d => d.each((dd, i, j) => {
-        const here = d3.select(j[i]);
-        for (let kk = 0; kk < shockedW[0].length; ++kk) {
-          const t = (kk + 1) / shockedW[0].length;
-          here.append('tspan')
-            .attr('x', xPos(kk))
-            .attr('y', yPos(i))
-            .attr('class', 'spacer')
-            .style('fill', `${d3.rgb(200 * (1 - t), t / 2 * 255, 200 * t)}`)
-            .text(isNumber(dd[kk]) ? d3.format('0.4f')(dd[kk]) : dd[kk]);
-        }
-      }));
+    if (doit) {
+      this.displayData.forEach(DATA => {
+        const shockedW = this.factorShock(this.factorConstraintChange, DATA.FL, DATA.w.map(d => d.w));
+        const ww = 100, hh = 100;
+        const xPos = d3.scaleLinear().domain([0, shockedW[0].length]).range([0, ww * shockedW[0].length]);
+        const yPos = d3.scaleLinear().domain([0, 6]).range([0, hh]);
+        const shockSvg = d3.select('app-users').select('#shocks').append('div')
+          .style('overflow-x', 'auto')
+          .style('overflow-y', 'hidden')
+          .style('width', '1000px')
+          .style('height', '100px')
+          .insert('svg')
+          .attr('width', ww * (shockedW[0].length + 1))
+          .attr('height', hh)
+          .attr('class', 'shocks');
+        const title = Array(shockedW[0].length);
+        const valsHereT = Array(shockedW[0].length);
+        title[0] = 'Shocks';
+        shockedW[1].forEach((d, i) => {
+          title[(i + 1) * 3] = DATA.factors.map(dd => dd.axis)[d];
+          valsHereT[(i + 1) * 3] = valsHere[i];
+        });
+        shockSvg
+          .selectAll('shocks')
+          .data([title, valsHereT, DATA.w.map(d => d.name), DATA.w.map(d => d.w), shockedW[0]]).enter()
+          .append('text')
+          .attr('transform', `translate(${xPos(1)},${yPos(1)})`)
+          .call(d => d.each((dd, i, j) => {
+            const here = d3.select(j[i]);
+            for (let kk = 0; kk < shockedW[0].length; ++kk) {
+              const t = (kk + 1) / shockedW[0].length;
+              here.append('tspan')
+                .attr('x', xPos(kk))
+                .attr('y', yPos(i))
+                .attr('class', 'spacer')
+                .style('fill', `${d3.rgb(200 * (1 - t), t / 2 * 255, 200 * t)}`)
+                .text(isNumber(dd[kk]) ? d3.format('0.4f')(dd[kk]) : dd[kk]);
+            }
+          }));
+      });
+    }
   }
   ngOnChanges(changed: SimpleChanges) {
     console.log('ngOnChanges '); console.log(changed);
@@ -425,6 +439,7 @@ export class UsersComponent implements OnChanges {
     this.updateLabel = pointed ? 'MAKE ROUND' : 'MAKE POINTED';
   }
   changeLs(type: string, pointed = false) {
+    d3.select('app-users').select('#shocks').selectAll('div').remove();
     // this.getType = type;
     console.log('Data changed is ' + this.dataChangedDueToAnotherSessionOptimising);
     d3.select('app-users').selectAll('.main').remove();
@@ -1964,8 +1979,6 @@ export class UsersComponent implements OnChanges {
         ww[iw] = (1 + (1 - shocks[Math.floor(i / w.length)]) * d) * ww[iw];
       }
     });
-    console.log(w);
-    console.log(ww);
     return [ww, facId];
   }
   stockbars = (DATA: { axis: string, value: number, alpha: number }[], dataIndex: number, ww: number, hh: number,
