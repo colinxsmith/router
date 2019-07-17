@@ -270,7 +270,7 @@ const factorAnal = (port3) => {
             if (d.indexOf('pc') === -1) {
                 smallfactors.push(d);
                 for (let ii = 0; ii < n; ++ii) {
-                    smallFL.push(FL[ii * nfac + i]);
+                    smallFL.push(FL[ii + i * n]);
                 }
             }
         });
@@ -387,3 +387,4 @@ const factor = (n, optype, gamma, factorwant) => {
 
 exports.opt = opt;
 exports.factor = factor;
+exports.factorAnal = factorAnal;
