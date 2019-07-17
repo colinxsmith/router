@@ -261,12 +261,23 @@ const factorAnal = (port3) => {
         const n = w.length;
         test.get_stocknames(stocks, model);
         const mFL = Array(nnn * nfac), FC = Array(nnn * (nnn + 1) / 2), mSV = Array(nnn);
-        const FL = Array(nnn * nfac), SV = Array(nnn);
-        test.getdata(nnn, nfac, stocks, FL, SV, FC, model);
+        const FL = Array(n * nfac), SV = Array(n);
+        test.getdata(nnn, nfac, stocks, mFL, mSV, FC, model);
         test.Extract_Factor_Information(n, nfac, nnn, FL, SV, stocknames, mFL, mSV, stocks);
-        d.FL = FL;
-        d.FC = FC;
+        const smallFL = [];
+        const smallfactors = [];
+        factors.forEach((d, i) => {
+            if (d.indexOf('pc') === -1) {
+                smallfactors.push(d);
+                for (let ii = 0; ii < n; ++ii) {
+                    smallFL.push(FL[ii * nfac + i]);
+                }
+            }
+        });
+        d.FL = smallFL;
+        d.FC = FC.slice(0, smallfactors.length * (smallfactors.length + 1) / 2);
         d.SV = SV;
+        d.fnames = smallfactors;
     });
     exports.port3 = port3;
 }

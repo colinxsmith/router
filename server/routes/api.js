@@ -47,7 +47,7 @@ router.post('/db', (req, res) => {
 });
 router.post('/factoranalysis', (req, res) => {
     const opt = require('../../optimiser/optimiser');
-    opt.factorAnal(req.body.port3);
+    opt.factorAnal(req.body);
     const sendoff = {};
     sendoff.port3 = opt.port3;
     res
