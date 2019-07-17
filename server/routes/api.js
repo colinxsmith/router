@@ -2,13 +2,13 @@
 const express = require('express');
 const router = express.Router();
 let mocked = {
-/*    'results': [
-        { 'id': 1, 'name': 'RDJ', 'movies': 100 },
-        { 'id': 2, 'name': 'Tom Holland', 'movies': 3 },
-        { 'id': 3, 'name': 'Benedict Cumberbatch', 'movies': 10 },
-        { 'id': 4, 'name': 'Chris Hemsworth', 'movies': 30 },
-        { 'id': 5, 'name': 'Chris Evans', 'movies': 20 }
-    ]*/
+    /*    'results': [
+            { 'id': 1, 'name': 'RDJ', 'movies': 100 },
+            { 'id': 2, 'name': 'Tom Holland', 'movies': 3 },
+            { 'id': 3, 'name': 'Benedict Cumberbatch', 'movies': 10 },
+            { 'id': 4, 'name': 'Chris Hemsworth', 'movies': 30 },
+            { 'id': 5, 'name': 'Chris Evans', 'movies': 20 }
+        ]*/
 };
 const setMocked = (n, type, want, res) => {
     const opt = require('../../optimiser/optimiser');
@@ -25,6 +25,7 @@ const setMocked = (n, type, want, res) => {
     mocked.factorX = opt.factorData;
     mocked.stockchart = opt.stockchart;
     mocked.factorchart = opt.factorchart;
+    mocked.factornames = opt.factornames
     res.status(200).json(mocked);
 }
 
@@ -43,6 +44,15 @@ router.post('/db', (req, res) => {
     res
         .status(200)
         .json(mocked);
+});
+router.post('/factoranalysis', (req, res) => {
+    const opt = require('../../optimiser/optimiser');
+    opt.factoranal(req.body.port3);
+    const sendoff = {};
+    sendoff.port3 = opt.port3;
+    res
+        .status(200)
+        .json(sendoff);
 });
 router.post('/optype', (req, res) => {
     console.log(req.body);

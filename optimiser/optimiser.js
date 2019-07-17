@@ -248,6 +248,28 @@ const makeFLsmall = (w, stocks, FL, Fnames) => {
     }
     return FLsmall;
 }
+const factorAnal = (port3) => {
+    port3.forEach((d, i) => {
+        const w = d.map(dd => dd.w);
+        const stocknames = d.map(dd => dd.n);
+        const model = '/home/colin/safeqp/newmodel.csv';
+        const nnn = test.get_nstocks(model);
+        const nfac = test.get_nfac(model);
+        const factors = Array(nfac);
+        test.get_factornames(factors, model);
+        const stocks = Array(nnn);
+        const n = w.length;
+        test.get_stocknames(stocks, model);
+        const mFL = Array(nnn * nfac), FC = Array(nnn * (nnn + 1) / 2), mSV = Array(nnn);
+        const FL = Array(nnn * nfac), SV = Array(nnn);
+        test.getdata(nnn, nfac, stocks, FL, SV, FC, model);
+        test.Extract_Factor_Information(n, nfac, nnn, FL, SV, stocknames, mFL, mSV, stocks);
+        d.FL = FL;
+        d.FC = FC;
+        d.SV = SV;
+    });
+    exports.port3 = port3;
+}
 const factor = (n, optype, gamma, factorwant) => {
     let wants = 0;
     factorwant.forEach(d => d !== null ? wants++ : console.log(d));
@@ -261,6 +283,7 @@ const factor = (n, optype, gamma, factorwant) => {
     const nfac = test.get_nfac(model);
     const factors = Array(nfac);
     test.get_factornames(factors, model);
+    exports.factornames = factors;
     const stocks = Array(nnn);
     if (n > nnn) {
         n = nnn;

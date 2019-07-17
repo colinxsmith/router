@@ -11,7 +11,8 @@ const app = express();
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Headers", "x-bita-api,Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Credentials", "true");
   res.header("Cache-Control", "max-age=6");
   next();
 });
