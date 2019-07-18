@@ -49,11 +49,12 @@ router.post('/factoranalysis', (req, res) => {
     const opt = require('../../optimiser/optimiser');
 	console.log(req.body);
     opt.factorAnal(req.body);
-    const sendoff = {};
-    sendoff.port3 = opt.port3;
+    mocked = {};
+    mocked.port3 = opt.port3;
+	console.log(opt.port3);
     res
         .status(200)
-        .json(sendoff);
+        .json(mocked);
 });
 router.post('/optype', (req, res) => {
     console.log(req.body);

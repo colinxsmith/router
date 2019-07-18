@@ -263,25 +263,41 @@ const makeFLsmall = (w, stocks, FL, Fnames) => {
     return FLsmall;
 }
 const factorAnal = (port3) => {
+    const model = 'c:/Users/colin/safeqp/router/mock.csv';
+	console.log(model,port3);
     port3.forEach((d, i) => {
-        const w = d.w;
-        const stocknames = d.n;
-        const model = 'c:\\Users\\colin\\safeqp\\JHP.csv';
-        const nnn = test.get_nstocks(model);
+		console.log(d);
+        const w = d.port.map(dd=>dd.w);
+        const stocknames = d.port.map(dd=>dd.name);
+        let nnn = test.get_nstocks(model);
+		console.log(nnn);
         const nfac = test.get_nfac(model);
         const factors = Array(nfac);
         test.get_factornames(factors, model);
         const stocks = Array(nnn);
         const n = w.length;
         test.get_stocknames(stocks, model);
+		nnn=4000;
         const mFL = Array(nnn * nfac), FC = Array(nnn * (nnn + 1) / 2), mSV = Array(nnn);
         const FL = Array(n * nfac), SV = Array(n);
         test.getdata(nnn, nfac, stocks, mFL, mSV, FC, model);
+		console.log('HERE');
         test.Extract_Factor_Information(n, nfac, nnn, FL, SV, stocknames, mFL, mSV, stocks);
-        d.FL = FL;
-        d.FC = FC;
+		const smallFL=[];
+		const smallfactors=[];
+		factors.forEach((d,i)=>{
+			if(d.indexOf('pc') === -1){
+				smallfactors.push(d);
+				for(let ii=0;ii<n;++ii){
+					smallFL.push(FL[ii+i*n]);
+				}
+			}
+		});
+        d.FL = smallFL;
+        d.FC = FC.slice(0,smallfactors.length*(smallfactors.length+1)/2);
         d.SV = SV;
-		d.fnames = factors;
+		d.stocks = stocks;
+		d.fnames = smallfactors;
     });
     exports.port3 = port3;
 }
