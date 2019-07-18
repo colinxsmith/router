@@ -47,11 +47,11 @@ router.post('/db', (req, res) => {
 });
 router.post('/factoranalysis', (req, res) => {
     const opt = require('../../optimiser/optimiser');
-	console.log(req.body);
+    console.log(req.body);
     opt.factorAnal(req.body);
     mocked = {};
     mocked.port3 = opt.port3;
-	console.log(opt.port3);
+    console.log(opt.port3);
     res
         .status(200)
         .json(mocked);

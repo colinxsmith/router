@@ -1,6 +1,6 @@
 const test = require('../build/Release/OPT');
 
-Object.keys(test).forEach(function(key) {
+Object.keys(test).forEach(key => {
     exports[key] = test[key];
 });
 const simpleopt = (n, nfac, ls, full, SV, FL, FC,
@@ -264,42 +264,45 @@ const makeFLsmall = (w, stocks, FL, Fnames) => {
 }
 const factorAnal = (port3) => {
     const model = 'c:/Users/colin/safeqp/router/mock.csv';
-	console.log(model,port3);
+    console.log(model, port3);
     port3.forEach((d, i) => {
-		console.log(d);
-        const w = d.port.map(dd=>dd.w);
-        const stocknames = d.port.map(dd=>dd.name);
+        console.log(d);
+        const w = d.port.map(dd => dd.w);
+        const stocknames = d.port.map(dd => dd.name);
         let nnn = test.get_nstocks(model);
-		console.log(nnn);
+        console.log(nnn);
         const nfac = test.get_nfac(model);
         const factors = Array(nfac);
         test.get_factornames(factors, model);
         const stocks = Array(nnn);
         const n = w.length;
         test.get_stocknames(stocks, model);
-		nnn=4000;
-        const mFL = Array(nnn * nfac), FC = Array(nnn * (nnn + 1) / 2), mSV = Array(nnn);
-        const FL = Array(n * nfac), SV = Array(n);
+        nnn = 4000;
+        const mFL = Array(nnn * nfac),
+            FC = Array(nnn * (nnn + 1) / 2),
+            mSV = Array(nnn);
+        const FL = Array(n * nfac),
+            SV = Array(n);
         test.getdata(nnn, nfac, stocks, mFL, mSV, FC, model);
-		console.log('HERE');
+        console.log('HERE');
         test.Extract_Factor_Information(n, nfac, nnn, FL, SV, stocknames, mFL, mSV, stocks);
-		const smallFL=[];
-		const smallfactors=[];
-		factors.forEach((d,i)=>{
-			if(d.indexOf('pc') === -1){
-				smallfactors.push(d);
-				for(let ii=0;ii<n;++ii){
-					smallFL.push(FL[ii+i*n]);
-				}
-			}
-		});
+        const smallFL = [];
+        const smallfactors = [];
+        factors.forEach((d, i) => {
+            if (d.indexOf('pc') === -1) {
+                smallfactors.push(d);
+                for (let ii = 0; ii < n; ++ii) {
+                    smallFL.push(FL[ii + i * n]);
+                }
+            }
+        });
         d.FL = smallFL;
-        d.FC = FC.slice(0,smallfactors.length*(smallfactors.length+1)/2);
+        d.FC = FC.slice(0, smallfactors.length * (smallfactors.length + 1) / 2);
         d.SV = SV;
-		d.stocks = stocknames;
-		d.fnames = smallfactors;
+        d.stocks = stocknames;
+        d.fnames = smallfactors;
     });
-	port3.push(port3[0]);
+    port3.push(port3[0]);
     exports.port3 = port3;
 }
 const factor = (n, optype, gamma, factorwant) => {
