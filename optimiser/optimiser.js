@@ -296,9 +296,10 @@ const factorAnal = (port3) => {
         d.FL = smallFL;
         d.FC = FC.slice(0,smallfactors.length*(smallfactors.length+1)/2);
         d.SV = SV;
-		d.stocks = stocks;
+		d.stocks = stocknames;
 		d.fnames = smallfactors;
     });
+	port3.push(port3[0]);
     exports.port3 = port3;
 }
 const factor = (n, optype, gamma, factorwant) => {
