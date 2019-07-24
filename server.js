@@ -37,7 +37,7 @@ app.get('*', (req, res) => {
  * Get port from environment and store in Express.
  */
 const port = process.env.PORT || '4024';
-const host = process.env.HOST || '192.168.0.27';
+const host = process.env.HOST || '192.168.0.21';
 
 app.set('port', port);
 app.set('host', host);
