@@ -1,6 +1,6 @@
 const test = require('../build/Release/OPT');
 
-Object.keys(test).forEach(function (key) {
+Object.keys(test).forEach(function(key) {
     exports[key] = test[key];
 });
 const simpleopt = (n, nfac, ls, full, SV, FL, FC,
@@ -13,11 +13,7 @@ const simpleopt = (n, nfac, ls, full, SV, FL, FC,
         gamma = 1 - 1e-15;
     }
     const back = test.Optimise_internalCVPAFblSaMSoftQ(n, nfac, stocks, w, m,
-        A, L, U, alpha,
-        [], [], gamma, [],
-        -1.0, [], [], -1.0, n,
-        -1, 0, 0, -1.0,
-        -1.0,
+        A, L, U, alpha, [], [], gamma, [], -1.0, [], [], -1.0, n, -1, 0, 0, -1.0, -1.0,
         ls, full, -1.0, -1.0,
         0, [], [], shake,
         0, [], 1.0,
@@ -25,12 +21,9 @@ const simpleopt = (n, nfac, ls, full, SV, FL, FC,
         0, [], 0, [], [],
         FC, FL, SV, minRisk, maxRisk,
         ogamma, [], log, logfile,
-        0, 1,
-        -1, -1,
-        -1, -1, 1, 1,
+        0, 1, -1, -1, -1, -1, 1, 1,
         1.0, 0.0, [], [],
-        1, [], 0, [], [],
-        [], [], [], [], [], five, ten, forty, []);
+        1, [], 0, [], [], [], [], [], [], [], five, ten, forty, []);
     shake.forEach(d => { if (d != -1) { console.log(d); } });
     return back;
 }
@@ -47,7 +40,11 @@ const getRisk = (n, w, nfac, SV, FL, FC) => {
         Q.push(0);
     }
     test.factor_model_process(n, nfac, FL, FC, SV, Q);
-    const arisk = [0], risk = [0], Rrisk = [0], brisk = [0], pbeta = [0];
+    const arisk = [0],
+        risk = [0],
+        Rrisk = [0],
+        brisk = [0],
+        pbeta = [0];
     test.Get_RisksC(n, nfac, Q, w, 0, arisk, risk, Rrisk, brisk,
         pbeta, 0, 0);
     return risk[0];
@@ -85,12 +82,26 @@ const opt = (n, optype) => {
     size_t get_nstocks(char*name=(char*)"modelgen.txt");
     void get_factornames(char** fname,char*name=(char*)"modelgen.txt");*/
 
-    var ls = 0, full = 1, w = [], m = 1, L = [], U = [], A = [], alpha = [], gamma = 0.5, ogamma = [], minRisk = -1, maxRisk = -1,
-        five = 0.05, ten = 0.1, forty = 0.4;
+    var ls = 0,
+        full = 1,
+        w = [],
+        m = 1,
+        L = [],
+        U = [],
+        A = [],
+        alpha = [],
+        gamma = 0.5,
+        ogamma = [],
+        minRisk = -1,
+        maxRisk = -1,
+        five = 0.05,
+        ten = 0.1,
+        forty = 0.4;
 
-    // const model = '/home/colin/safeqp/USE30305_30MAY03.csv';
-    const model = '/home/colin/safeqp/newmodel.csv';
-    const nnn = test.get_nstocks(model);
+    //    const model = 'c:/Users/colin/safeqp/USE30305_30MAY03.csv';
+    // const model = 's:\ARTORIUS_GBP_BITA Europe.csv';
+    const model = '/home/colin/safeqp/newmodel.csv'
+    const nnn = test.get_nstocks(model) + 1;
     const nfac = test.get_nfac(model);
     const factors = Array(nfac);
     test.get_factornames(factors, model);
@@ -123,7 +134,9 @@ const opt = (n, optype) => {
     L.push(optype === 'short' ? 0 : 1);
     U.push(optype === 'short' ? 0 : 1);
     if (optype !== 'KAG') {
-        five = -1; ten = -1; forty = -1;
+        five = -1;
+        ten = -1;
+        forty = -1;
     }
     if (optype === 'short') {
         ls = 1;
@@ -204,7 +217,8 @@ const opt = (n, optype) => {
     exports.factorchart = factorchart;
 }
 const makeFCsmall = (FC, Fnames) => {
-    const nfac = Fnames.length, FCsmall = [];
+    const nfac = Fnames.length,
+        FCsmall = [];
     for (let i = 0, ij = 0; i < nfac; ++i) {
         if (Fnames[i].indexOf('pc') !== 0) {
             for (let j = 0; j <= i; ++j, ++ij) {
@@ -249,11 +263,14 @@ const makeFLsmall = (w, stocks, FL, Fnames) => {
     return FLsmall;
 }
 const factorAnal = (port3) => {
+    const model = '/home/colin/safeqp/newmodel.csv';
+	console.log(model,port3);
     port3.forEach((d, i) => {
-        const w = d.map(dd => dd.w);
-        const stocknames = d.map(dd => dd.n);
-        const model = '/home/colin/safeqp/newmodel.csv';
-        const nnn = test.get_nstocks(model);
+		console.log(d);
+        const w = d.port.map(dd=>dd.w);
+        const stocknames = d.port.map(dd=>dd.name);
+        let nnn = test.get_nstocks(model);
+		console.log(nnn);
         const nfac = test.get_nfac(model);
         const factors = Array(nfac);
         test.get_factornames(factors, model);
@@ -264,20 +281,21 @@ const factorAnal = (port3) => {
         const FL = Array(n * nfac), SV = Array(n);
         test.getdata(nnn, nfac, stocks, mFL, mSV, FC, model);
         test.Extract_Factor_Information(n, nfac, nnn, FL, SV, stocknames, mFL, mSV, stocks);
-        const smallFL = [];
-        const smallfactors = [];
-        factors.forEach((d, i) => {
-            if (d.indexOf('pc') === -1) {
-                smallfactors.push(d);
-                for (let ii = 0; ii < n; ++ii) {
-                    smallFL.push(FL[ii + i * n]);
-                }
-            }
-        });
+		const smallFL=[];
+		const smallfactors=[];
+		factors.forEach((d,i)=>{
+			if(d.indexOf('pc') === -1){
+				smallfactors.push(d);
+				for(let ii=0;ii<n;++ii){
+					smallFL.push(FL[ii+i*n]);
+				}
+			}
+		});
         d.FL = smallFL;
-        d.FC = FC.slice(0, smallfactors.length * (smallfactors.length + 1) / 2);
+        d.FC = FC.slice(0,smallfactors.length*(smallfactors.length+1)/2);
         d.SV = SV;
-        d.fnames = smallfactors;
+		d.stocks = stocks;
+		d.fnames = smallfactors;
     });
     exports.port3 = port3;
 }
@@ -287,8 +305,20 @@ const factor = (n, optype, gamma, factorwant) => {
     const output = [];
     const factorData = [];
     const radar = [];
-    var ls = 0, full = 1, w = [], m = 1, L = [], U = [], A = [], alpha = [], ogamma = [], minRisk = -1, maxRisk = -1,
-        five = 0.05, ten = 0.1, forty = 0.4;
+    var ls = 0,
+        full = 1,
+        w = [],
+        m = 1,
+        L = [],
+        U = [],
+        A = [],
+        alpha = [],
+        ogamma = [],
+        minRisk = -1,
+        maxRisk = -1,
+        five = 0.05,
+        ten = 0.1,
+        forty = 0.4;
     const model = '/home/colin/safeqp/newmodel.csv';
     const nnn = test.get_nstocks(model);
     const nfac = test.get_nfac(model);
@@ -324,7 +354,9 @@ const factor = (n, optype, gamma, factorwant) => {
     L.push(optype === 'short' ? 0 : 1);
     U.push(optype === 'short' ? 0 : 1);
     if (optype !== 'KAG') {
-        five = -1; ten = -1; forty = -1;
+        five = -1;
+        ten = -1;
+        forty = -1;
     }
     if (optype === 'short') {
         ls = 1;
