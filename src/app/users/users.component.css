@@ -103,7 +103,7 @@ line.line {
 
 text.axisLabel {
     stroke-width: 0.5px;
-    font-size: 25px;
+    font-size: large;
     text-anchor: middle;
     fill: rgba(211, 127, 56, 0.74);
 }
@@ -117,7 +117,7 @@ text.axisNames {
 
 text.axis {
     stroke-width: 4px;
-    font-size: 25px;
+    font-size: large;
 }
 
 rect.barrim {

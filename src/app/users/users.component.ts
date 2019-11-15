@@ -515,7 +515,8 @@ export class UsersComponent implements OnChanges {
             };
           this.RadarChart('app-users', displayData, radarChartOptions);
           displayData.forEach((ddd, id) => {
-            this.stockbars(ddd, id, ww, hh, 2000, 'Factor Exposure', 'Factor');
+            //        this.stockbars(ddd, id, ww, hh, 2000, 'Factor Exposure', 'Factor');
+            this.stockbars('app-users', 1, ddd, ww, hh, 2000, ['blue','red'], id, 'Factor Exposure', 'Factor');
             this.simpleDisplay(ddd, id);
           });
         } else if (this.getKey === 'OPT') {
@@ -556,7 +557,8 @@ export class UsersComponent implements OnChanges {
           this.RadarChart('app-users', data1, radarChartOptions);
           data1.forEach((ddd, i: number) => {
             const idisp = data1.length === 4 || this.getType === 'factor' ? i : this.choose2[i];
-            this.stockbars(ddd, i, ww, hh, 2000, 'Weights', 'Assets');
+            //      this.stockbars(ddd, i, ww, hh, 2000, 'Weights', 'Assets');
+            this.stockbars('app-users', 1, ddd, ww, hh, 2000, ['green','orange'], i, 'Weights', 'Assets');
             this.simpleDisplay(ddd, i);
             d3.select('app-users').append('svg').attr('width', 750).attr('height', 50).append('g').append('text')
               .attr('transform', 'translate(0,30)').attr('class', 'users')
@@ -615,7 +617,7 @@ export class UsersComponent implements OnChanges {
           this.fiveCircles();
         }
 
-        ['text.users', 'rect.weightSinglePlus', 'rect.weightSingleMinus'].forEach(ss => {
+        ['text.users', 'rect.barfade'].forEach(ss => {
           d3.select('app-users').selectAll(ss)
             .on('mouseover', (d, ii, jj) => {
               const lineIndex = (jj[ii] as SVGTextElement | SVGRectElement).getAttribute('lineindex');
@@ -1942,24 +1944,31 @@ export class UsersComponent implements OnChanges {
       .attr('class', 'tooltipRadar')
       .style('opacity', 0);
   }
-  wrapFunction = (text1: any, width: number, lineHeight: number) =>  // Adapted from http://bl.ocks.org/mbostock/7555321
-    text1.each((_kk, i, j) => {
+  wrapFunction = (text1, width: number, lineHeight: number, maxLines = 10) =>  // Adapted from http://bl.ocks.org/mbostock/7555321
+    text1.each((kk, i, j) => {
       const text = d3.select(j[i]),
         words = text.text().split(/\s+/).reverse(),
         y = text.attr('y'),
         x = text.attr('x'),
+        dx = parseFloat(text.attr('dx') === null ? '0' : text.attr('dx')),
         dy = parseFloat(text.attr('dy'));
       let word, line = [],
         lineNumber = 0,
-        tspan = text.text(null).append('tspan').attr('x', x).attr('y', y).attr('dy', dy + 'em');
+        tspan = text.text(null).append('tspan').attr('x', x).attr('y', y).attr('dx', dx + 'em').attr('dy', dy + 'em');
       while (word = words.pop()) {
         line.push(word);
         tspan.text(line.join(' '));
-        if ((tspan.node() as SVGTSpanElement).getComputedTextLength() > width) {
+        if ((<SVGTSpanElement>tspan.node()).getComputedTextLength() > width) {
           line.pop();
           tspan.text(line.join(' '));
           line = [word];
-          tspan = text.append('tspan').attr('x', x).attr('y', y).attr('dy', ++lineNumber * lineHeight + dy + 'em').text(word);
+          tspan = text.append('tspan')
+            .attr('x', x).attr('y', y)
+            .attr('dx', ++lineNumber * lineHeight * (dx > 0 ? 1 : 0) + dx + 'em')
+            .attr('dy', lineNumber * lineHeight + dy + 'em').text(word);
+          if (lineNumber >= maxLines - 1) {
+            break;
+          }
         }
       }
     })
@@ -1981,45 +1990,54 @@ export class UsersComponent implements OnChanges {
     });
     return [ww, facId];
   }
-  stockbars = (DATA: { axis: string, value: number, alpha: number }[], dataIndex: number, ww: number, hh: number,
-    durationtime: number, xText = 'Weight', yText = 'Class') => {
-    const svg = d3.select('app-users').append('svg')
+  stockbars = (id: string, scaleHere: number, DATA: { axis: string, value: number, alpha: number }[], ww: number, hh: number,
+    durationtime: number, colour: string[], gIndex: number, xText = 'Weight', yText = 'Class') => {
+    ww *= scaleHere, hh *= scaleHere;
+    if (colour.length === 1) {
+      colour.push(colour[0]);
+    }
+    console.log(DATA);
+    const svg = d3.select(id).append('svg')
       .attr('width', ww)
-      .attr('height', hh).attr('class', 'stockbars').append('g'),
-      chart = svg.append('g'),
-      scaleAll = 1;
+      .attr('height', hh)
+      .style('vertical-align', 'top')
+      .attr('class', 'stockbars').append('g'),
+      chart = svg.append('g');
     const margin = {
-      top: 50 * scaleAll,
-      right: 50 * scaleAll,
-      bottom: 150 * scaleAll,
-      left: 70 * scaleAll
+      top: 50 * scaleHere,
+      right: 50 * scaleHere,
+      bottom: 150 * scaleHere,
+      left: 120 * scaleHere
     }, bandfiddle = 10000
       , customXAxis = (g: d3.Selection<SVGGElement, {}, HTMLElement, any>) => {
         g.call(d3.axisBottom(xx).tickSize(0));
-        const g1 = g.select('.domain').attr('class', 'axis');
         const g2 = g.selectAll('text').attr('class', 'axisNames')
-          .attr('x', -5 * scaleAll)
-          .attr('y', -5 * scaleAll)
-          .attr('transform', 'rotate(-70)');
-        if (DATA.length > 30) {
-          g.selectAll('text').style('fill', 'none').style('stroke', 'none');
-        }
-        if (scaleAll < 1.0) {
-          g1.style('font-size', (+g1.style('font-size').replace('px', '') * scaleAll) + 'px');
-          g2.style('font-size', (+g2.style('font-size').replace('px', '') * scaleAll) + 'px');
+          .attr('y', '0')
+          .attr('x', 0)
+          .attr('dx', 0)
+          .attr('dy', `${0 * scaleHere}em`)
+          .call(this.wrapFunction, 90, 1, DATA.length < 15 ? 3 : 2)
+          ;
+        g2
+          .transition().duration(2000)
+          .attrTween('transform', (d, i) =>
+            t => `translate(${(-xx.bandwidth() / 2 + 2 * rim) * t + (1 - t) * ww},
+            ${t * 10 * scaleHere}) rotate(${-(1 - t) * 270 - t * 75})`);
+        if (false && scaleHere < 1.0) {
+          g2.style('font-size', (+g2.style('font-size').replace('px', '') * scaleHere) + 'px');
         }
       }
-      , rim = 5 * scaleAll
+      , rim = 5 * scaleHere
       , width = ww - margin.left - margin.right
       , height = hh - margin.top - margin.bottom
       , x = d3.scaleBand().rangeRound([0, bandfiddle * width]).paddingInner(0.1)
-      , xx = d3.scaleBand().rangeRound([0, width]).paddingInner(0.1)
+      , xx = d3.scaleBand().range([0, width]).paddingInner(0.1)
       , y = d3.scaleLinear<number, number>().range([height, 0])
-        .domain([Math.min(0, d3.min(DATA, d => d.value)),
-        d3.max(DATA, d => d.value)]);
+        .domain([Math.min(0, d3.min(DATA, (d) => d.value)),
+        Math.max(0, d3.max(DATA, (d) => d.value))]);
     svg.attr('transform', `translate(${margin.left}, ${margin.top})`);
-    x.domain(DATA.map(d => d.axis)).padding(0.1);
-    xx.domain(DATA.map(d => d.axis)).padding(0.1);
+    x.domain(DATA.map((d) => d.axis)).padding(0.1);
+    xx.domain(DATA.map((d) => d.axis/*.substring(0, 15)*/)).padding(0.1);
     const yAxis = d3.axisLeft(y).ticks(2)
       , svgX = svg.append('g').attr('transform', `translate(0, ${height})`).attr('class', 'axis').call(customXAxis)
       , svgY = svg.append('g').attr('transform', 'translate(0,0)').attr('class', 'axis').call(yAxis)
@@ -2032,48 +2050,61 @@ export class UsersComponent implements OnChanges {
         .attr('width', width).attr('height', height)
       , rimmy1 = svg.append('rect').attr('class', 'rim').attr('x', -margin.left)
         .attr('y', -margin.top).attr('width', ww).attr('height', hh);
+    svgY.selectAll('text').attr('class', 'axis');
     // -----------------------------------------------Rim Outline-----------------------------------
     chart.selectAll('.bar').data(DATA).enter().append('rect').attr('class', 'barrim')
       .attr('width', x.bandwidth() / bandfiddle + 2 * rim)
-      .attr('x', d => x(d.axis) / bandfiddle - rim)
+      .attr('x', (d) => x(d.axis) / bandfiddle - rim)
       .attr('lineindex', d => d.axis)
-      .attr('height', d => rim + (d.value <= 0 ? y(d.value) - y(0) : y(0) - y(d.value)))
-      .attr('y', d => (d.value <= 0 ? y(0) : y(d.value) - rim))
-      .on('mousemove', d => this.tooltip.style('left', d3.event.pageX - 50 + 'px')
-        .style('top', d3.event.pageY - 70 + 'px')
+      .attr('height', (d) => rim + (d.value <= 0 ? y(d.value) - y(0) : y(0) - y(d.value)))
+      .attr('y', (d) => (d.value <= 0 ? y(0) : y(d.value) - rim))
+      .on('mousemove', (d) => this.tooltip.style('left', d3.event.pageX + 'px')
+        .style('top', d3.event.pageY + 'px')
         .style('display', 'inline-block')
-        .html(`<i class='fa fa-gears leafy'></i>${d.axis}<br>weight:${d.value}`))
-      .on('mouseleave', () => this.tooltip.style('display', 'none'));
+        .html(`<i class="fa fa-gears leafy"></i>${d.axis}<br>${d3.format('0.5f')(d.value)}<br>
+        ${d.alpha === undefined ? '' : 'alpha:' + d3.format('0.5f')(d.alpha)}`))
+      .on('mouseout', (d) => this.tooltip.style('display', 'none'));
     // --------------------------------------------------------------------------------------------
     chart.selectAll('.bar').data(DATA).enter().append('rect')
+      .attr('class', `barfade`)
       .attr('width', x.bandwidth() / bandfiddle)
-      .attr('x', d => x(d.axis) / bandfiddle)
+      .attr('x', (d) => x(d.axis) / bandfiddle)
       .attr('lineindex', d => d.axis)
-      .attr('height', d => {
+      .attr('height', (d) => {
         const deviation = 0;
         return deviation <= 0 ? y(deviation) - y(0) : y(0) - y(deviation);
       })
-      .attr('y', d => {
+      .attr('y', (d) => {
         const deviation = 0;
         return deviation <= 0 ? y(0) : y(deviation);
       })
-      .attr('class', d => d.value > 0 ? 'weightSinglePlus' : 'weightSingleMinus')
-      .attr('picId', dataIndex)
-      //      .style('fill-opacity', 0.35)
-      .on('mousemove', d => this.tooltip.style('left', d3.event.pageX - 50 + 'px')
-        .style('top', d3.event.pageY - 70 + 'px').style('display', 'inline-block')
-        .html(`<i class='fa fa-gears leafy'></i>${d.axis}<br>weight:${d3.format('0.5f')(d.value)}<br>
-        ${d.alpha === undefined ? '' : 'alpha:' + d3.format('0.5f')(d.alpha)}`))
-      .on('mouseleave', () => this.tooltip.style('display', 'none'))
+      .style('fill', d => d.value >= 0 ? colour[0] : colour[1])
+      .attr('picId', gIndex)
+          .style('fill-opacity', 0.35)
+      .on('mousemove', (d, i, j) => {
+        d3.select(j[i] as SVGRectElement)
+          .transition().duration(2)
+          .style('fill-opacity', 0.7);
+        this.tooltip.style('left', d3.event.pageX + 'px')
+          .style('top', d3.event.pageY + 'px').style('display', 'inline-block')
+          .html(`<i class="fa fa-gears leafy"></i>${d.axis}<br>${d3.format('0.5f')(d.value)}<br>
+        ${d.alpha === undefined ? '' : 'alpha:' + d3.format('0.5f')(d.alpha)}`);
+      })
+      .on('mouseout', (d, i, j) => {
+        d3.select(j[i] as SVGRectElement)
+          .transition().duration(10)
+          .style('fill-opacity', 0.35);
+        this.tooltip.style('display', 'none');
+      })
       .transition().duration(durationtime)
-      .attr('height', d => d.value <= 0 ? y(d.value) - y(0) : y(0) - y(d.value))
-      .attr('y', d => d.value <= 0 ? y(0) : y(d.value));
-    if (scaleAll < 1) {
-      chart.style('stroke-width', +chart.style('stroke-width').replace('px', '') * scaleAll);
-      titleX.style('font-size', (+titleX.style('font-size').replace('px', '') * scaleAll) + 'px');
-      titleY.style('font-size', (+titleY.style('font-size').replace('px', '') * scaleAll) + 'px');
-      svgX.style('font-size', (+svgX.style('font-size').replace('px', '') * scaleAll) + 'px');
-      svgY.style('font-size', (+svgY.style('font-size').replace('px', '') * scaleAll) + 'px');
+      .attr('height', (d) => d.value <= 0 ? y(d.value) - y(0) : y(0) - y(d.value))
+      .attr('y', (d) => d.value <= 0 ? y(0) : y(d.value));
+    if (false && scaleHere < 1) {
+      chart.style('stroke-width', +chart.style('stroke-width').replace('px', '') * scaleHere);
+      titleX.style('font-size', (+titleX.style('font-size').replace('px', '') * scaleHere) + 'px');
+      titleY.style('font-size', (+titleY.style('font-size').replace('px', '') * scaleHere) + 'px');
+      //      svgX.style('font-size', (+svgX.style('font-size').replace('px', '') * scaleHere) + 'px');
+      svgY.selectAll('text').style('font-size', (+svgY.selectAll('text').style('font-size').replace('px', '') * scaleHere) + 'px');
     }
   }
 }
