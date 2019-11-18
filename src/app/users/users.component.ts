@@ -516,7 +516,7 @@ export class UsersComponent implements OnChanges {
           this.RadarChart('app-users', displayData, radarChartOptions);
           displayData.forEach((ddd, id) => {
             //        this.stockbars(ddd, id, ww, hh, 2000, 'Factor Exposure', 'Factor');
-            this.stockbars('app-users', 1, ddd, ww, hh, 2000, ['blue','red'], id, 'Factor Exposure', 'Factor');
+            this.stockbars('app-users', 1, ddd, ww, hh, 2000, ['blue', 'red'], id, 'Factor Exposure', 'Factor');
             this.simpleDisplay(ddd, id);
           });
         } else if (this.getKey === 'OPT') {
@@ -558,7 +558,7 @@ export class UsersComponent implements OnChanges {
           data1.forEach((ddd, i: number) => {
             const idisp = data1.length === 4 || this.getType === 'factor' ? i : this.choose2[i];
             //      this.stockbars(ddd, i, ww, hh, 2000, 'Weights', 'Assets');
-            this.stockbars('app-users', 1, ddd, ww, hh, 2000, ['green','orange'], i, 'Weights', 'Assets');
+            this.stockbars('app-users', 1, ddd, ww, hh, 2000, ['green', 'orange'], i, 'Weights', 'Assets');
             this.simpleDisplay(ddd, i);
             d3.select('app-users').append('svg').attr('width', 750).attr('height', 50).append('g').append('text')
               .attr('transform', 'translate(0,30)').attr('class', 'users')
@@ -1944,7 +1944,7 @@ export class UsersComponent implements OnChanges {
       .attr('class', 'tooltipRadar')
       .style('opacity', 0);
   }
-  wrapFunction = (text1, width: number, lineHeight: number, maxLines = 10) =>  // Adapted from http://bl.ocks.org/mbostock/7555321
+  wrapFunction = (text1, width: number, lineHeight: number, maxLines = 3) =>  // Adapted from http://bl.ocks.org/mbostock/7555321
     text1.each((kk, i, j) => {
       const text = d3.select(j[i]),
         words = text.text().split(/\s+/).reverse(),
@@ -1958,17 +1958,19 @@ export class UsersComponent implements OnChanges {
       while (word = words.pop()) {
         line.push(word);
         tspan.text(line.join(' '));
-        if ((<SVGTSpanElement>tspan.node()).getComputedTextLength() > width) {
+        if ((tspan.node() as SVGTSpanElement).getComputedTextLength() > width) {
+          if (lineNumber >= maxLines - 1) {
+            console.log('last line', lineNumber, maxLines);
+            break;
+          }
           line.pop();
           tspan.text(line.join(' '));
           line = [word];
           tspan = text.append('tspan')
             .attr('x', x).attr('y', y)
             .attr('dx', ++lineNumber * lineHeight * (dx > 0 ? 1 : 0) + dx + 'em')
-            .attr('dy', lineNumber * lineHeight + dy + 'em').text(word);
-          if (lineNumber >= maxLines - 1) {
-            break;
-          }
+            .attr('dy', lineNumber * lineHeight + dy + 'em')
+            .text(word);
         }
       }
     })
@@ -2080,7 +2082,7 @@ export class UsersComponent implements OnChanges {
       })
       .style('fill', d => d.value >= 0 ? colour[0] : colour[1])
       .attr('picId', gIndex)
-          .style('fill-opacity', 0.35)
+      .style('fill-opacity', 0.35)
       .on('mousemove', (d, i, j) => {
         d3.select(j[i] as SVGRectElement)
           .transition().duration(2)
