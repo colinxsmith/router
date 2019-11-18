@@ -2040,7 +2040,7 @@ export class UsersComponent implements OnChanges {
     svg.attr('transform', `translate(${margin.left}, ${margin.top})`);
     x.domain(DATA.map((d) => d.axis)).padding(0.1);
     xx.domain(DATA.map((d) => d.axis/*.substring(0, 15)*/)).padding(0.1);
-    const yAxis = d3.axisLeft(y).ticks(2)
+    const yAxis = d3.axisLeft(y).ticks(3)
       , svgX = svg.append('g').attr('transform', `translate(0, ${height})`).attr('class', 'axis').call(customXAxis)
       , svgY = svg.append('g').attr('transform', 'translate(0,0)').attr('class', 'axis').call(yAxis)
       , titleY = svg.append('text').attr('class', 'axisLabel').attr('transform', 'rotate(-90)')
