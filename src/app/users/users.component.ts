@@ -511,7 +511,7 @@ export class UsersComponent implements OnChanges {
               'rgb(244,244,50)', 'rgb(50,244,244)']),
             radarChartOptions = {
               w: width, h: height, margin: margin, maxValue: 0,
-              levels: 3, roundStrokes: !joinLinear, colour: radarBlobColour
+              levels: 2, roundStrokes: !joinLinear, colour: radarBlobColour
             };
           this.RadarChart('app-users', displayData, radarChartOptions);
           displayData.forEach((ddd, id) => {
@@ -1722,15 +1722,15 @@ export class UsersComponent implements OnChanges {
       axisGrid.append('path')
         .attr('class', 'gridZero')
         .attr('d', () => d3.arc()({
-          innerRadius: circScale(0),
-          outerRadius: circScale(0),
+          innerRadius: circScale(circVal.invert(0)),
+          outerRadius: circScale(circVal.invert(0)),
           startAngle: 0,
           endAngle: 0
         }))
         .transition().duration(2000)
         .attrTween('d', () => (t) => d3.arc()({
-          innerRadius: circScale(0),
-          outerRadius: circScale(0),
+          innerRadius: circScale(circVal.invert(0)),
+          outerRadius: circScale(circVal.invert(0)),
           startAngle: -(t + 0.5) * Math.PI,
           endAngle: (t - 0.5) * Math.PI
         }));
