@@ -511,12 +511,12 @@ export class UsersComponent implements OnChanges {
               'rgb(244,244,50)', 'rgb(50,244,244)']),
             radarChartOptions = {
               w: width, h: height, margin: margin, maxValue: 0,
-              levels: 3, roundStrokes: !joinLinear, colour: radarBlobColour
+              levels: 2, roundStrokes: !joinLinear, colour: radarBlobColour
             };
           this.RadarChart('app-users', displayData, radarChartOptions);
           displayData.forEach((ddd, id) => {
             //        this.stockbars(ddd, id, ww, hh, 2000, 'Factor Exposure', 'Factor');
-            this.stockbars('app-users', 1, ddd, ww, hh, 2000, ['blue','red'], id, 'Factor Exposure', 'Factor');
+            this.stockbars('app-users', 1, ddd, ww, hh, 2000, ['blue', 'red'], id, 'Factor Exposure', 'Factor');
             this.simpleDisplay(ddd, id);
           });
         } else if (this.getKey === 'OPT') {
@@ -558,7 +558,7 @@ export class UsersComponent implements OnChanges {
           data1.forEach((ddd, i: number) => {
             const idisp = data1.length === 4 || this.getType === 'factor' ? i : this.choose2[i];
             //      this.stockbars(ddd, i, ww, hh, 2000, 'Weights', 'Assets');
-            this.stockbars('app-users', 1, ddd, ww, hh, 2000, ['green','orange'], i, 'Weights', 'Assets');
+            this.stockbars('app-users', 1, ddd, ww, hh, 2000, ['green', 'orange'], i, 'Weights', 'Assets');
             this.simpleDisplay(ddd, i);
             d3.select('app-users').append('svg').attr('width', 750).attr('height', 50).append('g').append('text')
               .attr('transform', 'translate(0,30)').attr('class', 'users')
@@ -1722,15 +1722,15 @@ export class UsersComponent implements OnChanges {
       axisGrid.append('path')
         .attr('class', 'gridZero')
         .attr('d', () => d3.arc()({
-          innerRadius: circScale(0),
-          outerRadius: circScale(0),
+          innerRadius: circScale(circVal.invert(0)),
+          outerRadius: circScale(circVal.invert(0)),
           startAngle: 0,
           endAngle: 0
         }))
         .transition().duration(2000)
         .attrTween('d', () => (t) => d3.arc()({
-          innerRadius: circScale(0),
-          outerRadius: circScale(0),
+          innerRadius: circScale(circVal.invert(0)),
+          outerRadius: circScale(circVal.invert(0)),
           startAngle: -(t + 0.5) * Math.PI,
           endAngle: (t - 0.5) * Math.PI
         }));
@@ -1944,7 +1944,7 @@ export class UsersComponent implements OnChanges {
       .attr('class', 'tooltipRadar')
       .style('opacity', 0);
   }
-  wrapFunction = (text1, width: number, lineHeight: number, maxLines = 10) =>  // Adapted from http://bl.ocks.org/mbostock/7555321
+  wrapFunction = (text1, width: number, lineHeight: number, maxLines = 3) =>  // Adapted from http://bl.ocks.org/mbostock/7555321
     text1.each((kk, i, j) => {
       const text = d3.select(j[i]),
         words = text.text().split(/\s+/).reverse(),
@@ -1958,17 +1958,19 @@ export class UsersComponent implements OnChanges {
       while (word = words.pop()) {
         line.push(word);
         tspan.text(line.join(' '));
-        if ((<SVGTSpanElement>tspan.node()).getComputedTextLength() > width) {
+        if ((tspan.node() as SVGTSpanElement).getComputedTextLength() > width) {
+          if (lineNumber >= maxLines - 1) {
+            console.log('last line', lineNumber, maxLines);
+            break;
+          }
           line.pop();
           tspan.text(line.join(' '));
           line = [word];
           tspan = text.append('tspan')
             .attr('x', x).attr('y', y)
             .attr('dx', ++lineNumber * lineHeight * (dx > 0 ? 1 : 0) + dx + 'em')
-            .attr('dy', lineNumber * lineHeight + dy + 'em').text(word);
-          if (lineNumber >= maxLines - 1) {
-            break;
-          }
+            .attr('dy', lineNumber * lineHeight + dy + 'em')
+            .text(word);
         }
       }
     })
@@ -2038,7 +2040,7 @@ export class UsersComponent implements OnChanges {
     svg.attr('transform', `translate(${margin.left}, ${margin.top})`);
     x.domain(DATA.map((d) => d.axis)).padding(0.1);
     xx.domain(DATA.map((d) => d.axis/*.substring(0, 15)*/)).padding(0.1);
-    const yAxis = d3.axisLeft(y).ticks(2)
+    const yAxis = d3.axisLeft(y).ticks(3)
       , svgX = svg.append('g').attr('transform', `translate(0, ${height})`).attr('class', 'axis').call(customXAxis)
       , svgY = svg.append('g').attr('transform', 'translate(0,0)').attr('class', 'axis').call(yAxis)
       , titleY = svg.append('text').attr('class', 'axisLabel').attr('transform', 'rotate(-90)')
@@ -2080,7 +2082,7 @@ export class UsersComponent implements OnChanges {
       })
       .style('fill', d => d.value >= 0 ? colour[0] : colour[1])
       .attr('picId', gIndex)
-          .style('fill-opacity', 0.35)
+      .style('fill-opacity', 0.35)
       .on('mousemove', (d, i, j) => {
         d3.select(j[i] as SVGRectElement)
           .transition().duration(2)
