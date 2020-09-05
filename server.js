@@ -8,13 +8,13 @@ const bodyParser = require('body-parser');
 const api = require('./server/routes/api');
 
 const app = express();
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "*");
-  res.header("Access-Control-Allow-Headers", "x-bita-api,Origin, X-Requested-With, Content-Type, Accept");
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Cache-Control", "max-age=6");
-  next();
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "*");
+    res.header("Access-Control-Allow-Headers", "x-bita-api,Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Cache-Control", "max-age=6");
+    next();
 });
 
 
@@ -30,14 +30,14 @@ app.use('/', api);
 
 // Catch all other routes and return the index file
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist/index.html'));
+    res.sendFile(path.join(__dirname, 'dist/index.html'));
 });
 
 /**
  * Get port from environment and store in Express.
  */
 const port = process.env.PORT || '4024';
-const host = process.env.HOST || '192.168.0.21';
+const host = process.env.HOST || '192.168.0.25';
 
 app.set('port', port);
 app.set('host', host);
