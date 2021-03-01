@@ -1,4 +1,5 @@
  file=${1:-OPT_wrap.cxx}
+ 
  sed -i "s/v8::Handle</v8::Local</g" $file
  sed -i "s/->NewInstance()/->NewInstance(isolate->GetCurrentContext()).ToLocalChecked()/g" $file 
  sed -i "s/obj->Set(SWIGV8_SYMBOL_NEW(symbol)/obj->Set(SWIGV8_CURRENT_CONTEXT(),SWIGV8_SYMBOL_NEW(symbol)/g" $file
@@ -15,3 +16,4 @@
  sed -i "/exports_obj->Set/s/);/).FromJust();/g" $file
  sed -i "/SetHiddenPrototype/s|_exports|// _exports|"  $file
  sed -i "/handle.MarkIndependent(/s|cdata|// cdata|" $file
+ vi -s sed1 $file
